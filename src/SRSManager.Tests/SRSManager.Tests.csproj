@@ -29,7 +29,7 @@
     <ProjectReference Include="..\SRSApis\SRSApis.csproj" />
     <ProjectReference Include="..\SRSConfFile\SRSConfFile.csproj" />
     <ProjectReference Include="..\SRSManageCommon\SRSManageCommon.csproj" />
-    <ProjectReference Include="..\SRSWebApi\SRSWebApi.csproj" />
+    <ProjectReference Include="..\SRSWeb\SRSWeb.csproj" />
   </ItemGroup>
 
 </Project>

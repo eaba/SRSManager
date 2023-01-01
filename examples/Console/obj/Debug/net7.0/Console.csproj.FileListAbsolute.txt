@@ -1,0 +1,15 @@
+C:\Users\Ebere\source\repos\SRSManager\examples\Console\bin\Debug\net7.0\Console.exe
+C:\Users\Ebere\source\repos\SRSManager\examples\Console\bin\Debug\net7.0\Console.deps.json
+C:\Users\Ebere\source\repos\SRSManager\examples\Console\bin\Debug\net7.0\Console.runtimeconfig.json
+C:\Users\Ebere\source\repos\SRSManager\examples\Console\bin\Debug\net7.0\Console.dll
+C:\Users\Ebere\source\repos\SRSManager\examples\Console\bin\Debug\net7.0\Console.pdb
+C:\Users\Ebere\source\repos\SRSManager\examples\Console\obj\Debug\net7.0\Console.csproj.AssemblyReference.cache
+C:\Users\Ebere\source\repos\SRSManager\examples\Console\obj\Debug\net7.0\Console.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Ebere\source\repos\SRSManager\examples\Console\obj\Debug\net7.0\Console.AssemblyInfoInputs.cache
+C:\Users\Ebere\source\repos\SRSManager\examples\Console\obj\Debug\net7.0\Console.AssemblyInfo.cs
+C:\Users\Ebere\source\repos\SRSManager\examples\Console\obj\Debug\net7.0\Console.csproj.CoreCompileInputs.cache
+C:\Users\Ebere\source\repos\SRSManager\examples\Console\obj\Debug\net7.0\Console.dll
+C:\Users\Ebere\source\repos\SRSManager\examples\Console\obj\Debug\net7.0\refint\Console.dll
+C:\Users\Ebere\source\repos\SRSManager\examples\Console\obj\Debug\net7.0\Console.pdb
+C:\Users\Ebere\source\repos\SRSManager\examples\Console\obj\Debug\net7.0\Console.genruntimeconfig.cache
+C:\Users\Ebere\source\repos\SRSManager\examples\Console\obj\Debug\net7.0\ref\Console.dll
