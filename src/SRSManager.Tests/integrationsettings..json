@@ -1,0 +1,5 @@
+{
+  "ConnectionStrings": {
+    "SQL": "Data Source=DESKTOP-GUGBB29\\SQLEXPRESS;Initial Catalog=srs;User Id=srs;password=apitest;MultipleActiveResultSets=True"
+  }
+}
