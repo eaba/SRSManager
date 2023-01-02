@@ -5,7 +5,7 @@ fork https://github.com/chatop2020/SRSManager
 # Event-Modeling
 
 ## Global SRS Controller
-
+![Global](images/GlobalSRSController.jpg)
 ## 1. Introduction
 
 - SRSManager is used to manage and control the configuration files of the SRS streaming media server, and structure the configuration files to make the configuration files easier to control.
