@@ -19,11 +19,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Console", "examples\Console
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SRSWeb", "src\SRSWeb\SRSWeb.csproj", "{C3DAC649-E028-444D-A6F7-8279229E6FA8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SRSManager.Actors", "SRSManager.Actors\SRSManager.Actors.csproj", "{50D11C67-9587-4331-A0AC-EFC8CF0A2E89}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SRSManager.Actors", "src\SRSManager.Actors\SRSManager.Actors.csproj", "{50D11C67-9587-4331-A0AC-EFC8CF0A2E89}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SRSManager.Messages", "SRSManager.Messages\SRSManager.Messages.csproj", "{61E7ADD7-77FF-4C5B-9CEB-39E5D342CFB9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SRSManager.Messages", "src\SRSManager.Messages\SRSManager.Messages.csproj", "{61E7ADD7-77FF-4C5B-9CEB-39E5D342CFB9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SRSManager.Shared", "SRSManager.Shared\SRSManager.Shared.csproj", "{BAC1D847-4D48-4652-BEA4-18F57092911D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SRSManager.Shared", "src\SRSManager.Shared\SRSManager.Shared.csproj", "{BAC1D847-4D48-4652-BEA4-18F57092911D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

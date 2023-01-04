@@ -11,8 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\SRSApis\SRSApis.csproj" />
-    <ProjectReference Include="..\src\SRSManageCommon\SRSManageCommon.csproj" />
+    <ProjectReference Include="..\SRSApis\SRSApis.csproj" />
+    <ProjectReference Include="..\SRSManageCommon\SRSManageCommon.csproj" />
   </ItemGroup>
 
 </Project>

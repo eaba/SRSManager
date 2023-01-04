@@ -1,4 +1,5 @@
-﻿using SRSManageCommon.ManageStructs;
+﻿
+using SRSManageCommon.ManageStructs;
 
 namespace SRSManager.Messages
 {

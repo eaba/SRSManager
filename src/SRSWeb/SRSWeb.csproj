@@ -12,10 +12,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\SRSManager.Actors\SRSManager.Actors.csproj" />
-    <ProjectReference Include="..\..\SRSManager.Messages\SRSManager.Messages.csproj" />
-    <ProjectReference Include="..\..\SRSManager.Shared\SRSManager.Shared.csproj" />
     <ProjectReference Include="..\SRSApis\SRSApis.csproj" />
+    <ProjectReference Include="..\SRSManager.Actors\SRSManager.Actors.csproj" />
+    <ProjectReference Include="..\SRSManager.Messages\SRSManager.Messages.csproj" />
+    <ProjectReference Include="..\SRSManager.Shared\SRSManager.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

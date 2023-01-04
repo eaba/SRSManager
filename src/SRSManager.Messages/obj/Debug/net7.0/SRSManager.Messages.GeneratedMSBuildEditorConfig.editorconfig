@@ -8,4 +8,4 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = SRSManager.Messages
-build_property.ProjectDir = C:\Users\Ebere\source\repos\SRSManager\SRSManager.Messages\
+build_property.ProjectDir = C:\Users\Ebere\source\repos\SRSManager\src\SRSManager.Messages\

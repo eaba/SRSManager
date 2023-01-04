@@ -12066,18 +12066,18 @@
     },
     "SRSManager.Actors/1.0.0": {
       "type": "project",
-      "path": "../../SRSManager.Actors/SRSManager.Actors.csproj",
-      "msbuildProject": "../../SRSManager.Actors/SRSManager.Actors.csproj"
+      "path": "../SRSManager.Actors/SRSManager.Actors.csproj",
+      "msbuildProject": "../SRSManager.Actors/SRSManager.Actors.csproj"
     },
     "SRSManager.Messages/1.0.0": {
       "type": "project",
-      "path": "../../SRSManager.Messages/SRSManager.Messages.csproj",
-      "msbuildProject": "../../SRSManager.Messages/SRSManager.Messages.csproj"
+      "path": "../SRSManager.Messages/SRSManager.Messages.csproj",
+      "msbuildProject": "../SRSManager.Messages/SRSManager.Messages.csproj"
     },
     "SRSManager.Shared/1.0.0": {
       "type": "project",
-      "path": "../../SRSManager.Shared/SRSManager.Shared.csproj",
-      "msbuildProject": "../../SRSManager.Shared/SRSManager.Shared.csproj"
+      "path": "../SRSManager.Shared/SRSManager.Shared.csproj",
+      "msbuildProject": "../SRSManager.Shared/SRSManager.Shared.csproj"
     }
   },
   "projectFileDependencyGroups": {
@@ -12126,14 +12126,14 @@
             "C:\\Users\\Ebere\\source\\repos\\SRSManager\\src\\SRSApis\\SRSApis.csproj": {
               "projectPath": "C:\\Users\\Ebere\\source\\repos\\SRSManager\\src\\SRSApis\\SRSApis.csproj"
             },
-            "C:\\Users\\Ebere\\source\\repos\\SRSManager\\SRSManager.Actors\\SRSManager.Actors.csproj": {
-              "projectPath": "C:\\Users\\Ebere\\source\\repos\\SRSManager\\SRSManager.Actors\\SRSManager.Actors.csproj"
+            "C:\\Users\\Ebere\\source\\repos\\SRSManager\\src\\SRSManager.Actors\\SRSManager.Actors.csproj": {
+              "projectPath": "C:\\Users\\Ebere\\source\\repos\\SRSManager\\src\\SRSManager.Actors\\SRSManager.Actors.csproj"
             },
-            "C:\\Users\\Ebere\\source\\repos\\SRSManager\\SRSManager.Messages\\SRSManager.Messages.csproj": {
-              "projectPath": "C:\\Users\\Ebere\\source\\repos\\SRSManager\\SRSManager.Messages\\SRSManager.Messages.csproj"
+            "C:\\Users\\Ebere\\source\\repos\\SRSManager\\src\\SRSManager.Messages\\SRSManager.Messages.csproj": {
+              "projectPath": "C:\\Users\\Ebere\\source\\repos\\SRSManager\\src\\SRSManager.Messages\\SRSManager.Messages.csproj"
             },
-            "C:\\Users\\Ebere\\source\\repos\\SRSManager\\SRSManager.Shared\\SRSManager.Shared.csproj": {
-              "projectPath": "C:\\Users\\Ebere\\source\\repos\\SRSManager\\SRSManager.Shared\\SRSManager.Shared.csproj"
+            "C:\\Users\\Ebere\\source\\repos\\SRSManager\\src\\SRSManager.Shared\\SRSManager.Shared.csproj": {
+              "projectPath": "C:\\Users\\Ebere\\source\\repos\\SRSManager\\src\\SRSManager.Shared\\SRSManager.Shared.csproj"
             }
           }
         }

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
@@ -14,10 +14,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\SRSApis\SRSApis.csproj" />
-    <ProjectReference Include="..\src\SRSManageCommon\SRSManageCommon.csproj" />
+    <ProjectReference Include="..\SRSApis\SRSApis.csproj" />
+    <ProjectReference Include="..\SRSManageCommon\SRSManageCommon.csproj" />
     <ProjectReference Include="..\SRSManager.Messages\SRSManager.Messages.csproj" />
     <ProjectReference Include="..\SRSManager.Shared\SRSManager.Shared.csproj" />
   </ItemGroup>
+
 
 </Project>
