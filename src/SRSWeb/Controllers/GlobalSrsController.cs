@@ -1,9 +1,14 @@
+using Akka.Actor;
+using Akka.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using SrsApis.SrsManager.Apis;
 using SrsManageCommon;
 using SRSManageCommon.ControllerStructs.RequestModules;
 using SRSManageCommon.ManageStructs;
+using SRSWeb.Actors;
 using SRSWeb.Attributes;
+using SRSWeb.Messages;
+using System.Security.Cryptography;
 
 namespace SRSWeb.Controllers
 {
@@ -14,6 +19,11 @@ namespace SRSWeb.Controllers
     [Route("")]
     public class GlobalSrsController : ControllerBase
     {
+        private readonly IActorRef _actor;
+        public GlobalSrsController(IRequiredActor<GlobalSrsApisActor> actor)
+        {
+            _actor = actor.ActorRef;
+        }
         /// <summary>
         /// Is srs running
         /// </summary>
@@ -62,16 +72,10 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/GlobalSrs/StartSrs")]
-        public JsonResult StartSrs(string deviceId)
-        {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId});
-            if (rss.Code != ErrorNumber.None)
-            {
-                return Program.CommonFunctions.DelApisResult(null!, rss);
-            }
-
-            var rt = GlobalSrsApis.StartSrs(deviceId, out ResponseStruct rs);
-            return Program.CommonFunctions.DelApisResult(rt, rs);
+        public async ValueTask<JsonResult> StartSrs(string deviceId)
+        {           
+            var a = await _actor.Ask<DelApisResult>(new GlobalSrs(deviceId, "StartSrs"));
+            return Program.CommonFunctions.DelApisResult(a.Rt, a.Rs);
         }
 
         /// <summary>
@@ -82,16 +86,10 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/GlobalSrs/StopSrs")]
-        public JsonResult StopSrs(string deviceId)
+        public async ValueTask<JsonResult> StopSrs(string deviceId)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId});
-            if (rss.Code != ErrorNumber.None)
-            {
-                return Program.CommonFunctions.DelApisResult(null!, rss);
-            }
-
-            var rt = GlobalSrsApis.StopSrs(deviceId, out ResponseStruct rs);
-            return Program.CommonFunctions.DelApisResult(rt, rs);
+            var a = await _actor.Ask<DelApisResult>(new GlobalSrs(deviceId, "StopSrs"));
+            return Program.CommonFunctions.DelApisResult(a.Rt, a.Rs);
         }
 
         /// <summary>
@@ -102,16 +100,10 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/GlobalSrs/RestartSrs")]
-        public JsonResult RestartSrs(string deviceId)
-        {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId});
-            if (rss.Code != ErrorNumber.None)
-            {
-                return Program.CommonFunctions.DelApisResult(null!, rss);
-            }
-
-            var rt = GlobalSrsApis.RestartSrs(deviceId, out ResponseStruct rs);
-            return Program.CommonFunctions.DelApisResult(rt, rs);
+        public async ValueTask<JsonResult> RestartSrs(string deviceId)
+        {           
+            var a = await _actor.Ask<DelApisResult>(new GlobalSrs(deviceId, "RestartSrs"));
+            return Program.CommonFunctions.DelApisResult(a.Rt, a.Rs);
         }
 
         /// <summary>
@@ -122,16 +114,10 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/GlobalSrs/ReloadSrs")]
-        public JsonResult ReloadtSrs(string deviceId)
+        public async ValueTask<JsonResult> ReloadtSrs(string deviceId)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId});
-            if (rss.Code != ErrorNumber.None)
-            {
-                return Program.CommonFunctions.DelApisResult(null!, rss);
-            }
-
-            var rt = GlobalSrsApis.ReloadSrs(deviceId, out ResponseStruct rs);
-            return Program.CommonFunctions.DelApisResult(rt, rs);
+            var a = await _actor.Ask<DelApisResult>(new GlobalSrs(deviceId, "ReloadSrs"));
+            return Program.CommonFunctions.DelApisResult(a.Rt, a.Rs);
         }
 
         /// <summary>

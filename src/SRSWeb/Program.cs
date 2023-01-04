@@ -2,6 +2,11 @@
 using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
+using Akka.Hosting;
+using Akka.Actor;
+using Microsoft.AspNetCore.StaticFiles.Infrastructure;
+using SRSWeb.Actors;
+using SharpPulsar;
 
 namespace SRSWeb;
 /// <summary>
@@ -16,7 +21,17 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container.
-
+        builder.Services.AddAkka("SRSManager", configurationBuilder =>
+        {
+           
+            configurationBuilder.WithActors((system, registry) =>
+            {
+                //v2.11.0 
+                //var s = PulsarSystem.GetInstanceAsync(system, null, actorSystemName: "tests");
+                var global = system.ActorOf(GlobalSrsApisActor.Prop(), "GlobalSrsApis");
+                registry.TryRegister<GlobalSrsApisActor>(global); // register for DI
+            });
+        });
         builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
@@ -32,7 +47,8 @@ public class Program
         builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         builder.Services.AddControllers().AddJsonOptions(
             options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter())
-        ).AddJsonOptions(configure =>
+        )
+        .AddJsonOptions(configure =>
         {
             configure.JsonSerializerOptions.Converters.Add(new DatetimeJsonConverter());
         });
