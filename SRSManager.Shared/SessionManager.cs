@@ -1,10 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Threading;
 using SrsManageCommon;
 using Common = SrsManageCommon.Common;
 
-namespace SRSWeb
+namespace SRSManager.Shared
 {
     /// <summary>
     /// session class structure
@@ -102,7 +99,7 @@ namespace SRSWeb
                 {
                     foreach (var session in _sessionList)
                     {
-                        if (session.Expires <= Program.CommonFunctions.GetTimeStampMilliseconds())
+                        if (session.Expires <= new CommonFunctions().GetTimeStampMilliseconds())
                         {
                             _sessionList.Remove(session);
                         }
@@ -133,7 +130,7 @@ namespace SRSWeb
                         _sessionList[i].SessionCode = Common.CreateUuid()!;
                         _sessionList[i].RefreshCode = Common.CreateUuid()!;
                         _sessionList[i].Expires =
-                            Program.CommonFunctions.GetTimeStampMilliseconds() + (addMin * 1000 * 60);
+                            new CommonFunctions().GetTimeStampMilliseconds() + (addMin * 1000 * 60);
                         found = true;
                         break;
                     }
@@ -171,7 +168,7 @@ namespace SRSWeb
                 AllowKey = allowKey,
                 SessionCode = Common.CreateUuid()!,
                 RefreshCode = Common.CreateUuid()!,
-                Expires = Program.CommonFunctions.GetTimeStampMilliseconds() + (addMin * 1000 * 60),
+                Expires = new  CommonFunctions().GetTimeStampMilliseconds() + (addMin * 1000 * 60),
             };
             lock (this)
             {

@@ -29,11 +29,11 @@ namespace SRSWeb.Controllers
             ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
             {
-                return Program.CommonFunctions.DelApisResult(null!, rss);
+                return Result.DelApisResult(null!, rss);
             }
 
             var rt = VhostHdsApis.DeleteVhostHds(deviceId, vhostDomain, out ResponseStruct rs);
-            return Program.CommonFunctions.DelApisResult(rt, rs);
+            return Result.DelApisResult(rt, rs);
         }
 
         /// <summary>
@@ -51,11 +51,11 @@ namespace SRSWeb.Controllers
             ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
             {
-                return Program.CommonFunctions.DelApisResult(null!, rss);
+                return Result.DelApisResult(null!, rss);
             }
 
             var rt = VhostHdsApis.GetVhostHds(deviceId, vhostDomain, out ResponseStruct rs);
-            return Program.CommonFunctions.DelApisResult(rt, rs);
+            return Result.DelApisResult(rt, rs);
         }
 
         /// <summary>
@@ -74,11 +74,11 @@ namespace SRSWeb.Controllers
             ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, hds});
             if (rss.Code != ErrorNumber.None)
             {
-                return Program.CommonFunctions.DelApisResult(null!, rss);
+                return Result.DelApisResult(null!, rss);
             }
 
             var rt = VhostHdsApis.SetVhostHds(deviceId, vhostDomain, hds, out ResponseStruct rs);
-            return Program.CommonFunctions.DelApisResult(rt, rs);
+            return Result.DelApisResult(rt, rs);
         }
     }
 }

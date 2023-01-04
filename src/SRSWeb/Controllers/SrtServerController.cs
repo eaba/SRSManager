@@ -27,11 +27,11 @@ namespace SRSWeb.Controllers
             ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId});
             if (rss.Code != ErrorNumber.None)
             {
-                return Program.CommonFunctions.DelApisResult(null!, rss);
+                return Result.DelApisResult(null!, rss);
             }
 
             var rt = SrtServerApis.GetSrtServer(deviceId, out ResponseStruct rs);
-            return Program.CommonFunctions.DelApisResult(rt, rs);
+            return Result.DelApisResult(rt, rs);
         }
 
         /// <summary>
@@ -47,11 +47,11 @@ namespace SRSWeb.Controllers
             ResponseStruct rss = CommonFunctions.CheckParams(new object[] {srt, deviceId});
             if (rss.Code != ErrorNumber.None)
             {
-                return Program.CommonFunctions.DelApisResult(null!, rss);
+                return Result.DelApisResult(null!, rss);
             }
 
             var rt = SrtServerApis.SetSrtServer(deviceId, srt, out ResponseStruct rs);
-            return Program.CommonFunctions.DelApisResult(rt, rs);
+            return Result.DelApisResult(rt, rs);
         }
 
         /// <summary>
@@ -67,11 +67,11 @@ namespace SRSWeb.Controllers
             ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId});
             if (rss.Code != ErrorNumber.None)
             {
-                return Program.CommonFunctions.DelApisResult(null!, rss);
+                return Result.DelApisResult(null!, rss);
             }
 
             var rt = SrtServerApis.DeleteSrtServer(deviceId, out ResponseStruct rs);
-            return Program.CommonFunctions.DelApisResult(rt, rs);
+            return Result.DelApisResult(rt, rs);
         }
     }
 }

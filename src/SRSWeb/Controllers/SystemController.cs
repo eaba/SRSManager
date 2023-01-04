@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using SrsApis.SrsManager;
@@ -30,11 +29,11 @@ namespace SRSWeb.Controllers
             ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId});
             if (rss.Code != ErrorNumber.None)
             {
-                return Program.CommonFunctions.DelApisResult(null!, rss);
+                return Result.DelApisResult(null!, rss);
             }
 
             var rt = SystemApis.RefreshSrsObject(deviceId, out ResponseStruct rs);
-            return Program.CommonFunctions.DelApisResult(rt, rs);
+            return Result.DelApisResult(rt, rs);
         }
 
 
@@ -54,7 +53,7 @@ namespace SRSWeb.Controllers
                 Message = ErrorMessage.ErrorDic![ErrorNumber.None],
             };
             var rt = SystemApis.GetAllSrsManagerDeviceId();
-            return Program.CommonFunctions.DelApisResult(rt, rs);
+            return Result.DelApisResult(rt, rs);
         }
 
         /// <summary>
@@ -70,11 +69,11 @@ namespace SRSWeb.Controllers
             ResponseStruct rss = CommonFunctions.CheckParams(new object[] {sm});
             if (rss.Code != ErrorNumber.None)
             {
-                return Program.CommonFunctions.DelApisResult(null!, rss);
+                return Result.DelApisResult(null!, rss);
             }
 
             var rt = SystemApis.CreateNewSrsInstance(sm, out ResponseStruct rs);
-            return Program.CommonFunctions.DelApisResult(rt, rs);
+            return Result.DelApisResult(rt, rs);
         }
 
 
@@ -89,7 +88,7 @@ namespace SRSWeb.Controllers
         public JsonResult GetSrsInstanceTemplate()
         {
             var rt = SystemApis.GetSrsInstanceTemplate(out ResponseStruct rs);
-            return Program.CommonFunctions.DelApisResult(rt, rs);
+            return Result.DelApisResult(rt, rs);
         }
 
 
@@ -106,11 +105,11 @@ namespace SRSWeb.Controllers
             ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId});
             if (rss.Code != ErrorNumber.None)
             {
-                return Program.CommonFunctions.DelApisResult(null!, rss);
+                return Result.DelApisResult(null!, rss);
             }
 
             var rt = SystemApis.DelSrsInstanceByDeviceId(deviceId, out ResponseStruct rs);
-            return Program.CommonFunctions.DelApisResult(rt, rs);
+            return Result.DelApisResult(rt, rs);
         }
 
         /// <summary>
@@ -126,7 +125,7 @@ namespace SRSWeb.Controllers
             ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId});
             if (rss.Code != ErrorNumber.None)
             {
-                return Program.CommonFunctions.DelApisResult(null!, rss);
+                return Result.DelApisResult(null!, rss);
             }
 
             ResponseStruct rs = new ResponseStruct()
@@ -135,7 +134,7 @@ namespace SRSWeb.Controllers
                 Message = ErrorMessage.ErrorDic![ErrorNumber.None],
             };
             var rt = SystemApis.GetSrsManagerInstanceByDeviceId(deviceId);
-            return Program.CommonFunctions.DelApisResult(rt, rs);
+            return Result.DelApisResult(rt, rs);
         }
 
         

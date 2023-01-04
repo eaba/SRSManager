@@ -1,11 +1,8 @@
-using System;
-using System.Net;
-using Microsoft.AspNetCore.Mvc;
 using SrsManageCommon;
 using SRSManageCommon.ManageStructs;
 using Common = SrsManageCommon.Common;
 
-namespace SRSWeb
+namespace SRSManager.Shared
 {
     /// <summary>
     /// General class
@@ -234,20 +231,6 @@ namespace SRSWeb
             return false;
         }
 
-        /// <summary>
-        /// Unified processing of apis return results
-        /// </summary>
-        /// <param name="rt">return value</param>
-        /// <param name="rs">ResponseStruct</param>
-        /// <returns></returns>
-        public JsonResult DelApisResult(object rt, ResponseStruct rs)
-        {
-            if (rs.Code != (int) ErrorNumber.None)
-            {
-                return new JsonResult(rs) {StatusCode = (int) HttpStatusCode.BadRequest};
-            }
-
-            return new JsonResult(rt) {StatusCode = (int) HttpStatusCode.OK};
-        }
+        
     }
 }

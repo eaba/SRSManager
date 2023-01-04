@@ -27,11 +27,11 @@ namespace SRSWeb.Controllers
             ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId});
             if (rss.Code != ErrorNumber.None)
             {
-                return Program.CommonFunctions.DelApisResult(null!, rss);
+                return Result.DelApisResult(null!, rss);
             }
 
             var rt = StreamCasterApis.GetStreamCastersInstanceName(deviceId, out ResponseStruct rs);
-            return Program.CommonFunctions.DelApisResult(rt, rs);
+            return Result.DelApisResult(rt, rs);
         }
 
         /// <summary>
@@ -47,11 +47,11 @@ namespace SRSWeb.Controllers
             ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId});
             if (rss.Code != ErrorNumber.None)
             {
-                return Program.CommonFunctions.DelApisResult(null!, rss);
+                return Result.DelApisResult(null!, rss);
             }
 
             var rt = StreamCasterApis.GetStreamCasterList(deviceId, out ResponseStruct rs);
-            return Program.CommonFunctions.DelApisResult(rt, rs);
+            return Result.DelApisResult(rt, rs);
         }
 
         /// <summary>
@@ -67,11 +67,11 @@ namespace SRSWeb.Controllers
             ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, streamcaster});
             if (rss.Code != ErrorNumber.None)
             {
-                return Program.CommonFunctions.DelApisResult(null!, rss);
+                return Result.DelApisResult(null!, rss);
             }
 
             var rt = StreamCasterApis.CreateStreamCaster(deviceId, streamcaster, out ResponseStruct rs);
-            return Program.CommonFunctions.DelApisResult(rt, rs);
+            return Result.DelApisResult(rt, rs);
         }
 
         /// <summary>
@@ -87,11 +87,11 @@ namespace SRSWeb.Controllers
             ResponseStruct rss = CommonFunctions.CheckParams(new object[] {casterType});
             if (rss.Code != ErrorNumber.None)
             {
-                return Program.CommonFunctions.DelApisResult(null!, rss);
+                return Result.DelApisResult(null!, rss);
             }
 
             var rt = StreamCasterApis.GetStreamCasterTemplate(casterType, out ResponseStruct rs);
-            return Program.CommonFunctions.DelApisResult(rt, rs);
+            return Result.DelApisResult(rt, rs);
         }
 
         /// <summary>
@@ -107,11 +107,11 @@ namespace SRSWeb.Controllers
             ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, instanceName});
             if (rss.Code != ErrorNumber.None)
             {
-                return Program.CommonFunctions.DelApisResult(null!, rss);
+                return Result.DelApisResult(null!, rss);
             }
 
             var rt = StreamCasterApis.DeleteStreamCasterByInstanceName(deviceId, instanceName, out ResponseStruct rs);
-            return Program.CommonFunctions.DelApisResult(rt, rs);
+            return Result.DelApisResult(rt, rs);
         }
 
         /// <summary>
@@ -127,12 +127,12 @@ namespace SRSWeb.Controllers
             ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, instanceName, newInstanceName});
             if (rss.Code != ErrorNumber.None)
             {
-                return Program.CommonFunctions.DelApisResult(null!, rss);
+                return Result.DelApisResult(null!, rss);
             }
 
             var rt = StreamCasterApis.ChangeStreamCasterInstanceName(deviceId, instanceName, newInstanceName,
                 out ResponseStruct rs);
-            return Program.CommonFunctions.DelApisResult(rt, rs);
+            return Result.DelApisResult(rt, rs);
         }
 
         /// <summary>
@@ -148,11 +148,11 @@ namespace SRSWeb.Controllers
             ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, instanceName, enable});
             if (rss.Code != ErrorNumber.None)
             {
-                return Program.CommonFunctions.DelApisResult(null!, rss);
+                return Result.DelApisResult(null!, rss);
             }
 
             var rt = StreamCasterApis.OnOrOffStreamCaster(deviceId, instanceName, enable, out ResponseStruct rs);
-            return Program.CommonFunctions.DelApisResult(rt, rs);
+            return Result.DelApisResult(rt, rs);
         }
 
         /// <summary>
@@ -168,11 +168,11 @@ namespace SRSWeb.Controllers
             ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, streamcaster});
             if (rss.Code != ErrorNumber.None)
             {
-                return Program.CommonFunctions.DelApisResult(null!, rss);
+                return Result.DelApisResult(null!, rss);
             }
 
             var rt = StreamCasterApis.SetStreamCaster(deviceId, streamcaster, out ResponseStruct rs);
-            return Program.CommonFunctions.DelApisResult(rt, rs);
+            return Result.DelApisResult(rt, rs);
         }
     }
 }

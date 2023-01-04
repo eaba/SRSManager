@@ -32,12 +32,12 @@ namespace SRSWeb.Controllers
                 CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, transcodeInstanceName});
             if (rss.Code != ErrorNumber.None)
             {
-                return Program.CommonFunctions.DelApisResult(null!, rss);
+                return Result.DelApisResult(null!, rss);
             }
 
             var rt = VhostTranscodeApis.DeleteVhostTranscodeByTranscodeInstanceName(deviceId, vhostDomain,
                 transcodeInstanceName, out ResponseStruct rs);
-            return Program.CommonFunctions.DelApisResult(rt, rs);
+            return Result.DelApisResult(rt, rs);
         }
 
         /// <summary>
@@ -55,11 +55,11 @@ namespace SRSWeb.Controllers
             ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
             {
-                return Program.CommonFunctions.DelApisResult(null!, rss);
+                return Result.DelApisResult(null!, rss);
             }
 
             var rt = VhostTranscodeApis.GetVhostTranscodeNameList(deviceId, out ResponseStruct rs, vhostDomain);
-            return Program.CommonFunctions.DelApisResult(rt, rs);
+            return Result.DelApisResult(rt, rs);
         }
 
         /// <summary>
@@ -79,12 +79,12 @@ namespace SRSWeb.Controllers
                 CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, transcodeInstanceName});
             if (rss.Code != ErrorNumber.None)
             {
-                return Program.CommonFunctions.DelApisResult(null!, rss);
+                return Result.DelApisResult(null!, rss);
             }
 
             var rt = VhostTranscodeApis.GetVhostTranscode(deviceId, vhostDomain, transcodeInstanceName,
                 out ResponseStruct rs);
-            return Program.CommonFunctions.DelApisResult(rt, rs);
+            return Result.DelApisResult(rt, rs);
         }
 
         /// <summary>
@@ -106,12 +106,12 @@ namespace SRSWeb.Controllers
                 {deviceId, vhostDomain, transcodeInstanceName, transcode});
             if (rss.Code != ErrorNumber.None)
             {
-                return Program.CommonFunctions.DelApisResult(null!, rss);
+                return Result.DelApisResult(null!, rss);
             }
 
             var rt = VhostTranscodeApis.SetVhostTranscode(deviceId, vhostDomain, transcodeInstanceName, transcode,
                 out ResponseStruct rs);
-            return Program.CommonFunctions.DelApisResult(rt, rs);
+            return Result.DelApisResult(rt, rs);
         }
     }
 }

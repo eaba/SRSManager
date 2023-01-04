@@ -1,11 +1,10 @@
-﻿using System;
-using System.Net;
-using Microsoft.AspNetCore.Http;
+﻿using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using SrsManageCommon;
 using SRSManageCommon.ControllerStructs.RequestModules;
 using SRSManageCommon.ControllerStructs.ResponseModules;
 using SRSManageCommon.ManageStructs;
+using SRSManager.Shared;
 using SRSWeb.Attributes;
 
 namespace SRSWeb.Controllers
@@ -41,7 +40,7 @@ namespace SRSWeb.Controllers
             ResponseStruct rss = CommonFunctions.CheckParams(new object[] {request});
             if (rss.Code != ErrorNumber.None)
             {
-                return Program.CommonFunctions.DelApisResult(null!, rss);
+                return Result.DelApisResult(null!, rss);
             }
 
             string remoteIpaddr = _httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
@@ -108,7 +107,7 @@ namespace SRSWeb.Controllers
             ResponseStruct rss = CommonFunctions.CheckParams(new object[] {request});
             if (rss.Code != ErrorNumber.None)
             {
-                return Program.CommonFunctions.DelApisResult(null!, rss);
+                return Result.DelApisResult(null!, rss);
             }
 
             string remoteIpaddr = _httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
@@ -146,7 +145,7 @@ namespace SRSWeb.Controllers
             ResponseStruct rss = CommonFunctions.CheckParams(new object[] {request});
             if (rss.Code != ErrorNumber.None)
             {
-                return Program.CommonFunctions.DelApisResult(null!, rss);
+                return Result.DelApisResult(null!, rss);
             }
 
             if (Program.CommonFunctions.CheckPassword(request.Password))
@@ -218,7 +217,7 @@ namespace SRSWeb.Controllers
             ResponseStruct rss = CommonFunctions.CheckParams(new object[] {request});
             if (rss.Code != ErrorNumber.None)
             {
-                return Program.CommonFunctions.DelApisResult(null!, rss);
+                return Result.DelApisResult(null!, rss);
             }
 
             if (Program.CommonFunctions.CheckPassword(request.Password))
@@ -292,7 +291,7 @@ namespace SRSWeb.Controllers
             ResponseStruct rss = CommonFunctions.CheckParams(new object[] {request});
             if (rss.Code != ErrorNumber.None)
             {
-                return Program.CommonFunctions.DelApisResult(null!, rss);
+                return Result.DelApisResult(null!, rss);
             }
 
             JsonResult result;
@@ -377,7 +376,7 @@ namespace SRSWeb.Controllers
             ResponseStruct rss = CommonFunctions.CheckParams(new object[] {request});
             if (rss.Code != ErrorNumber.None)
             {
-                return Program.CommonFunctions.DelApisResult(null!, rss);
+                return Result.DelApisResult(null!, rss);
             }
 
             if (Program.CommonFunctions.CheckPassword(request.Password))

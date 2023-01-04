@@ -3,10 +3,9 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
 using Akka.Hosting;
-using Akka.Actor;
-using Microsoft.AspNetCore.StaticFiles.Infrastructure;
-using SRSWeb.Actors;
 using SharpPulsar;
+using SRSManager.Shared;
+using SRSManager.Actors;
 
 namespace SRSWeb;
 /// <summary>
@@ -27,9 +26,9 @@ public class Program
             configurationBuilder.WithActors((system, registry) =>
             {
                 //v2.11.0 
-                //var s = PulsarSystem.GetInstanceAsync(system, null, actorSystemName: "tests");
-                var global = system.ActorOf(GlobalSrsApisActor.Prop(), "GlobalSrsApis");
-                registry.TryRegister<GlobalSrsApisActor>(global); // register for DI
+                Pulsar.System = PulsarSystem.GetInstance(system, actorSystemName: "Pulsar");
+                var srs = system.ActorOf(SRSManagersActor.Prop(), "SRSManager");
+                registry.TryRegister<SRSManagersActor>(srs); // register for DI
             });
         });
         builder.Services.AddControllers();

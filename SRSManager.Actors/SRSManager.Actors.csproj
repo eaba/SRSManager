@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Akka.Hosting" Version="1.0.0" />
+    <PackageReference Include="SharpPulsar" Version="2.10.0-rc1191" />
+    <PackageReference Include="SharpPulsar.Admin" Version="2.10.0-rc1191" />
+    <PackageReference Include="SharpPulsar.Trino" Version="2.10.0-rc1191" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\src\SRSApis\SRSApis.csproj" />
+    <ProjectReference Include="..\src\SRSManageCommon\SRSManageCommon.csproj" />
+    <ProjectReference Include="..\SRSManager.Messages\SRSManager.Messages.csproj" />
+    <ProjectReference Include="..\SRSManager.Shared\SRSManager.Shared.csproj" />
+  </ItemGroup>
+
+</Project>

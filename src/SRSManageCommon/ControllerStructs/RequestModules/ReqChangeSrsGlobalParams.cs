@@ -10,7 +10,8 @@ namespace SRSManageCommon.ControllerStructs.RequestModules
     public class ReqChangeSrsGlobalParams
     {
         private string _deviceId = null!;
-        private GlobalModule _gm = null!;
+        private GlobalModule _gm;
+
 
         /// <summary>
         /// srsmanager

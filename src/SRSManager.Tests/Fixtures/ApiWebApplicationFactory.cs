@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using SrsApis.SrsManager;
-using SRSWeb;
 using System.Text.Json.Serialization;
 
 namespace SRSManager.Tests.Fixtures

@@ -1,14 +1,14 @@
 using Akka.Actor;
 using Akka.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using SrsApis.SrsManager.Apis;
 using SrsManageCommon;
 using SRSManageCommon.ControllerStructs.RequestModules;
 using SRSManageCommon.ManageStructs;
-using SRSWeb.Actors;
+using SRSManager.Actors;
+using SRSManager.Messages;
+using SRSManager.Shared;
+using System.Security.Claims;
 using SRSWeb.Attributes;
-using SRSWeb.Messages;
-using System.Security.Cryptography;
 
 namespace SRSWeb.Controllers
 {
@@ -20,7 +20,7 @@ namespace SRSWeb.Controllers
     public class GlobalSrsController : ControllerBase
     {
         private readonly IActorRef _actor;
-        public GlobalSrsController(IRequiredActor<GlobalSrsApisActor> actor)
+        public GlobalSrsController(IRequiredActor<SRSManagersActor> actor)
         {
             _actor = actor.ActorRef;
         }
@@ -32,16 +32,16 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/GlobalSrs/IsRunning")]
-        public JsonResult IsRunning(string deviceId)
+        public async ValueTask<JsonResult> IsRunning(string deviceId)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId});
+            ResponseStruct rss = CommonFunctions.CheckParams(new object[] { deviceId });
             if (rss.Code != ErrorNumber.None)
             {
-                return Program.CommonFunctions.DelApisResult(null!, rss);
+                return Result.DelApisResult(null!, rss);
             }
-
-            var rt = GlobalSrsApis.IsRunning(deviceId, out ResponseStruct rs);
-            return Program.CommonFunctions.DelApisResult(rt, rs);
+            var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var a = await _actor.Ask<DelApisResult>(new GlobalSrs(deviceId, "IsRunning", userId));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
         /// <summary>
@@ -52,16 +52,16 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/GlobalSrs/IsInit")]
-        public JsonResult IsInit(string deviceId)
+        public async ValueTask<JsonResult> IsInit(string deviceId)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId});
+            ResponseStruct rss = CommonFunctions.CheckParams(new object[] { deviceId });
             if (rss.Code != ErrorNumber.None)
             {
-                return Program.CommonFunctions.DelApisResult(null!, rss);
+                return Result.DelApisResult(null!, rss);
             }
-
-            var rt = GlobalSrsApis.IsInit(deviceId, out ResponseStruct rs);
-            return Program.CommonFunctions.DelApisResult(rt, rs);
+            var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var a = await _actor.Ask<DelApisResult>(new GlobalSrs(deviceId, "IsInit", userId));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
         /// <summary>
@@ -73,9 +73,15 @@ namespace SRSWeb.Controllers
         [Log]
         [Route("/GlobalSrs/StartSrs")]
         public async ValueTask<JsonResult> StartSrs(string deviceId)
-        {           
-            var a = await _actor.Ask<DelApisResult>(new GlobalSrs(deviceId, "StartSrs"));
-            return Program.CommonFunctions.DelApisResult(a.Rt, a.Rs);
+        {
+            ResponseStruct rss = CommonFunctions.CheckParams(new object[] { deviceId });
+            if (rss.Code != ErrorNumber.None)
+            {
+                return Result.DelApisResult(null!, rss);
+            }
+            var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var a = await _actor.Ask<DelApisResult>(new GlobalSrs(deviceId, "Start", userId));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
         /// <summary>
@@ -88,8 +94,14 @@ namespace SRSWeb.Controllers
         [Route("/GlobalSrs/StopSrs")]
         public async ValueTask<JsonResult> StopSrs(string deviceId)
         {
-            var a = await _actor.Ask<DelApisResult>(new GlobalSrs(deviceId, "StopSrs"));
-            return Program.CommonFunctions.DelApisResult(a.Rt, a.Rs);
+            ResponseStruct rss = CommonFunctions.CheckParams(new object[] { deviceId });
+            if (rss.Code != ErrorNumber.None)
+            {
+                return Result.DelApisResult(null!, rss);
+            }
+            var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var a = await _actor.Ask<DelApisResult>(new GlobalSrs(deviceId, "Stop", userId));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
         /// <summary>
@@ -101,9 +113,15 @@ namespace SRSWeb.Controllers
         [Log]
         [Route("/GlobalSrs/RestartSrs")]
         public async ValueTask<JsonResult> RestartSrs(string deviceId)
-        {           
-            var a = await _actor.Ask<DelApisResult>(new GlobalSrs(deviceId, "RestartSrs"));
-            return Program.CommonFunctions.DelApisResult(a.Rt, a.Rs);
+        {
+            ResponseStruct rss = CommonFunctions.CheckParams(new object[] { deviceId });
+            if (rss.Code != ErrorNumber.None)
+            {
+                return Result.DelApisResult(null!, rss);
+            }
+            var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var a = await _actor.Ask<DelApisResult>(new GlobalSrs(deviceId, "Restart", userId));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
         /// <summary>
@@ -116,8 +134,14 @@ namespace SRSWeb.Controllers
         [Route("/GlobalSrs/ReloadSrs")]
         public async ValueTask<JsonResult> ReloadtSrs(string deviceId)
         {
-            var a = await _actor.Ask<DelApisResult>(new GlobalSrs(deviceId, "ReloadSrs"));
-            return Program.CommonFunctions.DelApisResult(a.Rt, a.Rs);
+            ResponseStruct rss = CommonFunctions.CheckParams(new object[] { deviceId });
+            if (rss.Code != ErrorNumber.None)
+            {
+                return Result.DelApisResult(null!, rss);
+            }
+            var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var a = await _actor.Ask<DelApisResult>(new GlobalSrs(deviceId, "Reload", userId));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
         /// <summary>
@@ -128,16 +152,16 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/GlobalSrs/GlobalChangeChunksize")]
-        public JsonResult GlobalChangeChunksize(string deviceId, ushort chunkSize)
+        public async ValueTask<JsonResult> GlobalChangeChunksize(string deviceId, ushort chunkSize)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, chunkSize});
+            ResponseStruct rss = CommonFunctions.CheckParams(new object[] { deviceId, chunkSize });
             if (rss.Code != ErrorNumber.None)
             {
-                return Program.CommonFunctions.DelApisResult(null!, rss);
+                return Result.DelApisResult(null!, rss);
             }
-
-            var rt = GlobalSrsApis.GlobalChangeChunksize(deviceId, chunkSize, out ResponseStruct rs);
-            return Program.CommonFunctions.DelApisResult(rt, rs);
+            var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var a = await _actor.Ask<DelApisResult>(new GlobalSrs(deviceId, chunkSize, "ChangeChunksize", userId));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
         /// <summary>
@@ -148,16 +172,16 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/GlobalSrs/GlobalChangeHttpApiListen")]
-        public JsonResult GlobalChangeHttpApiListen(string deviceId, ushort port)
+        public async ValueTask<JsonResult> GlobalChangeHttpApiListen(string deviceId, ushort port)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, port});
+            ResponseStruct rss = CommonFunctions.CheckParams(new object[] { deviceId, port });
             if (rss.Code != ErrorNumber.None)
             {
-                return Program.CommonFunctions.DelApisResult(null!, rss);
+                return Result.DelApisResult(null!, rss);
             }
-
-            var rt = GlobalSrsApis.GlobalChangeHttpApipListen(deviceId, port, out ResponseStruct rs);
-            return Program.CommonFunctions.DelApisResult(rt, rs);
+            var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var a = await _actor.Ask<DelApisResult>(new GlobalSrs(deviceId, port, "ChangeHttpApiListen", userId));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
         /// <summary>
@@ -168,16 +192,16 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/GlobalSrs/GlobalChangeHttpApiEnable")]
-        public JsonResult GlobalChangeHttpApiEnable(string deviceId, bool enable)
+        public async ValueTask<JsonResult> GlobalChangeHttpApiEnable(string deviceId, bool enable)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, enable});
+            ResponseStruct rss = CommonFunctions.CheckParams(new object[] { deviceId, enable });
             if (rss.Code != ErrorNumber.None)
             {
-                return Program.CommonFunctions.DelApisResult(null!, rss);
+                return Result.DelApisResult(null!, rss);
             }
-
-            var rt = GlobalSrsApis.GlobalChangeHttpApiEnable(deviceId, enable, out ResponseStruct rs);
-            return Program.CommonFunctions.DelApisResult(rt, rs);
+            var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var a = await _actor.Ask<DelApisResult>(new GlobalSrs(deviceId, enable, "ChangeHttpApiEnable", userId));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
         /// <summary>
@@ -188,16 +212,16 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/GlobalSrs/GlobalChangeMaxConnections")]
-        public JsonResult GlobalChangeMaxConnections(string deviceId, ushort max)
+        public async ValueTask<JsonResult> GlobalChangeMaxConnections(string deviceId, ushort max)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, max});
+            ResponseStruct rss = CommonFunctions.CheckParams(new object[] { deviceId, max });
             if (rss.Code != ErrorNumber.None)
             {
-                return Program.CommonFunctions.DelApisResult(null!, rss);
+                return Result.DelApisResult(null!, rss);
             }
-
-            var rt = GlobalSrsApis.GlobalChangeMaxConnections(deviceId, max, out ResponseStruct rs);
-            return Program.CommonFunctions.DelApisResult(rt, rs);
+            var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var a = await _actor.Ask<DelApisResult>(new GlobalSrs(deviceId, max, "ChangeMaxConnections", userId));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
         /// <summary>
@@ -208,16 +232,16 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/GlobalSrs/GlobalChangeRtmpListen")]
-        public JsonResult GlobalChangeRtmpListen(string deviceId, ushort port)
+        public async ValueTask<JsonResult> GlobalChangeRtmpListen(string deviceId, ushort port)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, port});
+            ResponseStruct rss = CommonFunctions.CheckParams(new object[] { deviceId, port });
             if (rss.Code != ErrorNumber.None)
             {
-                return Program.CommonFunctions.DelApisResult(null!, rss);
+                return Result.DelApisResult(null!, rss);
             }
-
-            var rt = GlobalSrsApis.GlobalChangeRtmpListen(deviceId, port, out ResponseStruct rs);
-            return Program.CommonFunctions.DelApisResult(rt, rs);
+            var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var a = await _actor.Ask<DelApisResult>(new GlobalSrs(deviceId, port, "ChangeRtmpListen", userId));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
         /// <summary>
@@ -228,16 +252,16 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/GlobalSrs/GlobalChangeHttpServerListen")]
-        public JsonResult GlobalChangeHttpServerListen(string deviceId, ushort port)
+        public async ValueTask<JsonResult> GlobalChangeHttpServerListen(string deviceId, ushort port)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, port});
+            ResponseStruct rss = CommonFunctions.CheckParams(new object[] { deviceId , port });
             if (rss.Code != ErrorNumber.None)
             {
-                return Program.CommonFunctions.DelApisResult(null!, rss);
+                return Result.DelApisResult(null!, rss);
             }
-
-            var rt = GlobalSrsApis.GlobalChangeHttpServerListen(deviceId, port, out ResponseStruct rs);
-            return Program.CommonFunctions.DelApisResult(rt, rs);
+            var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var a = await _actor.Ask<DelApisResult>(new GlobalSrs(deviceId, port, "ChangeHttpServerListen", userId));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
         /// <summary>
@@ -248,16 +272,16 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/GlobalSrs/GlobalChangeHttpServerPath")]
-        public JsonResult GlobalChangeHttpServerPath(string deviceId, string path)
+        public async ValueTask<JsonResult> GlobalChangeHttpServerPath(string deviceId, string path)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, path});
+            ResponseStruct rss = CommonFunctions.CheckParams(new object[] { deviceId, path });
             if (rss.Code != ErrorNumber.None)
             {
-                return Program.CommonFunctions.DelApisResult(null!, rss);
+                return Result.DelApisResult(null!, rss);
             }
-
-            var rt = GlobalSrsApis.GlobalChangeHttpServerPath(deviceId, path, out ResponseStruct rs);
-            return Program.CommonFunctions.DelApisResult(rt, rs);
+            var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var a = await _actor.Ask<DelApisResult>(new GlobalSrs(deviceId, path, "ChangeHttpServerPath", userId));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
         /// <summary>
@@ -268,16 +292,16 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/GlobalSrs/GlobalChangeHttpServerEnable")]
-        public JsonResult GlobalChangeHttpServerEnable(string deviceId, bool enable)
+        public async ValueTask<JsonResult> GlobalChangeHttpServerEnable(string deviceId, bool enable)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, enable});
+            ResponseStruct rss = CommonFunctions.CheckParams(new object[] { deviceId, enable });
             if (rss.Code != ErrorNumber.None)
             {
-                return Program.CommonFunctions.DelApisResult(null!, rss);
+                return Result.DelApisResult(null!, rss);
             }
-
-            var rt = GlobalSrsApis.GlobalChangeHttpServerEnable(deviceId, enable, out ResponseStruct rs);
-            return Program.CommonFunctions.DelApisResult(rt, rs);
+            var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var a = await _actor.Ask<DelApisResult>(new GlobalSrs(deviceId, enable, "ChangeHttpServerEnable", userId));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
         /// <summary>
@@ -288,16 +312,16 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/GlobalSrs/GetGlobalParams")]
-        public JsonResult GetGlobalParams(string deviceId)
+        public async ValueTask<JsonResult> GetGlobalParams(string deviceId)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId});
+            ResponseStruct rss = CommonFunctions.CheckParams(new object[] { deviceId });
             if (rss.Code != ErrorNumber.None)
             {
-                return Program.CommonFunctions.DelApisResult(null!, rss);
+                return Result.DelApisResult(null!, rss);
             }
-
-            var rt = GlobalSrsApis.GetGlobalParams(deviceId, out ResponseStruct rs);
-            return Program.CommonFunctions.DelApisResult(rt, rs);
+            var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var a = await _actor.Ask<DelApisResult>(new GlobalSrs(deviceId, "GetGlobalParams", userId));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
         /// <summary>
@@ -308,16 +332,16 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/GlobalSrs/ChangeGlobalParams")]
-        public JsonResult ChangeGlobalParams(ReqChangeSrsGlobalParams req)
+        public async ValueTask<JsonResult> ChangeGlobalParams(ReqChangeSrsGlobalParams req)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {req});
+            ResponseStruct rss = CommonFunctions.CheckParams(new object[] { req });
             if (rss.Code != ErrorNumber.None)
             {
-                return Program.CommonFunctions.DelApisResult(null!, rss);
+                return Result.DelApisResult(null!, rss);
             }
-
-            var rt = GlobalSrsApis.ChangeGlobalParams(req.DeviceId, req.Gm, out ResponseStruct rs);
-            return Program.CommonFunctions.DelApisResult(rt, rs);
+            var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var a = await _actor.Ask<DelApisResult>(new GlobalSrs(req.Gm, "ChangeGlobalParams", userId));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
     }
 }
