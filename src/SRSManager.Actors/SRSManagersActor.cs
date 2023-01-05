@@ -10,18 +10,18 @@ namespace SRSManager.Actors
         {
             Receive<GlobalSrs>(g =>
             {
-                var srs = SRSManager(g.UserId);
+                var srs = SRSManager(g.DeviceId);
                 srs.Forward(g);
             });
         }
-        private IActorRef SRSManager(string userId)
+        private IActorRef SRSManager(string deviceId)
         {
-            if (_srs.ContainsKey(userId))
-                return _srs[userId];
+            if (_srs.ContainsKey(deviceId))
+                return _srs[deviceId];
             else
             {
                 var s = Context.ActorOf(SRSManagerActor.Prop());
-                _srs[userId] = s;
+                _srs[deviceId] = s;
                 return s;
             }
 
