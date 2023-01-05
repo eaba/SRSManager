@@ -111,10 +111,10 @@ namespace SrsManageCommon
         {
             foreach (var s in lines)
             {
-                string tmps = s.Trim();
+                var tmps = s.Trim();
                 if (!tmps.EndsWith(";") || tmps.StartsWith("#")) continue;
                 tmps = tmps.TrimEnd(';');
-                string[] kv = Getkv(tmps, "::");
+                var kv = Getkv(tmps, "::");
                 if (kv.Length != 2) continue;
                 kv[0] = kv[0].Trim().ToLower();
                 switch (kv[0])
@@ -191,7 +191,7 @@ namespace SrsManageCommon
                         {
                             if (!string.IsNullOrEmpty(kv[1]))
                             {
-                                string tmpStr = kv[1].Trim();
+                                var tmpStr = kv[1].Trim();
                                 if (tmpStr.ToLower().Contains("mysql"))
                                 {
                                     DbType = DataType.MySql;
@@ -259,12 +259,12 @@ namespace SrsManageCommon
 
                         break;
                     case "allowkey":
-                        string[] kv1 = Getkv(kv[1], "\t");
+                        var kv1 = Getkv(kv[1], "\t");
                         if (kv1.Length > 1)
                         {
-                            AllowKey ak = new AllowKey();
+                            var ak = new AllowKey();
                             ak.Key = kv1[0];
-                            for (int i = 1; i <= kv1.Length - 1; i++)
+                            for (var i = 1; i <= kv1.Length - 1; i++)
                             {
                                 ak.IpArray.Add(kv1[i].Trim());
                             }
@@ -286,7 +286,7 @@ namespace SrsManageCommon
         /// <returns></returns>
         public bool RebuidConfig(string filePath)
         {
-            List<string> writeFile = new List<string>();
+            var writeFile = new List<string>();
             writeFile.Add("httpport::" + HttpPort + ";");
             writeFile.Add("password::" + Password + ";");
             writeFile.Add("ffmpegpath::" + Common.FFmpegBinPath+ ";");
@@ -302,8 +302,8 @@ namespace SrsManageCommon
             {
                 if (ak != null)
                 {
-                    string tmps = "";
-                    foreach (string ip in ak.IpArray)
+                    var tmps = "";
+                    foreach (var ip in ak.IpArray)
                     {
                         if (!string.IsNullOrEmpty(ip))
                         {
@@ -335,7 +335,7 @@ namespace SrsManageCommon
         {
             if (File.Exists(filePath))
             {
-                List<string> tmp_sl = File.ReadAllLines(filePath).ToList();
+                var tmp_sl = File.ReadAllLines(filePath).ToList();
                 if (tmp_sl != null && tmp_sl.Count > 0)
                 {
                     if (ParseConfig(tmp_sl))

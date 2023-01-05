@@ -25,12 +25,12 @@ namespace SRSManager.Tests
             a.VhostDomain = "vhost";
             a.OverStepPlan = SRSManageCommon.DBMoudle.OverStepPlan.DeleteFile;
             a.TimeRangeList = new List<SRSManageCommon.DBMoudle.DvrDayTimeRange>();
-            SRSManageCommon.DBMoudle.DvrDayTimeRange b = new SRSManageCommon.DBMoudle.DvrDayTimeRange();
+            var b = new SRSManageCommon.DBMoudle.DvrDayTimeRange();
             b.EndTime = DateTime.Now.AddDays(10);
             b.StartTime = DateTime.Now;
             b.WeekDay = DateTime.Now.DayOfWeek;
             a.TimeRangeList.Add(b);
-            SRSManageCommon.DBMoudle.DvrDayTimeRange c = new SRSManageCommon.DBMoudle.DvrDayTimeRange();
+            var c = new SRSManageCommon.DBMoudle.DvrDayTimeRange();
             c.EndTime = DateTime.Now.AddDays(15);
             c.StartTime = DateTime.Now.AddDays(-5);
             c.WeekDay = DayOfWeek.Monday;

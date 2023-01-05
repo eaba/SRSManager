@@ -19,13 +19,13 @@ namespace SrsConfFile.Renders
 
             sccout.sip.SectionsName = "sip";
             if (scbin.BodyList != null)
-                foreach (string s in scbin.BodyList)
+                foreach (var s in scbin.BodyList)
                 {
                     if (!s.Trim().EndsWith(";")) continue;
-                    KeyValuePair<string, string> tmpkv = Common.GetKV(s);
+                    var tmpkv = Common.GetKV(s);
                     if (string.IsNullOrEmpty(tmpkv.Key)) continue;
 
-                    string cmd = tmpkv.Key.Trim().ToLower();
+                    var cmd = tmpkv.Key.Trim().ToLower();
                     switch (cmd)
                     {
                         case "enabled":
@@ -65,16 +65,16 @@ namespace SrsConfFile.Renders
          
             if (null != sccout.Stream_casters.Find(s => s.InstanceName == instanceName))
                 return; //filter the same streamcaster instance
-            SrsStreamCasterConfClass sccc = new SrsStreamCasterConfClass();
+            var sccc = new SrsStreamCasterConfClass();
             if (scbin.BodyList != null)
-                foreach (string s in scbin.BodyList)
+                foreach (var s in scbin.BodyList)
                 {
                     if (!s.Trim().EndsWith(";")) continue;
-                    KeyValuePair<string, string> tmpkv = Common.GetKV(s);
+                    var tmpkv = Common.GetKV(s);
                     if (string.IsNullOrEmpty(tmpkv.Key)) continue;
                     sccc.InstanceName = instanceName;
                     sccc.SectionsName = "stream_caster";
-                    string cmd = tmpkv.Key.Trim().ToLower();
+                    var cmd = tmpkv.Key.Trim().ToLower();
                     switch (cmd)
                     {
                         case "enabled":
@@ -118,7 +118,7 @@ namespace SrsConfFile.Renders
                 }
 
             if (scbin.SubSections != null)
-                foreach (SectionBody scb in scbin.SubSections)
+                foreach (var scb in scbin.SubSections)
                 {
                     Render_Sip(scb, sccc);
                 }

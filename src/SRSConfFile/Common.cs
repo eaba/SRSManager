@@ -30,7 +30,7 @@ namespace SrsConfFile
 
         public static KeyValuePair<string, string> GetKV(string s)
         {
-            string[] tmpSarr = Regex.Split(s, @"[\s]+");
+            var tmpSarr = Regex.Split(s, @"[\s]+");
             //string[] tmp_sarr = s.Split('\t', StringSplitOptions.RemoveEmptyEntries);
 
             if (tmpSarr.Length == 2)
@@ -42,8 +42,8 @@ namespace SrsConfFile
             {
                 if (tmpSarr.Length > 2)
                 {
-                    string ss = "";
-                    for (int i = 1; i <= tmpSarr.Length - 1; i++)
+                    var ss = "";
+                    for (var i = 1; i <= tmpSarr.Length - 1; i++)
                     {
                         if (tmpSarr[i].Contains(';'))
                         {
@@ -67,9 +67,9 @@ namespace SrsConfFile
 
         public static bool IsRoot(SectionBody scb)
         {
-            bool isRootFlag = true;
+            var isRootFlag = true;
             if (scb.BodyList != null)
-                foreach (string s in scb.BodyList)
+                foreach (var s in scb.BodyList)
                 {
                     if (s.Contains('{') || s.Contains('}'))
                     {
@@ -149,7 +149,7 @@ namespace SrsConfFile
 
         public static KeyValuePair<string, string> GetSectionNameAndInstanceNameValue(SectionBody scb)
         {
-            string? s = scb.BodyList?[0];
+            var s = scb.BodyList?[0];
             string[] sArr;
             if (s != null && s.Contains(' '))
             {

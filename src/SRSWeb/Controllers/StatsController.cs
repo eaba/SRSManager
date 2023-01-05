@@ -25,13 +25,13 @@ namespace SRSWeb.Controllers
         [Route("/Stats/GetSrsStats")]
         public JsonResult GetSrsStats(string deviceId)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = StatsApis.GetStats(deviceId, out ResponseStruct rs);
+            var rt = StatsApis.GetStats(deviceId, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -45,13 +45,13 @@ namespace SRSWeb.Controllers
         [Route("/Stats/SetSrsStats")]
         public JsonResult SetSrsStats(string deviceId, SrsStatsConfClass stats)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, stats});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, stats});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = StatsApis.SetStatsServer(deviceId, stats, out ResponseStruct rs);
+            var rt = StatsApis.SetStatsServer(deviceId, stats, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -65,13 +65,13 @@ namespace SRSWeb.Controllers
         [Route("/Stats/DelStats")]
         public JsonResult DelStats(string deviceId)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = StatsApis.DeleteStats(deviceId, out ResponseStruct rs);
+            var rt = StatsApis.DeleteStats(deviceId, out var rs);
             return Result.DelApisResult(rt, rs);
         }
     }

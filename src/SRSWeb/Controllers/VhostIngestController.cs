@@ -27,14 +27,14 @@ namespace SRSWeb.Controllers
         [Route("/VhostIngest/GetVhostIngestList")]
         public JsonResult GetVhostIngestList(string deviceId, string vhostDomain)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
             var rt = VhostIngestApis.GetVhostIngestList(deviceId, vhostDomain,
-                out ResponseStruct rs);
+                out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -53,14 +53,14 @@ namespace SRSWeb.Controllers
         public JsonResult DeleteVhostIngestByIngestInstanceName(string deviceId, string vhostDomain,
             string ingestInstanceName)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, ingestInstanceName});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, ingestInstanceName});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
             var rt = VhostIngestApis.DeleteVhostIngestByIngestInstanceName(deviceId, vhostDomain, ingestInstanceName,
-                out ResponseStruct rs);
+                out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -76,13 +76,13 @@ namespace SRSWeb.Controllers
         [Route("/VhostIngest/GetVhostIngestNameList")]
         public JsonResult GetVhostIngestNameList(string deviceId, string vhostDomain = "")
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostIngestApis.GetVhostIngestNameList(deviceId, out ResponseStruct rs, vhostDomain);
+            var rt = VhostIngestApis.GetVhostIngestNameList(deviceId, out var rs, vhostDomain);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -99,13 +99,13 @@ namespace SRSWeb.Controllers
         [Route("/VhostIngest/GetVhostIngest")]
         public JsonResult GetVhostIngest(string deviceId, string vhostDomain, string ingestInstanceName)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, ingestInstanceName});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, ingestInstanceName});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostIngestApis.GetVhostIngest(deviceId, vhostDomain, ingestInstanceName, out ResponseStruct rs);
+            var rt = VhostIngestApis.GetVhostIngest(deviceId, vhostDomain, ingestInstanceName, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -123,7 +123,7 @@ namespace SRSWeb.Controllers
         [Route("/VhostIngest/SetVhostIngest")]
         public JsonResult SetVhostIngest(string deviceId, string vhostDomain, string ingestInstanceName, Ingest ingest)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[]
+            var rss = CommonFunctions.CheckParams(new object[]
                 {deviceId, vhostDomain, ingest, ingestInstanceName});
             if (rss.Code != ErrorNumber.None)
             {
@@ -131,7 +131,7 @@ namespace SRSWeb.Controllers
             }
 
             var rt = VhostIngestApis.SetVhostIngest(deviceId, vhostDomain, ingestInstanceName, ingest,
-                out ResponseStruct rs);
+                out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -150,7 +150,7 @@ namespace SRSWeb.Controllers
         [Route("/VhostIngest/OnOrOffIngest")]
         public JsonResult OnOrOffIngest(string deviceId, string vhostDomain, string ingestInstanceName, bool enable)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[]
+            var rss = CommonFunctions.CheckParams(new object[]
                 {deviceId, vhostDomain, enable, ingestInstanceName});
             if (rss.Code != ErrorNumber.None)
             {
@@ -158,7 +158,7 @@ namespace SRSWeb.Controllers
             }
 
             var rt = VhostIngestApis.OnOrOffIngest(deviceId, vhostDomain, ingestInstanceName, enable,
-                out ResponseStruct rs);
+                out var rs);
             return Result.DelApisResult(rt, rs);
         }
     }

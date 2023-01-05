@@ -128,11 +128,11 @@ namespace SRSApis.SystemAutonomy
 
         private bool GetDvrOnorOff(StreamDvrPlan sdp)
         {
-            var dvr = VhostDvrApis.GetVhostDvr(sdp.DeviceId, sdp.VhostDomain, out ResponseStruct rs);
+            var dvr = VhostDvrApis.GetVhostDvr(sdp.DeviceId, sdp.VhostDomain, out var rs);
             if (dvr == null) return false;
-            string? dvrApply = dvr.Dvr_apply!;
+            var dvrApply = dvr.Dvr_apply!;
             dvrApply = dvrApply.Replace(";", "");
-            List<string> dvrStreams = new List<string>();
+            var dvrStreams = new List<string>();
             if (dvrApply.Trim().ToLower().Equals("all"))
             {
                 dvrApply = "";
@@ -154,11 +154,11 @@ namespace SRSApis.SystemAutonomy
 
         private void SetDvrOnorOff(StreamDvrPlan sdp, bool eanble)
         {
-            var dvr = VhostDvrApis.GetVhostDvr(sdp.DeviceId, sdp.VhostDomain, out ResponseStruct rs);
+            var dvr = VhostDvrApis.GetVhostDvr(sdp.DeviceId, sdp.VhostDomain, out var rs);
             if (dvr != null)
             {
-                string? dvrApply = dvr.Dvr_apply!;
-                List<string> dvrStreams = new List<string>();
+                var dvrApply = dvr.Dvr_apply!;
+                var dvrStreams = new List<string>();
                 if (!string.IsNullOrEmpty(dvrApply))
                 {
                     dvrStreams = Regex.Split(dvrApply, @"[\s]+").ToList();
@@ -170,12 +170,12 @@ namespace SRSApis.SystemAutonomy
                     dvrStreams.Add("");
                 }
 
-                for (int i = 0; i <= dvrStreams.Count - 1; i++)
+                for (var i = 0; i <= dvrStreams.Count - 1; i++)
                 {
                     dvrStreams[i] = dvrStreams[i].TrimEnd(';').Trim();
                 }
 
-                bool needWrite = false;
+                var needWrite = false;
                 switch (eanble)
                 {
                     case true:
@@ -220,13 +220,13 @@ namespace SRSApis.SystemAutonomy
         private void DeleteFileOneByOne(decimal videoSize, StreamDvrPlan sdp)
         {
             long deleteSize = 0;
-            List<OrderByStruct> orderBy = new List<OrderByStruct>();
+            var orderBy = new List<OrderByStruct>();
             orderBy.Add(new OrderByStruct()
             {
                 FieldName = "starttime",
                 OrderByDir = OrderByDir.ASC,
             });
-            ReqGetDvrVideo rgdv = new ReqGetDvrVideo()
+            var rgdv = new ReqGetDvrVideo()
             {
                 App = sdp.App,
                 DeviceId = sdp.DeviceId,
@@ -241,7 +241,7 @@ namespace SRSApis.SystemAutonomy
             };
             while (videoSize - deleteSize > sdp.LimitSpace)
             {
-                DvrVideoResponseList videoList = DvrPlanApis.GetDvrVideoList(rgdv, out ResponseStruct rs);
+                var videoList = DvrPlanApis.GetDvrVideoList(rgdv, out var rs);
                 if (videoList != null && videoList.DvrVideoList != null && videoList.DvrVideoList.Count > 0)
                 {
                     lock (SrsManageCommon.Common.LockDbObjForDvrVideo)
@@ -311,8 +311,8 @@ namespace SRSApis.SystemAutonomy
 
         private void ExecOnOrOff(StreamDvrPlan sdp)
         {
-            bool isEnable = true;
-            int dateCount = 0;
+            var isEnable = true;
+            var dateCount = 0;
             decimal videoSize = 0;
             List<string?> dateList = null!;
             videoSize = GetDvrPlanFileSize(sdp)!;
@@ -349,7 +349,7 @@ namespace SRSApis.SystemAutonomy
                     }
                 }
             }
-            bool isTime = CheckTimeRange(sdp);
+            var isTime = CheckTimeRange(sdp);
             isEnable = isEnable && sdp.Enable; //To handle the status of planned outages
 
 
@@ -415,10 +415,10 @@ namespace SRSApis.SystemAutonomy
                     if (dateList != null && dateList.Count > sdp.LimitDays)
                     {
                         //Perform day-by-day deletion
-                        int? loopCount = dateList.Count - sdp.LimitDays;
+                        var loopCount = dateList.Count - sdp.LimitDays;
 
-                        List<string> willDeleteDays = new List<string>();
-                        for (int i = 0; i < loopCount; i++)
+                        var willDeleteDays = new List<string>();
+                        for (var i = 0; i < loopCount; i++)
                         {
                             willDeleteDays.Add(dateList[i]!);
                         }
@@ -429,7 +429,7 @@ namespace SRSApis.SystemAutonomy
 
                 if (sdp.LimitSpace > 0) //Handle capacity constraints
                 {
-                    decimal videoSize = GetDvrPlanFileSize(sdp);
+                    var videoSize = GetDvrPlanFileSize(sdp);
 
                     if (videoSize > sdp.LimitSpace)
                     {
@@ -445,15 +445,15 @@ namespace SRSApis.SystemAutonomy
         protected bool GetTimeSpan(string timeStr)
         {
             //Determine whether the current time is within the working hours
-            string _strWorkingDayAM = "08:30";//working hours in the morning 08:30
-            string _strWorkingDayPM = "17:30";
-            TimeSpan dspWorkingDayAM = DateTime.Parse(_strWorkingDayAM).TimeOfDay;
-            TimeSpan dspWorkingDayPM = DateTime.Parse(_strWorkingDayPM).TimeOfDay;
+            var _strWorkingDayAM = "08:30";//working hours in the morning 08:30
+            var _strWorkingDayPM = "17:30";
+            var dspWorkingDayAM = DateTime.Parse(_strWorkingDayAM).TimeOfDay;
+            var dspWorkingDayPM = DateTime.Parse(_strWorkingDayPM).TimeOfDay;
 
             //string time1 = "2017-2-17 8:10:00";
-            DateTime t1 = Convert.ToDateTime(timeStr);
+            var t1 = Convert.ToDateTime(timeStr);
 
-            TimeSpan dspNow = t1.TimeOfDay;
+            var dspNow = t1.TimeOfDay;
             if (dspNow > dspWorkingDayAM && dspNow < dspWorkingDayPM)
             {
                 return true;
@@ -463,11 +463,11 @@ namespace SRSApis.SystemAutonomy
         
         private bool IsTimeRange(DvrDayTimeRange d)
         {
-            TimeSpan nowDt = DateTime.Now.TimeOfDay;
-            string start = d.StartTime.ToString("HH:mm:ss");
-            string end = d.EndTime.ToString("HH:mm:ss");
-            TimeSpan workStartDT = DateTime.Parse(start).TimeOfDay;
-            TimeSpan workEndDT = DateTime.Parse(end).TimeOfDay;
+            var nowDt = DateTime.Now.TimeOfDay;
+            var start = d.StartTime.ToString("HH:mm:ss");
+            var end = d.EndTime.ToString("HH:mm:ss");
+            var workStartDT = DateTime.Parse(start).TimeOfDay;
+            var workEndDT = DateTime.Parse(end).TimeOfDay;
             if (nowDt > workStartDT && nowDt < workEndDT)
             {
                 return true;
@@ -508,14 +508,14 @@ namespace SRSApis.SystemAutonomy
             var srs = SystemApis.GetSrsManagerInstanceByDeviceId(deviceId);
             if (srs != null)
             {
-                string dvrPath = srs.SrsWorkPath + srs.SrsDeviceId + "/wwwroot/dvr";
+                var dvrPath = srs.SrsWorkPath + srs.SrsDeviceId + "/wwwroot/dvr";
                 if (Directory.Exists(dvrPath))
                 {
-                    DirectoryInfo dir = new DirectoryInfo(dvrPath);
-                    DirectoryInfo[] subdirs = dir.GetDirectories("*.*", SearchOption.AllDirectories);
-                    foreach (DirectoryInfo subdir in subdirs)
+                    var dir = new DirectoryInfo(dvrPath);
+                    var subdirs = dir.GetDirectories("*.*", SearchOption.AllDirectories);
+                    foreach (var subdir in subdirs)
                     {
-                        FileSystemInfo[] subFiles = subdir.GetFileSystemInfos();
+                        var subFiles = subdir.GetFileSystemInfos();
                         if (subFiles.Length == 0)
                         {
                             LogWriter.WriteLog("Monitoring found that there is an empty directory that needs to be deleted...", subdir.FullName);
@@ -539,10 +539,10 @@ namespace SRSApis.SystemAutonomy
                 foreach (var deviceId in srsDeviceIdList)
                 {
                     ClearNofileDir(deviceId);//清除空的目录
-                    ReqGetDvrPlan rgdp = new ReqGetDvrPlan();
+                    var rgdp = new ReqGetDvrPlan();
                     rgdp.DeviceId = deviceId;
 
-                    var dvrPlanList = DvrPlanApis.GetDvrPlanList(rgdp, out ResponseStruct rs);
+                    var dvrPlanList = DvrPlanApis.GetDvrPlanList(rgdp, out var rs);
 
                     if (dvrPlanList == null || dvrPlanList.Count == 0) continue;
                     foreach (var dvrPlan in dvrPlanList)

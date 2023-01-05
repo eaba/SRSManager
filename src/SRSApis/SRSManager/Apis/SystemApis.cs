@@ -76,7 +76,7 @@ namespace SrsApis.SrsManager.Apis
                 return false;
             }
 
-            ushort? port = sm.Srs.Listen;
+            var port = sm.Srs.Listen;
             if (port == null)
             {
                 rs = new ResponseStruct()
@@ -228,8 +228,8 @@ namespace SrsApis.SrsManager.Apis
                 return false;
             }
 
-            string devId = sm.SrsDeviceId;
-            string confPath = sm.SrsConfigPath;
+            var devId = sm.SrsDeviceId;
+            var confPath = sm.SrsConfigPath;
             if (string.IsNullOrEmpty(devId) || string.IsNullOrEmpty(confPath))
             {
                 rs = new ResponseStruct()
@@ -279,7 +279,7 @@ namespace SrsApis.SrsManager.Apis
         /// <returns></returns>
         public static SrsManager GetSrsInstanceTemplate(out ResponseStruct rs)
         {
-            SrsManager srsManager = new SrsManager();
+            var srsManager = new SrsManager();
             srsManager.Srs = new SrsSystemConfClass();
 
             srsManager.Srs = new SrsSystemConfClass();
@@ -340,7 +340,7 @@ namespace SrsApis.SrsManager.Apis
             srsManager.Srs.Http_server.SectionsName = "http_server";
             srsManager.Srs.Http_server.Crossdomain = true;
             srsManager.Srs.Vhosts = new List<SrsvHostConfClass>();
-            SrsvHostConfClass vhost = new SrsvHostConfClass();
+            var vhost = new SrsvHostConfClass();
             vhost.SectionsName = "vhost";
             vhost.VhostDomain = "__defaultVhost__";
             srsManager.Srs.Vhosts.Add(vhost);
@@ -452,11 +452,11 @@ namespace SrsApis.SrsManager.Apis
         /// <returns></returns>
         public static List<DriveDiskInfo> GetDriveDisksInfo()
         {
-            List<DriveDiskInfo> disks = new List<DriveDiskInfo>();
-            DriveInfo[] drives = DriveInfo.GetDrives();
-            foreach (DriveInfo d in drives)
+            var disks = new List<DriveDiskInfo>();
+            var drives = DriveInfo.GetDrives();
+            foreach (var d in drives)
             {
-                DriveDiskInfo ddi = new DriveDiskInfo()
+                var ddi = new DriveDiskInfo()
                 {
                     Format = d.DriveFormat,
                     VolumeLabel = d.VolumeLabel,
@@ -480,7 +480,7 @@ namespace SrsApis.SrsManager.Apis
         /// <returns></returns>
         public static SystemInfoModule GetSystemInfo()
         {
-            SystemInfoModule sim = new SystemInfoModule();
+            var sim = new SystemInfoModule();
             sim.NetworkInterfaceList = GetNetworkAdapterList();
             sim.Architecture = RuntimeInformation.OSArchitecture.ToString();
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
@@ -503,16 +503,16 @@ namespace SrsApis.SrsManager.Apis
                 {
                     if (sm.IsRunning && sm.Srs.Http_api != null && sm.Srs.Http_api.Enabled == true)
                     {
-                        string reqUrl = "http://127.0.0.1:" + sm!.Srs.Http_api!.Listen + "/api/v1/summaries";
+                        var reqUrl = "http://127.0.0.1:" + sm!.Srs.Http_api!.Listen + "/api/v1/summaries";
                         try
                         {
-                            string tmpStr = NetHelperNew.HttpGetRequest(reqUrl, null!);
+                            var tmpStr = NetHelperNew.HttpGetRequest(reqUrl, null!);
                             var retReq = JsonHelper.FromJson<SrsSystemInfo>(tmpStr);
                             if (retReq != null && retReq.Data != null && retReq.Data.Self != null)
                             {
                                 if (sim.SrsList == null) sim.SrsList = new List<Self_Srs>();
-                                string filename = Path.GetFileName(retReq.Data.Self.Argv)!;
-                                string ext = Path.GetExtension(filename);
+                                var filename = Path.GetFileName(retReq.Data.Self.Argv)!;
+                                var ext = Path.GetExtension(filename);
                                 retReq.Data.Self.Srs_DeviceId = filename.Replace(ext, "");
                                 sim.SrsList.Add(retReq.Data.Self);
                                 if (sim.System == null)
@@ -539,19 +539,19 @@ namespace SrsApis.SrsManager.Apis
         /// <returns></returns>
         public static List<NetworkInterfaceModule> GetNetworkAdapterList()
         {
-            List<NetworkInterfaceModule> listofnetwork = new List<NetworkInterfaceModule>();
-            NetworkInterface[] adapters = NetworkInterface.GetAllNetworkInterfaces();
-            string ipaddr = "";
+            var listofnetwork = new List<NetworkInterfaceModule>();
+            var adapters = NetworkInterface.GetAllNetworkInterfaces();
+            var ipaddr = "";
             ushort index = 0;
             if (adapters.Length > 0)
             {
-                foreach (NetworkInterface adapter in adapters)
+                foreach (var adapter in adapters)
                 {
                     if (adapter.NetworkInterfaceType != NetworkInterfaceType.Ethernet) continue;
                     ipaddr = "";
-                    IPInterfaceProperties adapterProperties = adapter.GetIPProperties();
-                    UnicastIPAddressInformationCollection ipCollection = adapterProperties.UnicastAddresses;
-                    foreach (UnicastIPAddressInformation ipadd in ipCollection)
+                    var adapterProperties = adapter.GetIPProperties();
+                    var ipCollection = adapterProperties.UnicastAddresses;
+                    foreach (var ipadd in ipCollection)
                     {
                         if (ipadd.Address.AddressFamily == AddressFamily.InterNetwork)
                         {
@@ -563,7 +563,7 @@ namespace SrsApis.SrsManager.Apis
                         }
                     }
 
-                    NetworkInterfaceModule tmp_adapter = new NetworkInterfaceModule()
+                    var tmp_adapter = new NetworkInterfaceModule()
                     {
                         Index = index,
                         Name = adapter.Name,
@@ -575,10 +575,10 @@ namespace SrsApis.SrsManager.Apis
                     index++;
                     if (!string.IsNullOrEmpty(tmp_adapter.Ipaddr))
                     {
-                        int loop = 1;
+                        var loop = 1;
                         if (!tmp_adapter.Mac.Contains('-'))
                         {
-                            for (int i = 1; i < 10; i += 2)
+                            for (var i = 1; i < 10; i += 2)
                             {
                                 tmp_adapter.Mac = tmp_adapter.Mac.Insert(i + loop, "-");
                                 loop += 1;

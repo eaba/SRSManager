@@ -27,10 +27,10 @@ namespace SrsManageCommon
                 Console.ForegroundColor = color;
             }
 
-            DateTime now = DateTime.Now;
-            string logPath = Path.Combine(Environment.CurrentDirectory, "logs",
+            var now = DateTime.Now;
+            var logPath = Path.Combine(Environment.CurrentDirectory, "logs",
                 $@"webapilog_Y{now.Year}M{now.Month}D{now.Day}.log");
-            string saveLogTxt = "[" + DateTime.Now.ToString(CultureInfo.CurrentCulture) + "]\t" + message + "\t" +
+            var saveLogTxt = "[" + DateTime.Now.ToString(CultureInfo.CurrentCulture) + "]\t" + message + "\t" +
                                 info + "\r\n";
             Console.WriteLine(saveLogTxt.Trim());
             if (color != ConsoleColor.Gray)

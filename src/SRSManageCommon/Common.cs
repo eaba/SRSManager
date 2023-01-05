@@ -72,7 +72,7 @@ namespace SrsManageCommon
         {
             try
             {
-                string Url = @"^http(s)?://([\w-]+\.)+[\w-]+(:\d*)?(/[\w- ./?%&=]*)?$";
+                var Url = @"^http(s)?://([\w-]+\.)+[\w-]+(:\d*)?(/[\w- ./?%&=]*)?$";
                 return Regex.IsMatch(str, Url);
             }
             catch
@@ -89,12 +89,12 @@ namespace SrsManageCommon
         public static void RemoveNull<T>(List<T> list)
         {
             // Find the first empty element O(n)
-            int count = list.Count;
-            for (int i = 0; i < count; i++)
+            var count = list.Count;
+            for (var i = 0; i < count; i++)
                 if (list[i] == null)
                 {
                     // record current location
-                    int newCount = i++;
+                    var newCount = i++;
 
                     // For each non-empty element, copy to the current position O(n)
                     for (; i < count; i++)
@@ -116,7 +116,7 @@ namespace SrsManageCommon
         /// <returns></returns>
         public static string GetValue(string str, string s, string e)
         {
-            Regex rg = new Regex("(?<=(" + s + "))[.\\s\\S]*?(?=(" + e + "))",
+            var rg = new Regex("(?<=(" + s + "))[.\\s\\S]*?(?=(" + e + "))",
                 RegexOptions.Multiline | RegexOptions.Singleline);
             return rg.Match(str).Value;
         }
@@ -130,7 +130,7 @@ namespace SrsManageCommon
         /// <returns></returns>
         public static long GetTimeGoneMilliseconds(DateTime starttime,DateTime endtime)
         {
-            TimeSpan ts = endtime.Subtract(starttime);
+            var ts = endtime.Subtract(starttime);
             return (long)ts.TotalMilliseconds;
         }
 
@@ -140,7 +140,7 @@ namespace SrsManageCommon
         public static void KillSelf()
         {
             LogWriter.WriteLog("process ended abnormally...");
-            string fileName= Path.GetFileName(Environment.GetCommandLineArgs()[0]);
+            var fileName= Path.GetFileName(Environment.GetCommandLineArgs()[0]);
             var ret = GetProcessPid(fileName);
             if (ret > 0)
             {
@@ -149,7 +149,7 @@ namespace SrsManageCommon
         }
         public static void KillProcess(int pid)
         {
-            string cmd = "kill -9 " + pid.ToString();
+            var cmd = "kill -9 " + pid.ToString();
             LinuxShell.Run(cmd, 1000);
         }
         /// <summary>
@@ -159,7 +159,7 @@ namespace SrsManageCommon
         /// <returns></returns>
         public static int GetProcessPid(string processName)
         {
-            string cmd = "";
+            var cmd = "";
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
                 cmd = "ps -aux |grep " + processName + "|grep -v grep|awk \'{print $2}\'";
@@ -169,13 +169,13 @@ namespace SrsManageCommon
                 cmd = "ps -A |grep " + processName + "|grep -v grep|awk \'{print $1}\'";
             }
 
-            LinuxShell.Run(cmd, 1000, out string std, out string err);
+            LinuxShell.Run(cmd, 1000, out var std, out var err);
             if (string.IsNullOrEmpty(std) && string.IsNullOrEmpty(err))
             {
                 return -1;
             }
 
-            int pid = -1;
+            var pid = -1;
             if (!string.IsNullOrEmpty(std))
             {
                 int.TryParse(std, out pid);
@@ -190,7 +190,7 @@ namespace SrsManageCommon
         {
             try
             {
-                Uri link = new Uri(url);
+                var link = new Uri(url);
                 return link.Host;
             }
             catch
@@ -241,10 +241,10 @@ namespace SrsManageCommon
                 return false;
             }
 
-            bool _result = false;
+            var _result = false;
             try
             {
-                Guid _t = new Guid(strSrc);
+                var _t = new Guid(strSrc);
                 _result = true;
             }
             catch

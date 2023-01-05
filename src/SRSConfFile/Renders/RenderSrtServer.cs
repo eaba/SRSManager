@@ -10,13 +10,13 @@ namespace SrsConfFile.Renders
             if (sccout.Srt_server == null) sccout.Srt_server = new SrsSrtServerConfClass();
             sccout.Srt_server.SectionsName = "srt_server";
             if (scbin.BodyList != null)
-                foreach (string s in scbin.BodyList)
+                foreach (var s in scbin.BodyList)
                 {
                     if (!s.Trim().EndsWith(";")) continue;
-                    KeyValuePair<string, string> tmpkv = Common.GetKV(s);
+                    var tmpkv = Common.GetKV(s);
                     if (string.IsNullOrEmpty(tmpkv.Key)) continue;
 
-                    string cmd = tmpkv.Key.Trim().ToLower();
+                    var cmd = tmpkv.Key.Trim().ToLower();
                     switch (cmd)
                     {
                         case "enabled":

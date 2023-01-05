@@ -88,7 +88,7 @@ namespace SrsApis.SrsManager
             {
                 if (Srs != null)
                 {
-                    string pidValue = "";
+                    var pidValue = "";
                     if (string.IsNullOrEmpty(Srs.Pid))
                     {
                         return false;
@@ -96,7 +96,7 @@ namespace SrsApis.SrsManager
 
                     if (GetPidValue(Srs.Pid!, out pidValue))
                     {
-                        string cmd = "";
+                        var cmd = "";
                         if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                         {
                             cmd = "ps -aux |grep " + pidValue + "|grep -v grep|awk \'{print $2}\'";
@@ -106,9 +106,9 @@ namespace SrsApis.SrsManager
                             cmd = "ps -A |grep " + pidValue + "|grep -v grep|awk \'{print $1}\'";
                         }
 
-                        string stdout = "";
-                        string errout = "";
-                        bool ret = LinuxShell.Run(cmd, 1000, out stdout, out errout);
+                        var stdout = "";
+                        var errout = "";
+                        var ret = LinuxShell.Run(cmd, 1000, out stdout, out errout);
                         if (ret && string.IsNullOrEmpty(errout))
                         {
                             if (stdout.Trim().Equals(pidValue.Trim()))
@@ -267,7 +267,7 @@ namespace SrsApis.SrsManager
                 Srs.Http_server.SectionsName = "http_server";
                 Srs.Http_server.Crossdomain = true;
                 Srs.Vhosts = new List<SrsvHostConfClass>();
-                SrsvHostConfClass vhost = new SrsvHostConfClass();
+                var vhost = new SrsvHostConfClass();
                 vhost.SectionsName = "vhost";
                 vhost.VhostDomain = "__defaultVhost__";
                 vhost.Vhttp_hooks = new HttpHooks();
@@ -315,12 +315,12 @@ namespace SrsApis.SrsManager
             pidValue = "";
             if (!string.IsNullOrEmpty(pidPath) && File.Exists(pidPath))
             {
-                string stdout = "";
-                string errout = "";
+                var stdout = "";
+                var errout = "";
                 var ret = LinuxShell.Run("cat " + pidPath, 300, out stdout, out errout);
                 if (!string.IsNullOrEmpty(stdout) && ret)
                 {
-                    if (int.TryParse(stdout, out int a))
+                    if (int.TryParse(stdout, out var a))
                     {
                         pidValue = stdout.Trim();
                     }
@@ -328,7 +328,7 @@ namespace SrsApis.SrsManager
 
                 if (!string.IsNullOrEmpty(errout) && ret)
                 {
-                    if (int.TryParse(errout, out int a))
+                    if (int.TryParse(errout, out var a))
                     {
                         pidValue = errout.Trim();
                     }
@@ -422,14 +422,14 @@ namespace SrsApis.SrsManager
         {
             if (IsRunning)
             {
-                bool ret = Stop(out rs);
+                var ret = Stop(out rs);
                 if (!ret || rs.Code != ErrorNumber.None)
                 {
                     return false;
                 }
             }
 
-            bool ret2 = Start(out rs);
+            var ret2 = Start(out rs);
             if (!ret2 || rs.Code != ErrorNumber.None)
             {
                 return false;
@@ -455,10 +455,10 @@ namespace SrsApis.SrsManager
                 return false;
             }
 
-            string cmd = "kill -s SIGHUP " + SrsPidValue + " && ret=$? && echo $ret";
-            string std = "";
-            string err = "";
-            bool ret = LinuxShell.Run(cmd, 1000, out std, out err);
+            var cmd = "kill -s SIGHUP " + SrsPidValue + " && ret=$? && echo $ret";
+            var std = "";
+            var err = "";
+            var ret = LinuxShell.Run(cmd, 1000, out std, out err);
             if (!ret && (string.IsNullOrEmpty(err) && string.IsNullOrEmpty(std)))
             {
                 rs = new ResponseStruct()
@@ -519,11 +519,11 @@ namespace SrsApis.SrsManager
                 return false;
             }
 
-            string cmd = "ulimit -c unlimited";
+            var cmd = "ulimit -c unlimited";
             LinuxShell.Run(cmd);
             cmd = "cd " + SrsWorkPath;
             LinuxShell.Run(cmd);
-            string srsPath = SrsWorkPath + "srs";
+            var srsPath = SrsWorkPath + "srs";
             cmd = srsPath + " -c " + SrsConfigPath;
             if (File.Exists(Srs.Pid))
             {
@@ -531,7 +531,7 @@ namespace SrsApis.SrsManager
             }
 
             LinuxShell.Run(cmd, 1000);
-            int i = 0;
+            var i = 0;
             while (!IsRunning && i < 50) //check srs process running ,wait 5sec
             {
                 i++;
@@ -572,8 +572,8 @@ namespace SrsApis.SrsManager
         {
             if (IsRunning)
             {
-                string cmd = "kill -s SIGTERM " + SrsPidValue + " 2>/dev/null";
-                for (int i = 0; i < 100; i++)
+                var cmd = "kill -s SIGTERM " + SrsPidValue + " 2>/dev/null";
+                for (var i = 0; i < 100; i++)
                 {
                     LinuxShell.Run(cmd, 100);
                     if (!IsRunning)
@@ -597,7 +597,7 @@ namespace SrsApis.SrsManager
                     Thread.Sleep(100);
                 }
 
-                for (int i = 0; i < 5; i++)
+                for (var i = 0; i < 5; i++)
                 {
                     cmd = "kill -s SIGKILL " + SrsPidValue + " 2>/dev/null";
                     LinuxShell.Run(cmd, 100);

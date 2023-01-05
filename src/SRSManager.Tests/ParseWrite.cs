@@ -20,7 +20,7 @@ namespace SRSManager.Tests
             SrsConfigParse.LoadSrsConfObject("/Users/ebere/test.conf"); //load configuration file
             SrsConfigParse.Parse(); //Analysis Profile 
             SrsConfigParse.Trim(); //Configuration deduplication
-            SrsSystemConfClass srs = new SrsSystemConfClass(); //Create an SRS configuration instance
+            var srs = new SrsSystemConfClass(); //Create an SRS configuration instance
             SrsConfigParse.Render(SrsConfigParse.RootSection, srs); //Write SRS configuration instance
             SrsConfigParse.Render(SrsConfigParse.RootSection, srs); //Write SRS configuration instance
             _output.WriteLine(SrsConfigBuild.Build(srs, "conf/full1.conf")); //Rebuild configuration file, output file

@@ -7,22 +7,22 @@ namespace SrsManageCommon
     {
         private static bool ifNotMp4(string ffmpegBinPath, string videoFilePath,out string videoPath)
         {
-            string ext = Path.GetExtension(videoFilePath);
-            string newFileName = videoFilePath.Replace(ext, ".mp4");
-            string ffmpegCmd = ffmpegBinPath + " -i " + videoFilePath + " -c copy -movflags faststart " +
+            var ext = Path.GetExtension(videoFilePath);
+            var newFileName = videoFilePath.Replace(ext, ".mp4");
+            var ffmpegCmd = ffmpegBinPath + " -i " + videoFilePath + " -c copy -movflags faststart " +
                                newFileName;
             videoPath = newFileName;
             if (!string.IsNullOrEmpty(ext) && !ext.Trim().ToLower().Equals(".mp4"))
             {
                
 
-                if (LinuxShell.Run(ffmpegCmd, 60 * 1000 * 5, out string std, out string err))
+                if (LinuxShell.Run(ffmpegCmd, 60 * 1000 * 5, out var std, out var err))
                 {
                     if (!string.IsNullOrEmpty(std) || !string.IsNullOrEmpty(err))
                     {
                         if (File.Exists(newFileName))
                         {
-                            FileInfo fi = new FileInfo(newFileName);
+                            var fi = new FileInfo(newFileName);
                             if (fi.Length > 100)
                             {
                                 File.Delete(videoFilePath);
@@ -53,19 +53,19 @@ namespace SrsManageCommon
             duartion = -1;
             if (File.Exists(ffmpegBinPath) && File.Exists(videoFilePath))
             {
-                string newPath = "";
+                var newPath = "";
                 var ret = ifNotMp4(ffmpegBinPath, videoFilePath, out newPath);
                 if (ret)
                 {
                     videoFilePath = newPath;
                 }
                 path = videoFilePath;
-                string cmd = ffmpegBinPath + " -i " + videoFilePath;
-                if (LinuxShell.Run(cmd, 1000, out string std, out string err))
+                var cmd = ffmpegBinPath + " -i " + videoFilePath;
+                if (LinuxShell.Run(cmd, 1000, out var std, out var err))
                 {
                     if (!string.IsNullOrEmpty(std) || !string.IsNullOrEmpty(err))
                     {
-                        string tmp = "";
+                        var tmp = "";
                         if (!string.IsNullOrEmpty(std))
                         {
                             tmp = Common.GetValue(std, "Duration:", ",");
@@ -78,16 +78,16 @@ namespace SrsManageCommon
 
                         if (!string.IsNullOrEmpty(tmp))
                         {
-                            string[] tmpArr = tmp.Split(':', StringSplitOptions.RemoveEmptyEntries);
+                            var tmpArr = tmp.Split(':', StringSplitOptions.RemoveEmptyEntries);
                             if (tmpArr.Length == 3)
                             {
-                                int hour = int.Parse(tmpArr[0]);
-                                int min = int.Parse(tmpArr[1]);
-                                int sec = 0;
-                                int msec = 0;
+                                var hour = int.Parse(tmpArr[0]);
+                                var min = int.Parse(tmpArr[1]);
+                                var sec = 0;
+                                var msec = 0;
                                 if (tmpArr[2].Contains('.'))
                                 {
-                                    string[] tmpArr2 = tmpArr[2].Split('.', StringSplitOptions.RemoveEmptyEntries);
+                                    var tmpArr2 = tmpArr[2].Split('.', StringSplitOptions.RemoveEmptyEntries);
                                     sec = int.Parse(tmpArr2[0]);
                                     msec = int.Parse(tmpArr2[1]);
                                 }

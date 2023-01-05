@@ -10,12 +10,12 @@ namespace SrsConfFile.Renders
             if (sccout.Http_server == null) sccout.Http_server = new SrsHttpServerConfClass();
             sccout.Http_server.SectionsName = "http_server";
             if (scbin.BodyList != null)
-                foreach (string s in scbin.BodyList)
+                foreach (var s in scbin.BodyList)
                 {
                     if (!s.Trim().EndsWith(";")) continue;
-                    KeyValuePair<string, string> tmpkv = Common.GetKV(s);
+                    var tmpkv = Common.GetKV(s);
                     if (string.IsNullOrEmpty(tmpkv.Key)) continue;
-                    string cmd = tmpkv.Key.Trim().ToLower();
+                    var cmd = tmpkv.Key.Trim().ToLower();
                     switch (cmd)
                     {
                         case "enabled":

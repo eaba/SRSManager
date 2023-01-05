@@ -44,20 +44,20 @@ namespace SrsApis.SrsManager
         private static CutMergeTask PackageToTsStreamFile(CutMergeTask task)
         {
             task.TaskStatus = TaskStatus.Packaging;
-            string tsPath = Common.WorkPath + "CutMergeDir/" + task.TaskId + "/ts";
+            var tsPath = Common.WorkPath + "CutMergeDir/" + task.TaskId + "/ts";
             if (!Directory.Exists(tsPath))
             {
                 Directory.CreateDirectory(tsPath);
             }
 
-            for (int i = 0; i <= task.CutMergeFileList!.Count - 1; i++)
+            for (var i = 0; i <= task.CutMergeFileList!.Count - 1; i++)
             {
-                string videoFileNameWithOutExt = Path.GetFileNameWithoutExtension(task.CutMergeFileList[i]!.FilePath!);
-                string videoTsFileName = videoFileNameWithOutExt + ".ts";
-                string videoTsFilePath = tsPath + "/" + videoTsFileName;
-                string ffmpegCmd = Common.FFmpegBinPath + " -i " + task.CutMergeFileList[i]!.FilePath! +
+                var videoFileNameWithOutExt = Path.GetFileNameWithoutExtension(task.CutMergeFileList[i]!.FilePath!);
+                var videoTsFileName = videoFileNameWithOutExt + ".ts";
+                var videoTsFilePath = tsPath + "/" + videoTsFileName;
+                var ffmpegCmd = Common.FFmpegBinPath + " -i " + task.CutMergeFileList[i]!.FilePath! +
                                    " -vcodec copy -acodec copy -vbsf h264_mp4toannexb " + videoTsFilePath + " -y";
-                var retRun = LinuxShell.Run(ffmpegCmd, 1000 * 60 * 30, out string std, out string err);
+                var retRun = LinuxShell.Run(ffmpegCmd, 1000 * 60 * 30, out var std, out var err);
 
                 if (retRun && (!string.IsNullOrEmpty(std) || !string.IsNullOrEmpty(err)) &&
                     File.Exists(videoTsFilePath))
@@ -109,27 +109,27 @@ namespace SrsApis.SrsManager
         private static string MergeProcess(CutMergeTask task)
         {
             task.TaskStatus = TaskStatus.Mergeing;
-            string mergePath = Common.WorkPath + "CutMergeDir/" + task.TaskId;
-            string outPutPath = Common.WorkPath + "CutMergeFile/" +
+            var mergePath = Common.WorkPath + "CutMergeDir/" + task.TaskId;
+            var outPutPath = Common.WorkPath + "CutMergeFile/" +
                                 DateTime.Now.Date.ToString("yyyy-MM-dd");
             if (!Directory.Exists(outPutPath))
             {
                 Directory.CreateDirectory(outPutPath);
             }
 
-            List<string> mergeStringList = new List<string>();
-            for (int i = 0; i <= task.CutMergeFileList!.Count - 1; i++)
+            var mergeStringList = new List<string>();
+            for (var i = 0; i <= task.CutMergeFileList!.Count - 1; i++)
             {
                 mergeStringList.Add("file '" + task.CutMergeFileList[i].FilePath + "'");
             }
 
             File.WriteAllLines(mergePath + "files.txt", mergeStringList);
-            string newFilePath = outPutPath + "/" + task.TaskId + "_" + DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss") +
+            var newFilePath = outPutPath + "/" + task.TaskId + "_" + DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss") +
                                  ".mp4";
-            string ffmpegCmd = Common.FFmpegBinPath + " -threads " + Common.FFmpegThreadCount.ToString() +
+            var ffmpegCmd = Common.FFmpegBinPath + " -threads " + Common.FFmpegThreadCount.ToString() +
                                " -f concat -safe 0 -i " + mergePath +
                                "files.txt" + " -c copy  -movflags faststart " + newFilePath;
-            var retRun = LinuxShell.Run(ffmpegCmd, 1000 * 60 * 30, out string std, out string err);
+            var retRun = LinuxShell.Run(ffmpegCmd, 1000 * 60 * 30, out var std, out var err);
             task.ProcessPercentage += 40f;
             if (retRun && (!string.IsNullOrEmpty(std) || !string.IsNullOrEmpty(err)) &&
                 File.Exists(newFilePath))
@@ -171,15 +171,15 @@ namespace SrsApis.SrsManager
         /// <returns></returns>
         private static CutMergeStruct CutProcess(CutMergeStruct cms)
         {
-            string tsPath = Path.GetDirectoryName(cms.FilePath!)!;
-            string fileName = Path.GetFileName(cms.FilePath!)!;
-            string newTsName = tsPath + "/cut_" + fileName;
+            var tsPath = Path.GetDirectoryName(cms.FilePath!)!;
+            var fileName = Path.GetFileName(cms.FilePath!)!;
+            var newTsName = tsPath + "/cut_" + fileName;
 
 
-            string ffmpegCmd = Common.FFmpegBinPath + " -i " + cms.FilePath +
+            var ffmpegCmd = Common.FFmpegBinPath + " -i " + cms.FilePath +
                                " -vcodec copy -acodec copy -ss " + cms.CutStartPos + " -to " + cms.CutEndPos + " " +
                                newTsName + " -y";
-            var retRun = LinuxShell.Run(ffmpegCmd, 1000 * 60 * 30, out string std, out string err);
+            var retRun = LinuxShell.Run(ffmpegCmd, 1000 * 60 * 30, out var std, out var err);
             if (retRun && (!string.IsNullOrEmpty(std) || !string.IsNullOrEmpty(err)) &&
                 File.Exists(newTsName))
             {
@@ -223,10 +223,10 @@ namespace SrsApis.SrsManager
         /// <returns></returns>
         public static CutMergeTaskResponse CutMerge(CutMergeTask task)
         {
-            Stopwatch stopwatch = new Stopwatch();
+            var stopwatch = new Stopwatch();
             stopwatch.Start(); //  Start monitoring code runtime
             LogWriter.WriteLog("Merge request task started(CutMerge)...", task.TaskId!);
-            string taskPath = "";
+            var taskPath = "";
             if (task != null && task.CutMergeFileList != null && task.CutMergeFileList.Count > 0)
             {
                 taskPath = Common.WorkPath + "CutMergeDir/" + task.TaskId;
@@ -240,9 +240,9 @@ namespace SrsApis.SrsManager
                     task = PackageToTsStreamFile(task); //transfer ts file
                     task.TaskStatus = TaskStatus.Cutting;
 
-                    List<CutMergeStruct> cutFileList = task.CutMergeFileList!
+                    var cutFileList = task.CutMergeFileList!
                         .FindAll(x => x.CutEndPos != null && x.CutStartPos != null).ToList();
-                    for (int i = 0; i <= task.CutMergeFileList!.Count - 1; i++)
+                    for (var i = 0; i <= task.CutMergeFileList!.Count - 1; i++)
                     {
                         if (task.CutMergeFileList[i].CutStartPos != null && task.CutMergeFileList[i].CutEndPos != null)
                         {
@@ -254,15 +254,15 @@ namespace SrsApis.SrsManager
                         }
                     }
 
-                    string filePath = MergeProcess(task);
+                    var filePath = MergeProcess(task);
                     task.ProcessPercentage = 100f;
                     task.TaskStatus = TaskStatus.Closed;
                     stopwatch.Stop(); //  stop monitoring
-                    TimeSpan timespan = stopwatch.Elapsed;
+                    var timespan = stopwatch.Elapsed;
                     if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
                     {
                         long duration = -1;
-                        string newPath = "";
+                        var newPath = "";
                         FFmpegGetDuration.GetDuration(Common.FFmpegBinPath, filePath, out duration,out newPath);
                         var ret = CutMergeTaskStatusList.FindLast(x => x.TaskId == task.TaskId);
                         if (ret != null)

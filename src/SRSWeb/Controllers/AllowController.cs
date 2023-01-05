@@ -37,20 +37,20 @@ namespace SRSWeb.Controllers
         [Route("/Allow/RefreshSession")]
         public JsonResult RefreshSession([FromBody] Session request)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {request});
+            var rss = CommonFunctions.CheckParams(new object[] {request});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            string remoteIpaddr = _httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
+            var remoteIpaddr = _httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
             if (Program.CommonFunctions.CheckAllow(remoteIpaddr, request.AllowKey))
             {
                 if (request.Expires >= Program.CommonFunctions.GetTimeStampMilliseconds() ||
                     Math.Abs(request.Expires - Program.CommonFunctions.GetTimeStampMilliseconds()) <
                     (1000 * 60)) //Refresh if it expires within 1 minute
                 {
-                    Session session = Program.CommonFunctions.SessionManager.RefreshSession(request);
+                    var session = Program.CommonFunctions.SessionManager.RefreshSession(request);
                     if (session != null)
                     {
                         var result = new JsonResult(session);
@@ -59,7 +59,7 @@ namespace SRSWeb.Controllers
                     }
                     else
                     {
-                        ResponseStruct rs = new ResponseStruct()
+                        var rs = new ResponseStruct()
                         {
                             Code = ErrorNumber.SystemSessionExcept,
                             Message = ErrorMessage.ErrorDic?[ErrorNumber.SystemSessionExcept]!,
@@ -71,7 +71,7 @@ namespace SRSWeb.Controllers
                 }
                 else
                 {
-                    ResponseStruct rs = new ResponseStruct()
+                    var rs = new ResponseStruct()
                     {
                         Code = ErrorNumber.SystemSessionItWorks,
                         Message = ErrorMessage.ErrorDic?[ErrorNumber.SystemSessionItWorks]!,
@@ -83,7 +83,7 @@ namespace SRSWeb.Controllers
             }
             else
             {
-                ResponseStruct rs = new ResponseStruct()
+                var rs = new ResponseStruct()
                 {
                     Code = ErrorNumber.SystemCheckAllowKeyFail,
                     Message = ErrorMessage.ErrorDic?[ErrorNumber.SystemCheckAllowKeyFail]!,
@@ -104,24 +104,24 @@ namespace SRSWeb.Controllers
         [Route("/Allow/GetSession")]
         public JsonResult GetSession([FromBody] ReqGetSession request)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {request});
+            var rss = CommonFunctions.CheckParams(new object[] {request});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            string remoteIpaddr = _httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
-            string allowKey = request.AllowKey;
+            var remoteIpaddr = _httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
+            var allowKey = request.AllowKey;
             if (Program.CommonFunctions.CheckAllow(remoteIpaddr, allowKey))
             {
-                Session session = Program.CommonFunctions.SessionManager.NewSession(allowKey);
+                var session = Program.CommonFunctions.SessionManager.NewSession(allowKey);
                 var result = new JsonResult(session);
                 result.StatusCode = (int) HttpStatusCode.OK;
                 return result;
             }
             else
             {
-                ResponseStruct rs = new ResponseStruct()
+                var rs = new ResponseStruct()
                 {
                     Code = ErrorNumber.SystemCheckAllowKeyFail,
                     Message = ErrorMessage.ErrorDic?[ErrorNumber.SystemCheckAllowKeyFail]!,
@@ -142,7 +142,7 @@ namespace SRSWeb.Controllers
         [Route("/Allow/SetAllowByKey")]
         public JsonResult SetAllowByKey([FromBody] ReqSetOrAddAllow request)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {request});
+            var rss = CommonFunctions.CheckParams(new object[] {request});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
@@ -150,8 +150,8 @@ namespace SRSWeb.Controllers
 
             if (Program.CommonFunctions.CheckPassword(request.Password))
             {
-                bool found = false;
-                for (int i = 0; i <= Common.SystemConfig.AllowKeys.Count - 1; i++)
+                var found = false;
+                for (var i = 0; i <= Common.SystemConfig.AllowKeys.Count - 1; i++)
                 {
                     if (Common.SystemConfig.AllowKeys[i].Key.Trim().ToLower()
                         .Equals(request.Allowkey.Key.Trim().ToLower()))
@@ -168,7 +168,7 @@ namespace SRSWeb.Controllers
 
                 if (found)
                 {
-                    ResponseStruct rs = new ResponseStruct()
+                    var rs = new ResponseStruct()
                     {
                         Code = ErrorNumber.None,
                         Message = ErrorMessage.ErrorDic?[ErrorNumber.None]!,
@@ -179,7 +179,7 @@ namespace SRSWeb.Controllers
                 }
                 else
                 {
-                    ResponseStruct rs = new ResponseStruct()
+                    var rs = new ResponseStruct()
                     {
                         Code = ErrorNumber.SrsSubInstanceNotFound,
                         Message = ErrorMessage.ErrorDic?[ErrorNumber.SrsSubInstanceNotFound]!,
@@ -191,7 +191,7 @@ namespace SRSWeb.Controllers
             }
             else
             {
-                ResponseStruct rs = new ResponseStruct()
+                var rs = new ResponseStruct()
                 {
                     Code = ErrorNumber.SystemCheckPasswordFail,
                     Message = ErrorMessage.ErrorDic?[ErrorNumber.SystemCheckPasswordFail]!,
@@ -214,7 +214,7 @@ namespace SRSWeb.Controllers
         [Route("/Allow/DelAllowByKey")]
         public JsonResult DelAllowByKey([FromBody] ReqDelAllow request)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {request});
+            var rss = CommonFunctions.CheckParams(new object[] {request});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
@@ -222,8 +222,8 @@ namespace SRSWeb.Controllers
 
             if (Program.CommonFunctions.CheckPassword(request.Password))
             {
-                bool found = false;
-                for (int i = 0; i <= Common.SystemConfig.AllowKeys.Count - 1; i++)
+                var found = false;
+                for (var i = 0; i <= Common.SystemConfig.AllowKeys.Count - 1; i++)
                 {
                     if (Common.SystemConfig.AllowKeys[i].Key.Trim().ToLower()
                         .Equals(request.Key.Trim().ToLower()))
@@ -241,7 +241,7 @@ namespace SRSWeb.Controllers
                 if (found)
                 {
                     Common.RemoveNull(Common.SystemConfig.AllowKeys);
-                    ResponseStruct rs = new ResponseStruct()
+                    var rs = new ResponseStruct()
                     {
                         Code = ErrorNumber.None,
                         Message = ErrorMessage.ErrorDic?[ErrorNumber.None]!,
@@ -253,7 +253,7 @@ namespace SRSWeb.Controllers
                 }
                 else
                 {
-                    ResponseStruct rs = new ResponseStruct()
+                    var rs = new ResponseStruct()
                     {
                         Code = ErrorNumber.SrsSubInstanceNotFound,
                         Message = ErrorMessage.ErrorDic?[ErrorNumber.SrsSubInstanceNotFound]!,
@@ -266,7 +266,7 @@ namespace SRSWeb.Controllers
             }
             else
             {
-                ResponseStruct rs = new ResponseStruct()
+                var rs = new ResponseStruct()
                 {
                     Code = ErrorNumber.SystemCheckPasswordFail,
                     Message = ErrorMessage.ErrorDic?[ErrorNumber.SystemCheckPasswordFail]!,
@@ -288,7 +288,7 @@ namespace SRSWeb.Controllers
         [Route("Allow/AddAllow")]
         public JsonResult AddAllow([FromBody] ReqSetOrAddAllow request)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {request});
+            var rss = CommonFunctions.CheckParams(new object[] {request});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
@@ -302,7 +302,7 @@ namespace SRSWeb.Controllers
 
                 if (obj != null)
                 {
-                    ResponseStruct rs = new ResponseStruct()
+                    var rs = new ResponseStruct()
                     {
                         Code = ErrorNumber.SrsSubInstanceAlreadyExists,
                         Message = ErrorMessage.ErrorDic?[ErrorNumber.SrsSubInstanceAlreadyExists]!,
@@ -315,7 +315,7 @@ namespace SRSWeb.Controllers
                 if (string.IsNullOrEmpty(request.Allowkey.Key.Trim()) ||
                     !Common.IsUuidByError(request.Allowkey.Key))
                 {
-                    ResponseStruct rs = new ResponseStruct()
+                    var rs = new ResponseStruct()
                     {
                         Code = ErrorNumber.FunctionInputParamsError,
                         Message = ErrorMessage.ErrorDic?[ErrorNumber.FunctionInputParamsError]!,
@@ -328,7 +328,7 @@ namespace SRSWeb.Controllers
                 Common.SystemConfig.AllowKeys.Add(request.Allowkey);
                 if (Common.SystemConfig.RebuidConfig(Program.CommonFunctions.ConfPath))
                 {
-                    ResponseStruct rs = new ResponseStruct()
+                    var rs = new ResponseStruct()
                     {
                         Code = ErrorNumber.None,
                         Message = ErrorMessage.ErrorDic?[ErrorNumber.None]!,
@@ -339,7 +339,7 @@ namespace SRSWeb.Controllers
                 }
                 else
                 {
-                    ResponseStruct rs = new ResponseStruct()
+                    var rs = new ResponseStruct()
                     {
                         Code = ErrorNumber.Other,
                         Message = ErrorMessage.ErrorDic?[ErrorNumber.Other]!,
@@ -351,7 +351,7 @@ namespace SRSWeb.Controllers
             }
             else
             {
-                ResponseStruct rs = new ResponseStruct()
+                var rs = new ResponseStruct()
                 {
                     Code = ErrorNumber.SystemCheckPasswordFail,
                     Message = ErrorMessage.ErrorDic?[ErrorNumber.SystemCheckPasswordFail]!,
@@ -373,7 +373,7 @@ namespace SRSWeb.Controllers
         [Route("Allow/GetAllows")]
         public JsonResult GetAllows([FromBody] ReqGetAllows request)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {request});
+            var rss = CommonFunctions.CheckParams(new object[] {request});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
@@ -381,7 +381,7 @@ namespace SRSWeb.Controllers
 
             if (Program.CommonFunctions.CheckPassword(request.Password))
             {
-                AllowListModule result = new AllowListModule()
+                var result = new AllowListModule()
                 {
                     AllowKeys = Common.SystemConfig.AllowKeys,
                 };
@@ -391,7 +391,7 @@ namespace SRSWeb.Controllers
             }
             else
             {
-                ResponseStruct rs = new ResponseStruct()
+                var rs = new ResponseStruct()
                 {
                     Code = ErrorNumber.SystemCheckPasswordFail,
                     Message = ErrorMessage.ErrorDic?[ErrorNumber.SystemCheckPasswordFail]!,

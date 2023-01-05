@@ -100,10 +100,10 @@ namespace SRSApis
         {
             ResponseStruct rs;
             bool ret;
-            foreach (SrsManager sm in SrsManagers)
+            foreach (var sm in SrsManagers)
             {
                 ret = sm.Start(out rs);
-                string rsStr = JsonHelper.ToJson(rs);
+                var rsStr = JsonHelper.ToJson(rs);
                 if (ret)
                 {
                     LogWriter.WriteLog("SRS started successfully...DeviceID:" + sm.SrsDeviceId, rsStr);
@@ -121,16 +121,16 @@ namespace SRSApis
         public static void Init_SrsServer()
         {
             LogWriter.WriteLog("Initialize the Srs server instance...");
-            DirectoryInfo dir = new DirectoryInfo(WorkPath);
+            var dir = new DirectoryInfo(WorkPath);
             ResponseStruct rs;
-            bool ret = false;
-            foreach (FileInfo file in dir.GetFiles())
+            var ret = false;
+            foreach (var file in dir.GetFiles())
             {
                 if (file.Extension.Trim().ToLower().Equals(".conf")) //find the configuration file
                 {
-                    SrsManager sm = new SrsManager();
+                    var sm = new SrsManager();
                     ret = sm.SRS_Init(file.FullName, out rs);
-                    string rsStr = JsonHelper.ToJson(rs);
+                    var rsStr = JsonHelper.ToJson(rs);
                     if (!ret)
                     {
                         LogWriter.WriteLog("Failed to initialize SRS configuration...ConfigPath:" + file.FullName, rsStr, ConsoleColor.Yellow);
@@ -147,9 +147,9 @@ namespace SRSApis
             if (SrsManagers.Count == 0)
             {
                 LogWriter.WriteLog("If there is no Srs instance configuration file, the system will automatically create a Srs instance configuration file");
-                SrsManager sm = new SrsManager();
+                var sm = new SrsManager();
                 ret = sm.CreateSrsManager(out rs);
-                string rsStr = JsonHelper.ToJson(rs);
+                var rsStr = JsonHelper.ToJson(rs);
                 if (!ret)
                 {
                     LogWriter.WriteLog("Failed to create an SRS instance...:", rsStr, ConsoleColor.Yellow);

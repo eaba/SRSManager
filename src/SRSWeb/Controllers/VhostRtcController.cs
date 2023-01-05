@@ -27,13 +27,13 @@ namespace SRSWeb.Controllers
         [Route("/VhostRtc/DeleteVhostRtc")]
         public JsonResult DeleteVhostRtc(string deviceId, string vhostDomain)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostRtcApis.DeleteVhostRtc(deviceId, vhostDomain, out ResponseStruct rs);
+            var rt = VhostRtcApis.DeleteVhostRtc(deviceId, vhostDomain, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -49,13 +49,13 @@ namespace SRSWeb.Controllers
         [Route("/VhostRtc/GetVhostRtc")]
         public JsonResult GetVhostRtc(string deviceId, string vhostDomain)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostRtcApis.GetVhostRtc(deviceId, vhostDomain, out ResponseStruct rs);
+            var rt = VhostRtcApis.GetVhostRtc(deviceId, vhostDomain, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -72,13 +72,13 @@ namespace SRSWeb.Controllers
         [Route("/VhostRtc/SetVhostRtc")]
         public JsonResult SetVhostRtc(string deviceId, string vhostDomain, Rtc rtc)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, rtc});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, rtc});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostRtcApis.SetVhostRtc(deviceId, vhostDomain, rtc, out ResponseStruct rs);
+            var rt = VhostRtcApis.SetVhostRtc(deviceId, vhostDomain, rtc, out var rs);
             return Result.DelApisResult(rt, rs);
         }
     }

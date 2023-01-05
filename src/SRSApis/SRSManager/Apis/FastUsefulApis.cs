@@ -58,14 +58,14 @@ namespace SrsApis.SrsManager.Apis
 
             try
             {
-                Uri uri = new Uri(retIngest.Engines![0].Output!);
-                Uri uriInput = new Uri(retIngest.Input!.Url!);
-                string userInfo = uriInput.UserInfo;
-                string username = "";
-                string password = "";
+                var uri = new Uri(retIngest.Engines![0].Output!);
+                var uriInput = new Uri(retIngest.Input!.Url!);
+                var userInfo = uriInput.UserInfo;
+                var username = "";
+                var password = "";
                 if (userInfo.Contains(":"))
                 {
-                    string[] strArr = userInfo.Split(":", StringSplitOptions.RemoveEmptyEntries);
+                    var strArr = userInfo.Split(":", StringSplitOptions.RemoveEmptyEntries);
                     if (strArr.Length == 2)
                     {
                         username = strArr[0].Trim();
@@ -126,7 +126,7 @@ namespace SrsApis.SrsManager.Apis
                 return null!;
             }
 
-            List<Ingest> ingestList = new List<Ingest>();
+            var ingestList = new List<Ingest>();
             if (ret.Srs.Vhosts == null || ret.Srs.Vhosts.Count == 0) return null!;
             foreach (var vhost in ret.Srs.Vhosts)
             {
@@ -272,15 +272,15 @@ namespace SrsApis.SrsManager.Apis
                 {
                     if (sm.IsRunning && sm.Srs.Http_api != null && sm.Srs.Http_api.Enabled == true)
                     {
-                        string reqUrl = "http://127.0.0.1:" + sm!.Srs.Http_api!.Listen + "/api/v1/summaries";
+                        var reqUrl = "http://127.0.0.1:" + sm!.Srs.Http_api!.Listen + "/api/v1/summaries";
                         try
                         {
-                            string tmpStr = NetHelperNew.HttpGetRequest(reqUrl, null!);
+                            var tmpStr = NetHelperNew.HttpGetRequest(reqUrl, null!);
                             var retReq = JsonHelper.FromJson<SrsSystemInfo>(tmpStr);
                             if (retReq != null && retReq.Data != null && retReq.Data.Self != null)
                             {
-                                string filename = Path.GetFileName(retReq.Data.Self.Argv)!;
-                                string ext = Path.GetExtension(filename);
+                                var filename = Path.GetFileName(retReq.Data.Self.Argv)!;
+                                var ext = Path.GetExtension(filename);
                                 retReq.Data.Self.Srs_DeviceId = filename.Replace(ext, "");
                                 result.Add(retReq.Data.Self);
                             }
@@ -316,13 +316,13 @@ namespace SrsApis.SrsManager.Apis
                 return null!;
             }
 
-            List<SrsStartStatus> result = new List<SrsStartStatus>();
+            var result = new List<SrsStartStatus>();
             foreach (var sm in Common.SrsManagers)
             {
                 if (sm.IsRunning == true)
                 {
-                    bool ret = sm.Stop(out rs);
-                    SrsStartStatus sts = new SrsStartStatus();
+                    var ret = sm.Stop(out rs);
+                    var sts = new SrsStartStatus();
                     sts.DeviceId = sm.SrsDeviceId;
                     sts.IsStarted = !ret;
                     sts.Message = JsonHelper.ToJson(rs);
@@ -354,18 +354,18 @@ namespace SrsApis.SrsManager.Apis
                 return null!;
             }
 
-            List<SrsStartStatus> result = new List<SrsStartStatus>();
+            var result = new List<SrsStartStatus>();
             foreach (var sm in Common.SrsManagers)
             {
                 if (sm.IsInit == false || sm.IsRunning == false)
                 {
-                    bool ret = sm.SRS_Init(sm.SrsConfigPath, out rs);
+                    var ret = sm.SRS_Init(sm.SrsConfigPath, out rs);
                     if (ret)
                     {
                         ret = sm.Start(out rs);
                     }
 
-                    SrsStartStatus sts = new SrsStartStatus();
+                    var sts = new SrsStartStatus();
                     sts.DeviceId = sm.SrsDeviceId;
                     sts.IsStarted = ret;
                     sts.Message = JsonHelper.ToJson(rs);
@@ -399,10 +399,10 @@ namespace SrsApis.SrsManager.Apis
             {
                 if (ret.Srs.Http_api != null && ret.Srs.Http_api.Enabled == true)
                 {
-                    string reqUrl = "http://127.0.0.1:" + ret.Srs.Http_api!.Listen + "/api/v1/clients/" + clientId;
+                    var reqUrl = "http://127.0.0.1:" + ret.Srs.Http_api!.Listen + "/api/v1/clients/" + clientId;
                     try
                     {
-                        string tmpStr = NetHelperNew.HttpDeleteRequest(reqUrl, null!);
+                        var tmpStr = NetHelperNew.HttpDeleteRequest(reqUrl, null!);
                         var retReq = JsonHelper.FromJson<SrsSimpleResponseModule>(tmpStr);
                         if (retReq.Code == 0)
                         {
@@ -457,10 +457,10 @@ namespace SrsApis.SrsManager.Apis
             {
                 if (ret.Srs.Http_api != null && ret.Srs.Http_api.Enabled == true)
                 {
-                    string reqUrl = "http://127.0.0.1:" + ret.Srs.Http_api!.Listen + "/api/v1/streams/" + streamId;
+                    var reqUrl = "http://127.0.0.1:" + ret.Srs.Http_api!.Listen + "/api/v1/streams/" + streamId;
                     try
                     {
-                        string tmpStr = NetHelperNew.HttpGetRequest(reqUrl, null!);
+                        var tmpStr = NetHelperNew.HttpGetRequest(reqUrl, null!);
                         var retReq = JsonHelper.FromJson<SrsStreamSingleStatusModule>(tmpStr);
                         if (retReq.Code == 0 && retReq.Stream != null)
                         {
@@ -512,10 +512,10 @@ namespace SrsApis.SrsManager.Apis
             {
                 if (ret.Srs.Http_api != null && ret.Srs.Http_api.Enabled == true)
                 {
-                    string reqUrl = "http://127.0.0.1:" + ret.Srs.Http_api!.Listen + "/api/v1/streams/";
+                    var reqUrl = "http://127.0.0.1:" + ret.Srs.Http_api!.Listen + "/api/v1/streams/";
                     try
                     {
-                        string tmpStr = NetHelperNew.HttpGetRequest(reqUrl, null!);
+                        var tmpStr = NetHelperNew.HttpGetRequest(reqUrl, null!);
                         var retReq = JsonHelper.FromJson<SrsStreamsStatusModule>(tmpStr);
                         if (retReq.Code == 0 && retReq.Streams != null)
                         {
@@ -570,10 +570,10 @@ namespace SrsApis.SrsManager.Apis
             {
                 if (ret.Srs.Http_api != null && ret.Srs.Http_api.Enabled == true)
                 {
-                    string reqUrl = "http://127.0.0.1:" + ret.Srs.Http_api!.Listen + "/api/v1/vhosts/" + vhostId;
+                    var reqUrl = "http://127.0.0.1:" + ret.Srs.Http_api!.Listen + "/api/v1/vhosts/" + vhostId;
                     try
                     {
-                        string tmpStr = NetHelperNew.HttpGetRequest(reqUrl, null!);
+                        var tmpStr = NetHelperNew.HttpGetRequest(reqUrl, null!);
                         var retReq = JsonHelper.FromJson<SrsVhostSingleStatusModule>(tmpStr);
                         if (retReq.Code == 0 && retReq.Vhost != null)
                         {
@@ -626,10 +626,10 @@ namespace SrsApis.SrsManager.Apis
             {
                 if (ret.Srs.Http_api != null && ret.Srs.Http_api.Enabled == true)
                 {
-                    string reqUrl = "http://127.0.0.1:" + ret.Srs.Http_api!.Listen + "/api/v1/vhosts/";
+                    var reqUrl = "http://127.0.0.1:" + ret.Srs.Http_api!.Listen + "/api/v1/vhosts/";
                     try
                     {
-                        string tmpStr = NetHelperNew.HttpGetRequest(reqUrl, null!);
+                        var tmpStr = NetHelperNew.HttpGetRequest(reqUrl, null!);
                         var retReq = JsonHelper.FromJson<SrsVhostsStatusModule>(tmpStr);
                         if (retReq.Code == 0 && retReq.Vhosts != null)
                         {
@@ -677,7 +677,7 @@ namespace SrsApis.SrsManager.Apis
             };
             lock (SrsManageCommon.Common.LockDbObjForOnlineClient)
             {
-                List<OnlineClient> result = OrmService.Db.Select<OnlineClient>()
+                var result = OrmService.Db.Select<OnlineClient>()
                     .Where(x => x.IsOnline == true && x.ClientType == ClientType.User && x.IsPlay == true &&
                                 x.Device_Id!.Equals(deviceId)).ToList();
                 return result;
@@ -698,7 +698,7 @@ namespace SrsApis.SrsManager.Apis
             };
             lock (SrsManageCommon.Common.LockDbObjForOnlineClient)
             {
-                List<OnlineClient> result = OrmService.Db.Select<OnlineClient>()
+                var result = OrmService.Db.Select<OnlineClient>()
                     .Where(x => x.IsOnline == true && x.ClientType == ClientType.User && x.IsPlay == true).ToList();
                 return result;
             }
@@ -726,7 +726,7 @@ namespace SrsApis.SrsManager.Apis
 
             lock (SrsManageCommon.Common.LockDbObjForOnlineClient)
             {
-                List<OnlineClient> result = OrmService.Db.Select<OnlineClient>()
+                var result = OrmService.Db.Select<OnlineClient>()
                     .Where(x => x.IsOnline == true && x.ClientType == ClientType.Monitor &&
                                 x.Device_Id!.Equals(deviceId.Trim())).ToList();
                 return result;
@@ -745,10 +745,10 @@ namespace SrsApis.SrsManager.Apis
                 Code = ErrorNumber.None,
                 Message = ErrorMessage.ErrorDic![ErrorNumber.None],
             };
-            string[] strArr = id.Split(" ", StringSplitOptions.RemoveEmptyEntries);
+            var strArr = id.Split(" ", StringSplitOptions.RemoveEmptyEntries);
             if (strArr.Length > 0)
             {
-                long[] lIds = Array.ConvertAll(strArr, long.Parse);
+                var lIds = Array.ConvertAll(strArr, long.Parse);
                 lock (SrsManageCommon.Common.LockDbObjForOnlineClient)
                 {
                     return OrmService.Db.Select<OnlineClient>().Where(x => lIds.Contains(x.Id)).ToList();
@@ -773,7 +773,7 @@ namespace SrsApis.SrsManager.Apis
             };
             lock (SrsManageCommon.Common.LockDbObjForOnlineClient)
             {
-                List<OnlineClient> result = OrmService.Db.Select<OnlineClient>()
+                var result = OrmService.Db.Select<OnlineClient>()
                     .Where(x => x.IsOnline == true && x.ClientType == ClientType.Monitor).ToList();
                 return result;
             }
@@ -812,23 +812,23 @@ namespace SrsApis.SrsManager.Apis
                 }
             }
 
-            Uri url = new Uri(rtspUrl);
-            string ip = url.Host;
-            ushort port = (ushort) url.Port;
-            string protocol = url.Scheme;
-            string pathInfo = url.PathAndQuery;
+            var url = new Uri(rtspUrl);
+            var ip = url.Host;
+            var port = (ushort) url.Port;
+            var protocol = url.Scheme;
+            var pathInfo = url.PathAndQuery;
             if (pathInfo.Contains('='))
             {
-                int eqflagidx = pathInfo.LastIndexOf('=');
+                var eqflagidx = pathInfo.LastIndexOf('=');
                 pathInfo = pathInfo.Substring(eqflagidx + 1);
             }
             else
             {
-                int flagidx = pathInfo.LastIndexOf('/');
+                var flagidx = pathInfo.LastIndexOf('/');
                 pathInfo = pathInfo.Substring(flagidx + 1);
             }
 
-            Ingest result = new Ingest();
+            var result = new Ingest();
             result.IngestName = ip.Trim() + "_" + pathInfo.Trim().ToLower();
             result.Enabled = true;
             result.Input = new IngestInput();
@@ -836,7 +836,7 @@ namespace SrsApis.SrsManager.Apis
             result.Input.Url = rtspUrl;
             result.Ffmpeg = SrsManageCommon.Common.FFmpegBinPath;
             result.Engines = new List<IngestTranscodeEngine>();
-            IngestTranscodeEngine eng = new IngestTranscodeEngine();
+            var eng = new IngestTranscodeEngine();
             eng.Enabled = true;
             eng.Perfile = new IngestEnginePerfile();
             eng.Perfile.Re = "re;";

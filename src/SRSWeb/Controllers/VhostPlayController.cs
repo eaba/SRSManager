@@ -27,13 +27,13 @@ namespace SRSWeb.Controllers
         [Route("/VhostPlay/DeleteVhostPlay")]
         public JsonResult DeleteVhostPlay(string deviceId, string vhostDomain)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostPlayApis.DeleteVhostPlay(deviceId, vhostDomain, out ResponseStruct rs);
+            var rt = VhostPlayApis.DeleteVhostPlay(deviceId, vhostDomain, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -49,13 +49,13 @@ namespace SRSWeb.Controllers
         [Route("/VhostPlay/GetVhostPlay")]
         public JsonResult GetVhostPlay(string deviceId, string vhostDomain)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostPlayApis.GetVhostPlay(deviceId, vhostDomain, out ResponseStruct rs);
+            var rt = VhostPlayApis.GetVhostPlay(deviceId, vhostDomain, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -72,13 +72,13 @@ namespace SRSWeb.Controllers
         [Route("/VhostPlay/SetVhostPlay")]
         public JsonResult SetVhostPlay(string deviceId, string vhostDomain, Play play)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, play});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, play});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostPlayApis.SetVhostPlay(deviceId, vhostDomain, play, out ResponseStruct rs);
+            var rt = VhostPlayApis.SetVhostPlay(deviceId, vhostDomain, play, out var rs);
             return Result.DelApisResult(rt, rs);
         }
     }

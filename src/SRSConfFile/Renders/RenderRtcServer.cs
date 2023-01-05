@@ -16,12 +16,12 @@ namespace SrsConfFile.Renders
                 {
                     sccout.Rtc_server.Black_hole.SectionsName = "black_hole";
                     if (scbin.BodyList != null)
-                        foreach (string s in scbin.BodyList)
+                        foreach (var s in scbin.BodyList)
                         {
                             if (!s.Trim().EndsWith(";")) continue;
-                            KeyValuePair<string, string> tmpkv = Common.GetKV(s);
+                            var tmpkv = Common.GetKV(s);
                             if (string.IsNullOrEmpty(tmpkv.Key)) continue;
-                            string cmd = tmpkv.Key.Trim().ToLower();
+                            var cmd = tmpkv.Key.Trim().ToLower();
                             switch (cmd)
                             {
                                 case "enabled":
@@ -45,12 +45,12 @@ namespace SrsConfFile.Renders
                 if (sccout.Rtc_server.Tcp != null)
                 {                  
                     if (scbin.BodyList != null)
-                        foreach (string s in scbin.BodyList)
+                        foreach (var s in scbin.BodyList)
                         {
                             if (!s.Trim().EndsWith(";")) continue;
-                            KeyValuePair<string, string> tmpkv = Common.GetKV(s);
+                            var tmpkv = Common.GetKV(s);
                             if (string.IsNullOrEmpty(tmpkv.Key)) continue;
-                            string cmd = tmpkv.Key.Trim().ToLower();
+                            var cmd = tmpkv.Key.Trim().ToLower();
                             switch (cmd)
                             {
                                 case "enabled":
@@ -69,13 +69,13 @@ namespace SrsConfFile.Renders
             if (sccout.Rtc_server == null) sccout.Rtc_server = new SrsRtcServerConfClass();
             sccout.Rtc_server.SectionsName = "rtc_server";
             if (scbin.BodyList != null)
-                foreach (string s in scbin.BodyList)
+                foreach (var s in scbin.BodyList)
                 {
                     if (!s.Trim().EndsWith(";")) continue;
-                    KeyValuePair<string, string> tmpkv = Common.GetKV(s);
+                    var tmpkv = Common.GetKV(s);
                     if (string.IsNullOrEmpty(tmpkv.Key)) continue;
 
-                    string cmd = tmpkv.Key.Trim().ToLower();
+                    var cmd = tmpkv.Key.Trim().ToLower();
                     switch (cmd)
                     {
                         case "enabled":
@@ -122,7 +122,7 @@ namespace SrsConfFile.Renders
 
             if (scbin.SubSections != null && scbin.SubSections.Count > 0)
             {
-                foreach (SectionBody scb in scbin.SubSections)
+                foreach (var scb in scbin.SubSections)
                 {
                     Render_BlackHole(scb, sccout);
                     Render_Tcp(scb, sccout);    

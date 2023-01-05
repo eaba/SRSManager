@@ -27,13 +27,13 @@ namespace SRSWeb.Controllers
         [Route("/VhostHttpStatic/DeleteVhostHttpStatic")]
         public JsonResult DeleteVhostHttpStatic(string deviceId, string vhostDomain)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostHttpStaticApis.DeleteVhostHttpStatic(deviceId, vhostDomain, out ResponseStruct rs);
+            var rt = VhostHttpStaticApis.DeleteVhostHttpStatic(deviceId, vhostDomain, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -49,13 +49,13 @@ namespace SRSWeb.Controllers
         [Route("/VhostHttpStatic/GetVhostHttpStatic")]
         public JsonResult GetVhostHttpStatic(string deviceId, string vhostDomain)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostHttpStaticApis.GetVhostHttpStatic(deviceId, vhostDomain, out ResponseStruct rs);
+            var rt = VhostHttpStaticApis.GetVhostHttpStatic(deviceId, vhostDomain, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -72,13 +72,13 @@ namespace SRSWeb.Controllers
         [Route("/VhostHttpStatic/SetVhostHttpStatic")]
         public JsonResult SetVhostHttpStatic(string deviceId, string vhostDomain, HttpStatic httpStatic)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, httpStatic});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, httpStatic});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostHttpStaticApis.SetVhostHttpStatic(deviceId, vhostDomain, httpStatic, out ResponseStruct rs);
+            var rt = VhostHttpStaticApis.SetVhostHttpStatic(deviceId, vhostDomain, httpStatic, out var rs);
             return Result.DelApisResult(rt, rs);
         }
     }

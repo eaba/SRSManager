@@ -117,8 +117,8 @@ namespace SRSManager.Shared
         /// <returns></returns>
         public Session RefreshSession(Session session)
         {
-            bool found = false;
-            int i = 0;
+            var found = false;
+            var i = 0;
             lock (this)
             {
                 for (i = 0; i <= _sessionList.Count - 1; i++)
@@ -156,14 +156,14 @@ namespace SRSManager.Shared
         {
             if (_sessionList != null)
             {
-                Session s = _sessionList.FindLast(x => x.AllowKey.Trim().ToLower().Equals(allowKey.Trim().ToLower()))!;
+                var s = _sessionList.FindLast(x => x.AllowKey.Trim().ToLower().Equals(allowKey.Trim().ToLower()))!;
                 if (s != null)
                 {
                     return s;
                 }
             }
 
-            Session session = new Session()
+            var session = new Session()
             {
                 AllowKey = allowKey,
                 SessionCode = Common.CreateUuid()!,

@@ -27,13 +27,13 @@ namespace SRSWeb.Controllers
         [Route("/VhostDash/DeleteVhostDash")]
         public JsonResult DeleteVhostDash(string deviceId, string vhostDomain)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostDashApis.DeleteVhostDash(deviceId, vhostDomain, out ResponseStruct rs);
+            var rt = VhostDashApis.DeleteVhostDash(deviceId, vhostDomain, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -49,13 +49,13 @@ namespace SRSWeb.Controllers
         [Route("/VhostDash/GetVhostDash")]
         public JsonResult GetVhostDash(string deviceId, string vhostDomain)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostDashApis.GetVhostDash(deviceId, vhostDomain, out ResponseStruct rs);
+            var rt = VhostDashApis.GetVhostDash(deviceId, vhostDomain, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -72,13 +72,13 @@ namespace SRSWeb.Controllers
         [Route("/VhostDash/SetVhostDash")]
         public JsonResult SetVhostDash(string deviceId, string vhostDomain, Dash dash)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, dash});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, dash});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostDashApis.SetVhostDash(deviceId, vhostDomain, dash, out ResponseStruct rs);
+            var rt = VhostDashApis.SetVhostDash(deviceId, vhostDomain, dash, out var rs);
             return Result.DelApisResult(rt, rs);
         }
     }

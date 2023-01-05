@@ -24,7 +24,7 @@ namespace SrsApis.SrsManager.Apis
                 dvrVideo.Undo = false;
                 dvrVideo.UpdateTime = DateTime.Now;
                 var onPublishList =
-                    FastUsefulApis.GetOnPublishMonitorListByDeviceId(dvrVideo.Device_Id!, out ResponseStruct rs);
+                    FastUsefulApis.GetOnPublishMonitorListByDeviceId(dvrVideo.Device_Id!, out var rs);
                 var ret = onPublishList.FindLast(x => x.Client_Id == dvrVideo.Client_Id);
                 if (ret != null)
                 {
@@ -33,7 +33,7 @@ namespace SrsApis.SrsManager.Apis
                     dvrVideo.RecordDate = DateTime.Now.ToString("yyyy-MM-dd");
                 }
 
-                SrsManager srs = SystemApis.GetSrsManagerInstanceByDeviceId(dvrVideo.Device_Id!);
+                var srs = SystemApis.GetSrsManagerInstanceByDeviceId(dvrVideo.Device_Id!);
                 dvrVideo.Url = ":" + srs.Srs.Http_server!.Listen +
                                dvrVideo.VideoPath!.Replace(srs.Srs.Http_server.Dir!, "");
                 lock (Common.LockDbObjForDvrVideo)
@@ -63,7 +63,7 @@ namespace SrsApis.SrsManager.Apis
                 Code = ErrorNumber.None,
                 Message = ErrorMessage.ErrorDic![ErrorNumber.None],
             };
-            string jsonStr = JsonHelper.ToJson(heartbeat);
+            var jsonStr = JsonHelper.ToJson(heartbeat);
             jsonStr = JsonHelper.ConvertJsonString(jsonStr);
             lock (Common.LockDbObjForHeartbeat)
             {
@@ -84,7 +84,7 @@ namespace SrsApis.SrsManager.Apis
                 {
                     lock (Common.LockDbObjForOnlineClient)
                     {
-                        ClientLog tmpClientLog = new ClientLog();
+                        var tmpClientLog = new ClientLog();
                         tmpClientLog.EventMethod = EventMethod.Close;
                         tmpClientLog.App = onlineClient.App;
                         tmpClientLog.Param = onlineClient.Param;
@@ -104,7 +104,7 @@ namespace SrsApis.SrsManager.Apis
                         tmpClientLog.RtspUrl = onlineClient.RtspUrl;
                         tmpClientLog.UpdateTime = DateTime.Now;
                         OrmService.Db.Insert<ClientLog>(tmpClientLog).ExecuteAffrows();
-                        var retPlan = LiveBroadcastApis.CheckIsLiveCh(onlineClient, out ResponseStruct rs);
+                        var retPlan = LiveBroadcastApis.CheckIsLiveCh(onlineClient, out var rs);
 
                         if (retPlan != null)
                         {
@@ -170,8 +170,8 @@ namespace SrsApis.SrsManager.Apis
                 {
                     lock (Common.LockDbObjForOnlineClient)
                     {
-                        ClientLog tmpClientLog = new ClientLog();
-                        string monitorIp = GetMonitorIpAddressFromStream(onlineClient.Stream!);
+                        var tmpClientLog = new ClientLog();
+                        var monitorIp = GetMonitorIpAddressFromStream(onlineClient.Stream!);
                         tmpClientLog.EventMethod = EventMethod.Play;
                         tmpClientLog.App = onlineClient.App;
                         tmpClientLog.Param = onlineClient.Param;
@@ -244,7 +244,7 @@ namespace SrsApis.SrsManager.Apis
                 {
                     lock (Common.LockDbObjForOnlineClient)
                     {
-                        ClientLog tmpClientLog = new ClientLog();
+                        var tmpClientLog = new ClientLog();
                         tmpClientLog.EventMethod = EventMethod.Stop;
                         tmpClientLog.App = onlineClient.App;
                         tmpClientLog.Param = onlineClient.Param;
@@ -313,7 +313,7 @@ namespace SrsApis.SrsManager.Apis
                 {
                     lock (Common.LockDbObjForOnlineClient)
                     {
-                        ClientLog tmpClientLog = new ClientLog();
+                        var tmpClientLog = new ClientLog();
                         tmpClientLog.EventMethod = EventMethod.Publish;
                         tmpClientLog.App = onlineClient.App;
                         tmpClientLog.Param = onlineClient.Param;
@@ -333,7 +333,7 @@ namespace SrsApis.SrsManager.Apis
                         tmpClientLog.RtspUrl = onlineClient.RtspUrl;
                         tmpClientLog.UpdateTime = DateTime.Now;
                         OrmService.Db.Insert<ClientLog>(tmpClientLog).ExecuteAffrows();
-                        var retPlan = LiveBroadcastApis.CheckIsLiveCh(onlineClient, out ResponseStruct rs);
+                        var retPlan = LiveBroadcastApis.CheckIsLiveCh(onlineClient, out var rs);
                         var retBool = LiveBroadcastApis.CheckLivePlan(retPlan, out rs); //If it is not in the live broadcast plan, kick the connection
                         if (!retBool && retPlan != null)
                         {
@@ -410,7 +410,7 @@ namespace SrsApis.SrsManager.Apis
                 {
                     lock (Common.LockDbObjForOnlineClient)
                     {
-                        ClientLog tmpClientLog = new ClientLog();
+                        var tmpClientLog = new ClientLog();
                         tmpClientLog.EventMethod = EventMethod.UnPublish;
                         tmpClientLog.App = onlineClient.App;
                         tmpClientLog.Param = onlineClient.Param;
@@ -430,7 +430,7 @@ namespace SrsApis.SrsManager.Apis
                         tmpClientLog.RtspUrl = onlineClient.RtspUrl;
                         tmpClientLog.UpdateTime = DateTime.Now;
                         OrmService.Db.Insert<ClientLog>(tmpClientLog).ExecuteAffrows();
-                        var retPlan = LiveBroadcastApis.CheckIsLiveCh(onlineClient, out ResponseStruct rs);
+                        var retPlan = LiveBroadcastApis.CheckIsLiveCh(onlineClient, out var rs);
 
                         if (retPlan != null)
                         {
@@ -498,7 +498,7 @@ namespace SrsApis.SrsManager.Apis
                 {
                     lock (Common.LockDbObjForOnlineClient)
                     {
-                        ClientLog tmpClientLog = new ClientLog();
+                        var tmpClientLog = new ClientLog();
                         tmpClientLog.EventMethod = EventMethod.Connect;
                         tmpClientLog.App = onlineClient.App;
                         tmpClientLog.Param = onlineClient.Param;
@@ -519,7 +519,7 @@ namespace SrsApis.SrsManager.Apis
                         tmpClientLog.UpdateTime = DateTime.Now;
                         OrmService.Db.Insert<ClientLog>(tmpClientLog).ExecuteAffrows();
 
-                        var retPlan = LiveBroadcastApis.CheckIsLiveCh(onlineClient, out ResponseStruct rs);
+                        var retPlan = LiveBroadcastApis.CheckIsLiveCh(onlineClient, out var rs);
                         var retBool = LiveBroadcastApis.CheckLivePlan(retPlan, out rs); //如果不是直播计划内的就踢掉连接
                         if (!retBool && retPlan != null)
                         {

@@ -27,13 +27,13 @@ namespace SRSWeb.Controllers
         [Route("/VhostHttpRemux/DeleteVhostHttpRemux")]
         public JsonResult DeleteVhostHttpRemux(string deviceId, string vhostDomain)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostHttpRemuxApis.DeleteVhostHttpRemux(deviceId, vhostDomain, out ResponseStruct rs);
+            var rt = VhostHttpRemuxApis.DeleteVhostHttpRemux(deviceId, vhostDomain, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -49,13 +49,13 @@ namespace SRSWeb.Controllers
         [Route("/VhostHttpRemux/GetVhostHttpRemux")]
         public JsonResult GetVhostHttpRemux(string deviceId, string vhostDomain)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostHttpRemuxApis.GetVhostHttpRemux(deviceId, vhostDomain, out ResponseStruct rs);
+            var rt = VhostHttpRemuxApis.GetVhostHttpRemux(deviceId, vhostDomain, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -72,13 +72,13 @@ namespace SRSWeb.Controllers
         [Route("/VhostHttpRemux/SetVhostHttpRemux")]
         public JsonResult SetVhostHttpRemux(string deviceId, string vhostDomain, HttpRemux httpRemux)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, httpRemux});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, httpRemux});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostHttpRemuxApis.SetVhostHttpRemux(deviceId, vhostDomain, httpRemux, out ResponseStruct rs);
+            var rt = VhostHttpRemuxApis.SetVhostHttpRemux(deviceId, vhostDomain, httpRemux, out var rs);
             return Result.DelApisResult(rt, rs);
         }
     }

@@ -27,13 +27,13 @@ namespace SRSWeb.Controllers
         [Route("/VhostHttpHooks/DeleteVhostHttpHooks")]
         public JsonResult DeleteVhostHttpHooks(string deviceId, string vhostDomain)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostHttpHooksApis.DeleteVhostHttpHooks(deviceId, vhostDomain, out ResponseStruct rs);
+            var rt = VhostHttpHooksApis.DeleteVhostHttpHooks(deviceId, vhostDomain, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -49,13 +49,13 @@ namespace SRSWeb.Controllers
         [Route("/VhostHttpHooks/GetVhostHttpHooks")]
         public JsonResult GetVhostHttpHooks(string deviceId, string vhostDomain)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostHttpHooksApis.GetVhostHttpHooks(deviceId, vhostDomain, out ResponseStruct rs);
+            var rt = VhostHttpHooksApis.GetVhostHttpHooks(deviceId, vhostDomain, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -72,13 +72,13 @@ namespace SRSWeb.Controllers
         [Route("/VhostHttpHooks/SetVhostHttpHooks")]
         public JsonResult SetVhostHttpHooks(string deviceId, string vhostDomain, HttpHooks httpHooks)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, httpHooks});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, httpHooks});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostHttpHooksApis.SetVhostHttpHooks(deviceId, vhostDomain, httpHooks, out ResponseStruct rs);
+            var rt = VhostHttpHooksApis.SetVhostHttpHooks(deviceId, vhostDomain, httpHooks, out var rs);
             return Result.DelApisResult(rt, rs);
         }
     }

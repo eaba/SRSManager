@@ -27,13 +27,13 @@ namespace SRSWeb.Controllers
         [Route("/VhostHds/DeleteVhostHds")]
         public JsonResult DeleteVhostHds(string deviceId, string vhostDomain)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostHdsApis.DeleteVhostHds(deviceId, vhostDomain, out ResponseStruct rs);
+            var rt = VhostHdsApis.DeleteVhostHds(deviceId, vhostDomain, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -49,13 +49,13 @@ namespace SRSWeb.Controllers
         [Route("/VhostHds/GetVhostHds")]
         public JsonResult GetVhostHds(string deviceId, string vhostDomain)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostHdsApis.GetVhostHds(deviceId, vhostDomain, out ResponseStruct rs);
+            var rt = VhostHdsApis.GetVhostHds(deviceId, vhostDomain, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -72,13 +72,13 @@ namespace SRSWeb.Controllers
         [Route("/VhostHds/SetVhostHds")]
         public JsonResult SetVhostHds(string deviceId, string vhostDomain, Hds hds)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, hds});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, hds});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostHdsApis.SetVhostHds(deviceId, vhostDomain, hds, out ResponseStruct rs);
+            var rt = VhostHdsApis.SetVhostHds(deviceId, vhostDomain, hds, out var rs);
             return Result.DelApisResult(rt, rs);
         }
     }

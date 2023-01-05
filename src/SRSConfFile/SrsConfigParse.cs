@@ -70,10 +70,10 @@ namespace SrsConfFile
             }
 
             if (scbin.SubSections != null)
-                foreach (SectionBody scb in scbin.SubSections)
+                foreach (var scb in scbin.SubSections)
                 {
-                    KeyValuePair<string, string> tmpkv = Common.GetSectionNameAndInstanceNameValue(scb);
-                    string cmd = tmpkv.Key;
+                    var tmpkv = Common.GetSectionNameAndInstanceNameValue(scb);
+                    var cmd = tmpkv.Key;
                     switch (cmd)
                     {
                         case "heartbeat":
@@ -111,9 +111,9 @@ namespace SrsConfFile
         public static void FixFormat(SectionBody scb)
         {
             if (scb.BodyList != null)
-                for (int i = 0; i <= scb.BodyList.Count - 1; i++)
+                for (var i = 0; i <= scb.BodyList.Count - 1; i++)
                 {
-                    string tmp = scb.BodyList[i];
+                    var tmp = scb.BodyList[i];
                     if (tmp.Trim() == SectionStartChar.ToString())
                     {
                         scb.BodyList[i - 1] = scb.BodyList[i - 1] + SectionStartChar;
@@ -129,19 +129,19 @@ namespace SrsConfFile
         {
             FindSection2(RootSection, false);
             if (RootSection.SubSections != null)
-                foreach (SectionBody scb in RootSection.SubSections)
+                foreach (var scb in RootSection.SubSections)
                 {
                     FindSection2(scb, true);
                     if (scb.SubSections != null)
-                        foreach (SectionBody scbscb in scb.SubSections)
+                        foreach (var scbscb in scb.SubSections)
                         {
                             FindSection2(scbscb, true);
                             if (scbscb.SubSections != null)
-                                foreach (SectionBody scbscbscb in scbscb.SubSections)
+                                foreach (var scbscbscb in scbscb.SubSections)
                                 {
                                     FindSection2(scbscbscb, true);
                                     if (scbscbscb.SubSections != null)
-                                        foreach (SectionBody scbscbscbscb in scbscbscb.SubSections)
+                                        foreach (var scbscbscbscb in scbscbscb.SubSections)
                                         {
                                             FindSection2(scbscbscbscb, true);
                                         }
@@ -154,11 +154,11 @@ namespace SrsConfFile
         private static void TrimSpace(SectionBody scbin)
         {
             if (scbin.SubSections != null)
-                foreach (SectionBody scb in scbin.SubSections)
+                foreach (var scb in scbin.SubSections)
                 {
                     if (scb.BodyList != null)
                     {
-                        for (int i = scb.BodyList.Count - 1; i >= 0; i--)
+                        for (var i = scb.BodyList.Count - 1; i >= 0; i--)
                         {
                             if (String.IsNullOrEmpty(scb.BodyList[i].Trim()))
                             {
@@ -167,7 +167,7 @@ namespace SrsConfFile
                         }
 
                         scb.body = "";
-                        for (int i = 0; i <= scb.BodyList.Count - 1; i++)
+                        for (var i = 0; i <= scb.BodyList.Count - 1; i++)
                         {
                             scb.body += scb.BodyList[i] + "\r\n";
                         }
@@ -182,7 +182,7 @@ namespace SrsConfFile
         {
             if (RootSection.BodyList != null)
             {
-                for (int i = RootSection.BodyList.Count - 1; i >= 0; i--)
+                for (var i = RootSection.BodyList.Count - 1; i >= 0; i--)
                 {
                     if (String.IsNullOrEmpty(RootSection.BodyList[i].Trim()))
                     {
@@ -191,7 +191,7 @@ namespace SrsConfFile
                 }
 
                 RootSection.body = "";
-                for (int i = 0; i <= RootSection.BodyList.Count - 1; i++)
+                for (var i = 0; i <= RootSection.BodyList.Count - 1; i++)
                 {
                     RootSection.body += RootSection.BodyList[i] + "\r\n";
                 }
@@ -199,19 +199,19 @@ namespace SrsConfFile
 
             TrimSpace(RootSection);
             if (RootSection.SubSections != null)
-                foreach (SectionBody scb in RootSection.SubSections)
+                foreach (var scb in RootSection.SubSections)
                 {
                     TrimSpace(scb);
                     if (scb.SubSections != null)
-                        foreach (SectionBody scbscb in scb.SubSections)
+                        foreach (var scbscb in scb.SubSections)
                         {
                             TrimSpace(scbscb);
                             if (scbscb.SubSections != null)
-                                foreach (SectionBody scbscbscb in scbscb.SubSections)
+                                foreach (var scbscbscb in scbscb.SubSections)
                                 {
                                     TrimSpace(scbscbscb);
                                     if (scbscbscb.SubSections != null)
-                                        foreach (SectionBody scbscbscbscb in scbscbscb.SubSections)
+                                        foreach (var scbscbscbscb in scbscbscb.SubSections)
                                         {
                                             TrimSpace(scbscbscbscb);
                                         }
@@ -222,14 +222,14 @@ namespace SrsConfFile
 
         private static void FindSection2(SectionBody scbin, bool withoutSelf = false)
         {
-            int startcount = 0;
-            int linenostart = 0;
-            int linenoend = 0;
+            var startcount = 0;
+            var linenostart = 0;
+            var linenoend = 0;
 
-            int i = 0;
+            var i = 0;
             if (scbin.BodyList != null)
             {
-                int endline = scbin.BodyList.Count - 1;
+                var endline = scbin.BodyList.Count - 1;
                 if (withoutSelf)
                 {
                     i = 1;
@@ -238,7 +238,7 @@ namespace SrsConfFile
 
                 for (; i <= endline; i++)
                 {
-                    string tmpStr = scbin.BodyList[i];
+                    var tmpStr = scbin.BodyList[i];
                     if (tmpStr.Contains(SectionStartChar))
                     {
                         if (startcount == 0)
@@ -254,10 +254,10 @@ namespace SrsConfFile
                         startcount--;
                         if (startcount == 0)
                         {
-                            SectionBody scb = new SectionBody();
+                            var scb = new SectionBody();
                             scb.startline = linenostart;
                             scb.endline = linenoend;
-                            for (int k = linenostart; k <= linenoend; k++)
+                            for (var k = linenostart; k <= linenoend; k++)
                             {
                                 scb.body += scbin.BodyList[k] + "\r\n";
                                 scb.BodyList?.Add(scbin.BodyList[k]);
@@ -266,7 +266,7 @@ namespace SrsConfFile
 
                             scbin.SubSections?.Add(scb);
                             scbin.body = "";
-                            for (int f = 0; f <= scbin.BodyList.Count - 1; f++)
+                            for (var f = 0; f <= scbin.BodyList.Count - 1; f++)
                             {
                                 scbin.body += scbin.BodyList[f] + "\r\n";
                             }
@@ -286,14 +286,14 @@ namespace SrsConfFile
             if (!File.Exists(srsconf.ConfFilePath)) return false;
             RootSection.BodyList?.Clear();
             if (srsconf.ConfigLines != null)
-                foreach (string str in srsconf.ConfigLines)
+                foreach (var str in srsconf.ConfigLines)
                 {
-                    string tmp_str = "";
+                    var tmp_str = "";
                     if (string.IsNullOrEmpty(str.Trim())) continue;
                     if (str.Trim().StartsWith('#')) continue;
                     if (str.Trim().Contains("#"))
                     {
-                        foreach (char c in str.Trim())
+                        foreach (var c in str.Trim())
                         {
                             if (c != '#')
                             {
@@ -319,8 +319,8 @@ namespace SrsConfFile
         public static bool LoadSrsConfObject(string filepath)
         {
             if (!File.Exists(filepath)) return false;
-            List<string> lines = new List<string>();
-            foreach (string str in File.ReadAllLines(filepath, Encoding.Default))
+            var lines = new List<string>();
+            foreach (var str in File.ReadAllLines(filepath, Encoding.Default))
             {
                 var str_tmp = str.Trim();
                 if (!string.IsNullOrEmpty(str_tmp) && !str_tmp.StartsWith('#'))
@@ -331,14 +331,14 @@ namespace SrsConfFile
 
             RootSection.BodyList?.Clear();
             if (lines != null)
-                foreach (string str in lines)
+                foreach (var str in lines)
                 {
-                    string tmp_str = "";
+                    var tmp_str = "";
                     if (string.IsNullOrEmpty(str.Trim())) continue;
                     if (str.Trim().StartsWith('#')) continue;
                     if (str.Trim().Contains("#"))
                     {
-                        foreach (char c in str.Trim())
+                        foreach (var c in str.Trim())
                         {
                             if (c != '#')
                             {
@@ -366,14 +366,14 @@ namespace SrsConfFile
             if (lines == null) return false;
             RootSection.BodyList?.Clear();
             if (lines != null)
-                foreach (string str in lines)
+                foreach (var str in lines)
                 {
-                    string tmp_str = "";
+                    var tmp_str = "";
                     if (string.IsNullOrEmpty(str.Trim())) continue;
                     if (str.Trim().StartsWith('#')) continue;
                     if (str.Trim().Contains("#"))
                     {
-                        foreach (char c in str.Trim())
+                        foreach (var c in str.Trim())
                         {
                             if (c != '#')
                             {

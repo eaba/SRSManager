@@ -452,7 +452,7 @@ namespace SrsApis.SrsManager.Apis
                 x.SrsDeviceId.Trim().ToUpper().Equals(deviceId.Trim().ToUpper()));
             if (ret != null && ret.Srs.Http_server != null)
             {
-                GlobalModule result = new GlobalModule()
+                var result = new GlobalModule()
                 {
                     Listen = ret.Srs.Listen,
                     HttpApiListen = ret.Srs.Http_api!.Listen,

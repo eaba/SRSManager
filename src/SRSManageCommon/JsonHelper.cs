@@ -15,7 +15,7 @@ namespace SrsManageCommon
 
         static JsonHelper()
         {
-            IsoDateTimeConverter datetimeConverter = new IsoDateTimeConverter();
+            var datetimeConverter = new IsoDateTimeConverter();
             datetimeConverter.DateTimeFormat = "yyyy-MM-dd HH:mm:ss";
             _jsonSettings = new JsonSerializerSettings();
             _jsonSettings.MissingMemberHandling = MissingMemberHandling.Error;
@@ -28,14 +28,14 @@ namespace SrsManageCommon
         //format json string
         public static string ConvertJsonString(string str)
         {
-            JsonSerializer serializer = new JsonSerializer();
+            var serializer = new JsonSerializer();
             TextReader tr = new StringReader(str);
-            JsonTextReader jtr = new JsonTextReader(tr);
-            object? obj = serializer.Deserialize(jtr);
+            var jtr = new JsonTextReader(tr);
+            var obj = serializer.Deserialize(jtr);
             if (obj != null)
             {
-                StringWriter textWriter = new StringWriter();
-                JsonTextWriter jsonWriter = new JsonTextWriter(textWriter)
+                var textWriter = new StringWriter();
+                var jsonWriter = new JsonTextWriter(textWriter)
                 {
                     Formatting = Formatting.Indented,
                     Indentation = 4,

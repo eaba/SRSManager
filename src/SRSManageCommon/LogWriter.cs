@@ -14,10 +14,10 @@ namespace SrsManageCommon
                 Console.ForegroundColor = color;
             }
 
-            string logPath = Common.LogPath;
-            DateTime now = DateTime.Now;
-            string logpath = string.Format(logPath + @"streamnodelog_Y{0}M{1}D{2}.log", now.Year, now.Month, now.Day);
-            string saveLogTxt = "[" + DateTime.Now.ToString() + "]\t" + message + "\t" + info + "\r\n";
+            var logPath = Common.LogPath;
+            var now = DateTime.Now;
+            var logpath = string.Format(logPath + @"streamnodelog_Y{0}M{1}D{2}.log", now.Year, now.Month, now.Day);
+            var saveLogTxt = "[" + DateTime.Now.ToString() + "]\t" + message + "\t" + info + "\r\n";
             Console.WriteLine(saveLogTxt.Trim());
             if (color != ConsoleColor.Gray)
             {

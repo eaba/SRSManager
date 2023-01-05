@@ -34,7 +34,7 @@ namespace SRSWeb.Controllers
         [Route("/GlobalSrs/IsRunning")]
         public async ValueTask<JsonResult> IsRunning(string deviceId)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] { deviceId });
+            var rss = CommonFunctions.CheckParams(new object[] { deviceId });
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
@@ -54,7 +54,7 @@ namespace SRSWeb.Controllers
         [Route("/GlobalSrs/IsInit")]
         public async ValueTask<JsonResult> IsInit(string deviceId)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] { deviceId });
+            var rss = CommonFunctions.CheckParams(new object[] { deviceId });
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
@@ -74,7 +74,7 @@ namespace SRSWeb.Controllers
         [Route("/GlobalSrs/StartSrs")]
         public async ValueTask<JsonResult> StartSrs(string deviceId)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] { deviceId });
+            var rss = CommonFunctions.CheckParams(new object[] { deviceId });
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
@@ -94,7 +94,7 @@ namespace SRSWeb.Controllers
         [Route("/GlobalSrs/StopSrs")]
         public async ValueTask<JsonResult> StopSrs(string deviceId)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] { deviceId });
+            var rss = CommonFunctions.CheckParams(new object[] { deviceId });
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
@@ -114,7 +114,7 @@ namespace SRSWeb.Controllers
         [Route("/GlobalSrs/RestartSrs")]
         public async ValueTask<JsonResult> RestartSrs(string deviceId)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] { deviceId });
+            var rss = CommonFunctions.CheckParams(new object[] { deviceId });
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
@@ -134,7 +134,7 @@ namespace SRSWeb.Controllers
         [Route("/GlobalSrs/ReloadSrs")]
         public async ValueTask<JsonResult> ReloadtSrs(string deviceId)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] { deviceId });
+            var rss = CommonFunctions.CheckParams(new object[] { deviceId });
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
@@ -154,7 +154,7 @@ namespace SRSWeb.Controllers
         [Route("/GlobalSrs/GlobalChangeChunksize")]
         public async ValueTask<JsonResult> GlobalChangeChunksize(string deviceId, ushort chunkSize)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] { deviceId, chunkSize });
+            var rss = CommonFunctions.CheckParams(new object[] { deviceId, chunkSize });
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
@@ -174,7 +174,7 @@ namespace SRSWeb.Controllers
         [Route("/GlobalSrs/GlobalChangeHttpApiListen")]
         public async ValueTask<JsonResult> GlobalChangeHttpApiListen(string deviceId, ushort port)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] { deviceId, port });
+            var rss = CommonFunctions.CheckParams(new object[] { deviceId, port });
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
@@ -194,7 +194,7 @@ namespace SRSWeb.Controllers
         [Route("/GlobalSrs/GlobalChangeHttpApiEnable")]
         public async ValueTask<JsonResult> GlobalChangeHttpApiEnable(string deviceId, bool enable)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] { deviceId, enable });
+            var rss = CommonFunctions.CheckParams(new object[] { deviceId, enable });
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
@@ -214,7 +214,7 @@ namespace SRSWeb.Controllers
         [Route("/GlobalSrs/GlobalChangeMaxConnections")]
         public async ValueTask<JsonResult> GlobalChangeMaxConnections(string deviceId, ushort max)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] { deviceId, max });
+            var rss = CommonFunctions.CheckParams(new object[] { deviceId, max });
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
@@ -234,7 +234,7 @@ namespace SRSWeb.Controllers
         [Route("/GlobalSrs/GlobalChangeRtmpListen")]
         public async ValueTask<JsonResult> GlobalChangeRtmpListen(string deviceId, ushort port)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] { deviceId, port });
+            var rss = CommonFunctions.CheckParams(new object[] { deviceId, port });
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
@@ -254,7 +254,7 @@ namespace SRSWeb.Controllers
         [Route("/GlobalSrs/GlobalChangeHttpServerListen")]
         public async ValueTask<JsonResult> GlobalChangeHttpServerListen(string deviceId, ushort port)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] { deviceId , port });
+            var rss = CommonFunctions.CheckParams(new object[] { deviceId , port });
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
@@ -274,7 +274,7 @@ namespace SRSWeb.Controllers
         [Route("/GlobalSrs/GlobalChangeHttpServerPath")]
         public async ValueTask<JsonResult> GlobalChangeHttpServerPath(string deviceId, string path)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] { deviceId, path });
+            var rss = CommonFunctions.CheckParams(new object[] { deviceId, path });
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
@@ -294,7 +294,7 @@ namespace SRSWeb.Controllers
         [Route("/GlobalSrs/GlobalChangeHttpServerEnable")]
         public async ValueTask<JsonResult> GlobalChangeHttpServerEnable(string deviceId, bool enable)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] { deviceId, enable });
+            var rss = CommonFunctions.CheckParams(new object[] { deviceId, enable });
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
@@ -314,7 +314,7 @@ namespace SRSWeb.Controllers
         [Route("/GlobalSrs/GetGlobalParams")]
         public async ValueTask<JsonResult> GetGlobalParams(string deviceId)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] { deviceId });
+            var rss = CommonFunctions.CheckParams(new object[] { deviceId });
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
@@ -334,7 +334,7 @@ namespace SRSWeb.Controllers
         [Route("/GlobalSrs/ChangeGlobalParams")]
         public async ValueTask<JsonResult> ChangeGlobalParams(ReqChangeSrsGlobalParams req)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] { req });
+            var rss = CommonFunctions.CheckParams(new object[] { req });
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);

@@ -27,13 +27,13 @@ namespace SRSWeb.Controllers
         [Route("/VhostBandcheck/DeleteVhostBandcheck")]
         public JsonResult DeleteVhostBandcheck(string deviceId, string vhostDomain)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostBandcheckApis.DeleteVhostBandcheck(deviceId, vhostDomain, out ResponseStruct rs);
+            var rt = VhostBandcheckApis.DeleteVhostBandcheck(deviceId, vhostDomain, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -49,13 +49,13 @@ namespace SRSWeb.Controllers
         [Route("/VhostBandcheck/GetVhostBandcheck")]
         public JsonResult GetVhostBandcheck(string deviceId, string vhostDomain)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostBandcheckApis.GetVhostBandcheck(deviceId, vhostDomain, out ResponseStruct rs);
+            var rt = VhostBandcheckApis.GetVhostBandcheck(deviceId, vhostDomain, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -72,13 +72,13 @@ namespace SRSWeb.Controllers
         [Route("/VhostBandcheck/SetVhostBandcheck")]
         public JsonResult SetVhostBandcheck(string deviceId, string vhostDomain, Bandcheck bandcheck)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {vhostDomain, deviceId, bandcheck});
+            var rss = CommonFunctions.CheckParams(new object[] {vhostDomain, deviceId, bandcheck});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostBandcheckApis.SetVhostBandcheck(deviceId, vhostDomain, bandcheck, out ResponseStruct rs);
+            var rt = VhostBandcheckApis.SetVhostBandcheck(deviceId, vhostDomain, bandcheck, out var rs);
             return Result.DelApisResult(rt, rs);
         }
     }

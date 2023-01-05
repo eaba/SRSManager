@@ -25,7 +25,7 @@ namespace SRSWeb.Attributes
         public void OnActionExecuting(ActionExecutingContext context)
         {
             if (Program.CommonFunctions.IsDebug) return;
-            string remoteIpAddr = context.HttpContext.Connection.RemoteIpAddress.ToString();
+            var remoteIpAddr = context.HttpContext.Connection.RemoteIpAddress.ToString();
             string sessionCode = context.HttpContext.Request.Headers["SessionCode"];
             string allowKey = context.HttpContext.Request.Headers["Allowkey"];
             if (sessionCode == null || !Program.CommonFunctions.CheckSession(sessionCode))

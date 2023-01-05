@@ -27,13 +27,13 @@ namespace SRSWeb.Controllers
         [Route("/VhostSecurity/DeleteVhostSecurity")]
         public JsonResult DeleteVhostSecurity(string deviceId, string vhostDomain)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostSecurityApis.DeleteVhostSecurity(deviceId, vhostDomain, out ResponseStruct rs);
+            var rt = VhostSecurityApis.DeleteVhostSecurity(deviceId, vhostDomain, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -49,13 +49,13 @@ namespace SRSWeb.Controllers
         [Route("/VhostSecurity/GetVhostSecurity")]
         public JsonResult GetVhostSecurity(string deviceId, string vhostDomain)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostSecurityApis.GetVhostSecurity(deviceId, vhostDomain, out ResponseStruct rs);
+            var rt = VhostSecurityApis.GetVhostSecurity(deviceId, vhostDomain, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -72,13 +72,13 @@ namespace SRSWeb.Controllers
         [Route("/VhostSecurity/SetVhostSecurity")]
         public JsonResult SetVhostSecurity(string deviceId, string vhostDomain, Security security)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, security});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, security});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostSecurityApis.SetVhostSecurity(deviceId, vhostDomain, security, out ResponseStruct rs);
+            var rt = VhostSecurityApis.SetVhostSecurity(deviceId, vhostDomain, security, out var rs);
             return Result.DelApisResult(rt, rs);
         }
     }

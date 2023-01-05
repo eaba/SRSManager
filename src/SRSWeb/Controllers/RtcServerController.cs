@@ -25,13 +25,13 @@ namespace SRSWeb.Controllers
         [Route("/RtcServer/GetSrsRtcServer")]
         public JsonResult GetSrsRtcServer(string deviceId)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = RtcServerApis.GetRtcServer(deviceId, out ResponseStruct rs);
+            var rt = RtcServerApis.GetRtcServer(deviceId, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -45,13 +45,13 @@ namespace SRSWeb.Controllers
         [Route("/RtcServer/SetRtcServer")]
         public JsonResult SetSrsRtcServer(string deviceId, SrsRtcServerConfClass rtc)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {rtc});
+            var rss = CommonFunctions.CheckParams(new object[] {rtc});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = RtcServerApis.SetRtcServer(deviceId, rtc, out ResponseStruct rs);
+            var rt = RtcServerApis.SetRtcServer(deviceId, rtc, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -65,13 +65,13 @@ namespace SRSWeb.Controllers
         [Route("/RtcServer/DelRtcServer")]
         public JsonResult DelSrsRtcServer(string deviceId)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = RtcServerApis.DeleteRtcServer(deviceId, out ResponseStruct rs);
+            var rt = RtcServerApis.DeleteRtcServer(deviceId, out var rs);
             return Result.DelApisResult(rt, rs);
         }
     }

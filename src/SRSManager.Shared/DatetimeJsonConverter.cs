@@ -19,7 +19,7 @@ namespace SRSManager.Shared
         {
             if (reader.TokenType == JsonTokenType.String)
             {
-                if (DateTime.TryParse(reader.GetString(), out DateTime date))
+                if (DateTime.TryParse(reader.GetString(), out var date))
                     return date;
             }
             return reader.GetDateTime();

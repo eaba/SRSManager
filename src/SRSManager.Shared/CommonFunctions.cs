@@ -83,7 +83,7 @@ namespace SRSManager.Shared
                 ffpath = "ffmpeg";
             }
 
-            LinuxShell.Run(ffpath, 1000, out string std, out string err);
+            LinuxShell.Run(ffpath, 1000, out var std, out var err);
             if (!string.IsNullOrEmpty(std))
             {
                 if (std.ToLower().Contains("ffmpeg version"))
@@ -162,9 +162,9 @@ namespace SRSManager.Shared
         /// <returns></returns>
         public bool CheckSession(string sessionCode)
         {
-            Session s = this.SessionManager.SessionList.FindLast(x =>
+            var s = this.SessionManager.SessionList.FindLast(x =>
                 x.SessionCode.Trim().ToLower().Equals(sessionCode.Trim().ToLower()))!;
-            long a = this.GetTimeStampMilliseconds();
+            var a = this.GetTimeStampMilliseconds();
 
             if (s != null && s.Expires > a)
             {
@@ -208,7 +208,7 @@ namespace SRSManager.Shared
                     {
                         ip_tmp = ip.Split('.', StringSplitOptions.RemoveEmptyEntries);
                         ipAddr_tmp = ipAddr.Split('.', StringSplitOptions.RemoveEmptyEntries);
-                        for (int i = 0; i <= ip_tmp.Length - 1; i++)
+                        for (var i = 0; i <= ip_tmp.Length - 1; i++)
                         {
                             if (ip_tmp[i].Trim().Equals("*"))
                             {

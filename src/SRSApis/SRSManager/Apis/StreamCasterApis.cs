@@ -46,7 +46,7 @@ namespace SrsApis.SrsManager.Apis
                     return null!;
                 }
 
-                List<string> slist = ret.Srs.Stream_casters.Select(i => i.InstanceName).ToList()!;
+                var slist = ret.Srs.Stream_casters.Select(i => i.InstanceName).ToList()!;
                 return slist!;
             }
 
@@ -174,7 +174,7 @@ namespace SrsApis.SrsManager.Apis
         /// <returns></returns>
         public static SrsStreamCasterConfClass GetStreamCasterTemplate(CasterEnum casterType, out ResponseStruct rs)
         {
-            SrsStreamCasterConfClass result = new SrsStreamCasterConfClass();
+            var result = new SrsStreamCasterConfClass();
             rs = new ResponseStruct()
             {
                 Code = ErrorNumber.None,

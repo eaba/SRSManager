@@ -27,13 +27,13 @@ namespace SRSWeb.Controllers
         [Route("/VhostRefer/DeleteVhostRefer")]
         public JsonResult DeleteVhostRefer(string deviceId, string vhostDomain)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostReferApis.DeleteVhostRefer(deviceId, vhostDomain, out ResponseStruct rs);
+            var rt = VhostReferApis.DeleteVhostRefer(deviceId, vhostDomain, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -49,13 +49,13 @@ namespace SRSWeb.Controllers
         [Route("/VhostRefer/GetVhostRefer")]
         public JsonResult GetVhostRefer(string deviceId, string vhostDomain)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostReferApis.GetVhostRefer(deviceId, vhostDomain, out ResponseStruct rs);
+            var rt = VhostReferApis.GetVhostRefer(deviceId, vhostDomain, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -72,13 +72,13 @@ namespace SRSWeb.Controllers
         [Route("/VhostRefer/SetVhostRefer")]
         public JsonResult SetVhostRefer(string deviceId, string vhostDomain, Refer refer)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, refer});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, refer});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostReferApis.SetVhostRefer(deviceId, vhostDomain, refer, out ResponseStruct rs);
+            var rt = VhostReferApis.SetVhostRefer(deviceId, vhostDomain, refer, out var rs);
             return Result.DelApisResult(rt, rs);
         }
     }

@@ -27,13 +27,13 @@ namespace SRSWeb.Controllers
         [Route("/System/RefreshSrsObject")]
         public JsonResult RefreshSrsObject(string deviceId)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = SystemApis.RefreshSrsObject(deviceId, out ResponseStruct rs);
+            var rt = SystemApis.RefreshSrsObject(deviceId, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -48,7 +48,7 @@ namespace SRSWeb.Controllers
         [Route("/System/GetAllSrsManagerDeviceId")]
         public JsonResult GetAllSrsManagerDeviceId()
         {
-            ResponseStruct rs = new ResponseStruct()
+            var rs = new ResponseStruct()
             {
                 Code = ErrorNumber.None,
                 Message = ErrorMessage.ErrorDic![ErrorNumber.None],
@@ -67,13 +67,13 @@ namespace SRSWeb.Controllers
         [Route("/System/CreateNewSrsInstance")]
         public JsonResult CreateNewSrsInstance(SrsManager sm)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {sm});
+            var rss = CommonFunctions.CheckParams(new object[] {sm});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = SystemApis.CreateNewSrsInstance(sm, out ResponseStruct rs);
+            var rt = SystemApis.CreateNewSrsInstance(sm, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -88,7 +88,7 @@ namespace SRSWeb.Controllers
         [Route("/System/GetSrsInstanceTemplate")]
         public JsonResult GetSrsInstanceTemplate()
         {
-            var rt = SystemApis.GetSrsInstanceTemplate(out ResponseStruct rs);
+            var rt = SystemApis.GetSrsInstanceTemplate(out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -103,13 +103,13 @@ namespace SRSWeb.Controllers
         [Route("/System/DelSrsByDevId")]
         public JsonResult DelSrsInstanceByDeviceId(string deviceId)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = SystemApis.DelSrsInstanceByDeviceId(deviceId, out ResponseStruct rs);
+            var rt = SystemApis.DelSrsInstanceByDeviceId(deviceId, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -123,13 +123,13 @@ namespace SRSWeb.Controllers
         [Route("/System/GetSrsInstanceByDeviceId")]
         public JsonResult GetSrsInstanceByDeviceId(string deviceId)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            ResponseStruct rs = new ResponseStruct()
+            var rs = new ResponseStruct()
             {
                 Code = ErrorNumber.None,
                 Message = ErrorMessage.ErrorDic![ErrorNumber.None],
@@ -164,14 +164,14 @@ namespace SRSWeb.Controllers
         [Route("/System/GetSrsInstanceList")]
         public JsonResult GetSrsInstanceList()
         {
-            List<string> devs = SystemApis.GetAllSrsManagerDeviceId();
-            List<SrsInstanceModule> simlist = new List<SrsInstanceModule>();
+            var devs = SystemApis.GetAllSrsManagerDeviceId();
+            var simlist = new List<SrsInstanceModule>();
             foreach (var dev in devs)
             {
-                SrsManager srs = SystemApis.GetSrsManagerInstanceByDeviceId(dev);
+                var srs = SystemApis.GetSrsManagerInstanceByDeviceId(dev);
                 if (srs != null)
                 {
-                    SrsInstanceModule sim = new SrsInstanceModule()
+                    var sim = new SrsInstanceModule()
                     {
                         ConfigPath = srs.SrsConfigPath,
                         DeviceId = srs.SrsDeviceId,

@@ -21,13 +21,13 @@ namespace SrsConfFile.Renders
             svcc.Rtc.SectionsName = "rtc";
 
             if (scbin.BodyList != null)
-                foreach (string s in scbin.BodyList)
+                foreach (var s in scbin.BodyList)
                 {
                     if (!s.Trim().EndsWith(";")) continue;
-                    KeyValuePair<string, string> tmpkv = Common.GetKV(s);
+                    var tmpkv = Common.GetKV(s);
                     if (string.IsNullOrEmpty(tmpkv.Key)) continue;
 
-                    string cmd = tmpkv.Key.Trim().ToLower();
+                    var cmd = tmpkv.Key.Trim().ToLower();
                     switch (cmd)
                     {
                         case "enabled":
@@ -80,13 +80,13 @@ namespace SrsConfFile.Renders
 
             svcc.Vcluster.SectionsName = "cluster";
             if (scbin.BodyList != null)
-                foreach (string s in scbin.BodyList)
+                foreach (var s in scbin.BodyList)
                 {
                     if (!s.Trim().EndsWith(";")) continue;
-                    KeyValuePair<string, string> tmpkv = Common.GetKV(s);
+                    var tmpkv = Common.GetKV(s);
                     if (string.IsNullOrEmpty(tmpkv.Key)) continue;
 
-                    string cmd = tmpkv.Key.Trim().ToLower();
+                    var cmd = tmpkv.Key.Trim().ToLower();
                     switch (cmd)
                     {
                         case "mode":
@@ -134,13 +134,13 @@ namespace SrsConfFile.Renders
             svcc.Vforward.SectionsName = "forward";
 
             if (scbin.BodyList != null)
-                foreach (string s in scbin.BodyList)
+                foreach (var s in scbin.BodyList)
                 {
                     if (!s.Trim().EndsWith(";")) continue;
-                    KeyValuePair<string, string> tmpkv = Common.GetKV(s);
+                    var tmpkv = Common.GetKV(s);
                     if (string.IsNullOrEmpty(tmpkv.Key)) continue;
 
-                    string cmd = tmpkv.Key.Trim().ToLower();
+                    var cmd = tmpkv.Key.Trim().ToLower();
                     switch (cmd)
                     {
                         case "enabled":
@@ -169,13 +169,13 @@ namespace SrsConfFile.Renders
 
             svcc.Vplay.SectionsName = "play";
             if (scbin.BodyList != null)
-                foreach (string s in scbin.BodyList)
+                foreach (var s in scbin.BodyList)
                 {
                     if (!s.Trim().EndsWith(";")) continue;
-                    KeyValuePair<string, string> tmpkv = Common.GetKV(s);
+                    var tmpkv = Common.GetKV(s);
                     if (string.IsNullOrEmpty(tmpkv.Key)) continue;
 
-                    string cmd = tmpkv.Key.Trim().ToLower();
+                    var cmd = tmpkv.Key.Trim().ToLower();
                     switch (cmd)
                     {
                         case "mw_msgs":
@@ -231,13 +231,13 @@ namespace SrsConfFile.Renders
 
             svcc.Vpublish.SectionsName = "publish";
             if (scbin.BodyList != null)
-                foreach (string s in scbin.BodyList)
+                foreach (var s in scbin.BodyList)
                 {
                     if (!s.Trim().EndsWith(";")) continue;
-                    KeyValuePair<string, string> tmpkv = Common.GetKV(s);
+                    var tmpkv = Common.GetKV(s);
                     if (string.IsNullOrEmpty(tmpkv.Key)) continue;
 
-                    string cmd = tmpkv.Key.Trim().ToLower();
+                    var cmd = tmpkv.Key.Trim().ToLower();
                     switch (cmd)
                     {
                         case "mr":
@@ -275,13 +275,13 @@ namespace SrsConfFile.Renders
 
             svcc.Vrefer.SectionsName = "refer";
             if (scbin.BodyList != null)
-                foreach (string s in scbin.BodyList)
+                foreach (var s in scbin.BodyList)
                 {
                     if (!s.Trim().EndsWith(";")) continue;
-                    KeyValuePair<string, string> tmpkv = Common.GetKV(s);
+                    var tmpkv = Common.GetKV(s);
                     if (string.IsNullOrEmpty(tmpkv.Key)) continue;
 
-                    string cmd = tmpkv.Key.Trim().ToLower();
+                    var cmd = tmpkv.Key.Trim().ToLower();
                     switch (cmd)
                     {
                         case "enabled":
@@ -313,13 +313,13 @@ namespace SrsConfFile.Renders
 
             svcc.Vbandcheck.SectionsName = "bandcheck";
             if (scbin.BodyList != null)
-                foreach (string s in scbin.BodyList)
+                foreach (var s in scbin.BodyList)
                 {
                     if (!s.Trim().EndsWith(";")) continue;
-                    KeyValuePair<string, string> tmpkv = Common.GetKV(s);
+                    var tmpkv = Common.GetKV(s);
                     if (string.IsNullOrEmpty(tmpkv.Key)) continue;
 
-                    string cmd = tmpkv.Key.Trim().ToLower();
+                    var cmd = tmpkv.Key.Trim().ToLower();
                     switch (cmd)
                     {
                         case "enabled":
@@ -350,13 +350,13 @@ namespace SrsConfFile.Renders
             }
 
             if (scbin.BodyList != null)
-                foreach (string s in scbin.BodyList)
+                foreach (var s in scbin.BodyList)
                 {
                     if (!s.Trim().EndsWith(";")) continue;
-                    KeyValuePair<string, string> tmpkv = Common.GetKV(s);
+                    var tmpkv = Common.GetKV(s);
                     if (string.IsNullOrEmpty(tmpkv.Key)) continue;
 
-                    string cmd = tmpkv.Key.Trim().ToLower();
+                    var cmd = tmpkv.Key.Trim().ToLower();
                     switch (cmd)
                     {
                         case "enabled":
@@ -369,9 +369,9 @@ namespace SrsConfFile.Renders
                                 svcc.Vsecurity.Seo = new List<SecurityObj>();
                             }
 
-                            SecurityObj seo = new SecurityObj();
+                            var seo = new SecurityObj();
                             seo.Sem = (SecurityMethod) Enum.Parse(typeof(SecurityMethod), tmpkv.Key);
-                            string[] sArr = Regex.Split(tmpkv.Value, @"[\s]+");
+                            var sArr = Regex.Split(tmpkv.Value, @"[\s]+");
                             // string[] s_arr = tmpkv.Value.Split(new char[] {' '}, StringSplitOptions.RemoveEmptyEntries);
                             if (sArr.Length > 1)
                             {
@@ -398,13 +398,13 @@ namespace SrsConfFile.Renders
 
             svcc.Vhttp_static.SectionsName = "http_static";
             if (scbin.BodyList != null)
-                foreach (string s in scbin.BodyList)
+                foreach (var s in scbin.BodyList)
                 {
                     if (!s.Trim().EndsWith(";")) continue;
-                    KeyValuePair<string, string> tmpkv = Common.GetKV(s);
+                    var tmpkv = Common.GetKV(s);
                     if (string.IsNullOrEmpty(tmpkv.Key)) continue;
 
-                    string cmd = tmpkv.Key.Trim().ToLower();
+                    var cmd = tmpkv.Key.Trim().ToLower();
                     switch (cmd)
                     {
                         case "enabled":
@@ -433,13 +433,13 @@ namespace SrsConfFile.Renders
 
             svcc.Vhttp_remux.SectionsName = "http_remux";
             if (scbin.BodyList != null)
-                foreach (string s in scbin.BodyList)
+                foreach (var s in scbin.BodyList)
                 {
                     if (!s.Trim().EndsWith(";")) continue;
-                    KeyValuePair<string, string> tmpkv = Common.GetKV(s);
+                    var tmpkv = Common.GetKV(s);
                     if (string.IsNullOrEmpty(tmpkv.Key)) continue;
 
-                    string cmd = tmpkv.Key.Trim().ToLower();
+                    var cmd = tmpkv.Key.Trim().ToLower();
                     switch (cmd)
                     {
                         case "enabled":
@@ -480,13 +480,13 @@ namespace SrsConfFile.Renders
 
             svcc.Vhttp_hooks.SectionsName = "http_hooks";
             if (scbin.BodyList != null)
-                foreach (string s in scbin.BodyList)
+                foreach (var s in scbin.BodyList)
                 {
                     if (!s.Trim().EndsWith(";")) continue;
-                    KeyValuePair<string, string> tmpkv = Common.GetKV(s);
+                    var tmpkv = Common.GetKV(s);
                     if (string.IsNullOrEmpty(tmpkv.Key)) continue;
 
-                    string cmd = tmpkv.Key.Trim().ToLower();
+                    var cmd = tmpkv.Key.Trim().ToLower();
                     switch (cmd)
                     {
                         case "enabled":
@@ -536,13 +536,13 @@ namespace SrsConfFile.Renders
 
             svcc.Vexec.SectionsName = "exec";
             if (scbin.BodyList != null)
-                foreach (string s in scbin.BodyList)
+                foreach (var s in scbin.BodyList)
                 {
                     if (!s.Trim().EndsWith(";")) continue;
-                    KeyValuePair<string, string> tmpkv = Common.GetKV(s);
+                    var tmpkv = Common.GetKV(s);
                     if (string.IsNullOrEmpty(tmpkv.Key)) continue;
 
-                    string cmd = tmpkv.Key.Trim().ToLower();
+                    var cmd = tmpkv.Key.Trim().ToLower();
                     switch (cmd)
                     {
                         case "enabled":
@@ -568,13 +568,13 @@ namespace SrsConfFile.Renders
 
             svcc.Vdash.SectionsName = "dash";
             if (scbin.BodyList != null)
-                foreach (string s in scbin.BodyList)
+                foreach (var s in scbin.BodyList)
                 {
                     if (!s.Trim().EndsWith(";")) continue;
-                    KeyValuePair<string, string> tmpkv = Common.GetKV(s);
+                    var tmpkv = Common.GetKV(s);
                     if (string.IsNullOrEmpty(tmpkv.Key)) continue;
 
-                    string cmd = tmpkv.Key.Trim().ToLower();
+                    var cmd = tmpkv.Key.Trim().ToLower();
                     switch (cmd)
                     {
                         case "enabled":
@@ -612,13 +612,13 @@ namespace SrsConfFile.Renders
 
             svcc.Vhls.SectionsName = "hls";
             if (scbin.BodyList != null)
-                foreach (string s in scbin.BodyList)
+                foreach (var s in scbin.BodyList)
                 {
                     if (!s.Trim().EndsWith(";")) continue;
-                    KeyValuePair<string, string> tmpkv = Common.GetKV(s);
+                    var tmpkv = Common.GetKV(s);
                     if (string.IsNullOrEmpty(tmpkv.Key)) continue;
 
-                    string cmd = tmpkv.Key.Trim().ToLower();
+                    var cmd = tmpkv.Key.Trim().ToLower();
                     switch (cmd)
                     {
                         case "enabled":
@@ -713,13 +713,13 @@ namespace SrsConfFile.Renders
 
             svcc.Vhds.SectionsName = "hds";
             if (scbin.BodyList != null)
-                foreach (string s in scbin.BodyList)
+                foreach (var s in scbin.BodyList)
                 {
                     if (!s.Trim().EndsWith(";")) continue;
-                    KeyValuePair<string, string> tmpkv = Common.GetKV(s);
+                    var tmpkv = Common.GetKV(s);
                     if (string.IsNullOrEmpty(tmpkv.Key)) continue;
 
-                    string cmd = tmpkv.Key.Trim().ToLower();
+                    var cmd = tmpkv.Key.Trim().ToLower();
                     switch (cmd)
                     {
                         case "enabled":
@@ -751,13 +751,13 @@ namespace SrsConfFile.Renders
 
             svcc.Vdvr.SectionsName = "dvr";
             if (scbin.BodyList != null)
-                foreach (string s in scbin.BodyList)
+                foreach (var s in scbin.BodyList)
                 {
                     if (!s.Trim().EndsWith(";")) continue;
-                    KeyValuePair<string, string> tmpkv = Common.GetKV(s);
+                    var tmpkv = Common.GetKV(s);
                     if (string.IsNullOrEmpty(tmpkv.Key)) continue;
 
-                    string cmd = tmpkv.Key.Trim().ToLower();
+                    var cmd = tmpkv.Key.Trim().ToLower();
                     switch (cmd)
                     {
                         case "enabled":
@@ -800,13 +800,13 @@ namespace SrsConfFile.Renders
 
             svcc.Vnack.SectionsName = "nack";
             if (scbin.BodyList != null)
-                foreach (string s in scbin.BodyList)
+                foreach (var s in scbin.BodyList)
                 {
                     if (!s.Trim().EndsWith(";")) continue;
-                    KeyValuePair<string, string> tmpkv = Common.GetKV(s);
+                    var tmpkv = Common.GetKV(s);
                     if (string.IsNullOrEmpty(tmpkv.Key)) continue;
 
-                    string cmd = tmpkv.Key.Trim().ToLower();
+                    var cmd = tmpkv.Key.Trim().ToLower();
                     switch (cmd)
                     {
                         case "enabled":
@@ -830,13 +830,13 @@ namespace SrsConfFile.Renders
 
             igs.Input.SectionsName = "input";
             if (scbin.BodyList != null)
-                foreach (string s in scbin.BodyList)
+                foreach (var s in scbin.BodyList)
                 {
                     if (!s.Trim().EndsWith(";")) continue;
-                    KeyValuePair<string, string> tmpkv = Common.GetKV(s);
+                    var tmpkv = Common.GetKV(s);
                     if (string.IsNullOrEmpty(tmpkv.Key)) continue;
 
-                    string cmd = tmpkv.Key.Trim().ToLower();
+                    var cmd = tmpkv.Key.Trim().ToLower();
                     switch (cmd)
                     {
                         case "type":
@@ -854,18 +854,18 @@ namespace SrsConfFile.Renders
             if (igs.Engines == null) igs.Engines = new List<IngestTranscodeEngine>();
             if (null != igs.Engines .Find(s => s.InstanceName == instanceName))
                 return; //filter the same engiest instance
-            IngestTranscodeEngine eng = new IngestTranscodeEngine();
+            var eng = new IngestTranscodeEngine();
             eng.EngineName = instanceName;
             eng.InstanceName = instanceName;
             eng.SectionsName = "engine";
             if (scbin.BodyList != null)
-                foreach (string s in scbin.BodyList)
+                foreach (var s in scbin.BodyList)
                 {
                     if (!s.Trim().EndsWith(";")) continue;
-                    KeyValuePair<string, string> tmpkv = Common.GetKV(s);
+                    var tmpkv = Common.GetKV(s);
                     if (string.IsNullOrEmpty(tmpkv.Key)) continue;
 
-                    string cmd = tmpkv.Key.Trim().ToLower();
+                    var cmd = tmpkv.Key.Trim().ToLower();
                     switch (cmd)
                     {
                         case "enabled":
@@ -924,10 +924,10 @@ namespace SrsConfFile.Renders
                 }
 
             if (scbin.SubSections != null)
-                foreach (SectionBody scb in scbin.SubSections)
+                foreach (var scb in scbin.SubSections)
                 {
-                    KeyValuePair<string, string> tmpkv = Common.GetSectionNameAndInstanceNameValue(scb);
-                    string cmd = tmpkv.Key;
+                    var tmpkv = Common.GetSectionNameAndInstanceNameValue(scb);
+                    var cmd = tmpkv.Key;
                     switch (cmd)
                     {
                         case "perfile":
@@ -956,18 +956,18 @@ namespace SrsConfFile.Renders
             if (tsc.Engines == null) tsc.Engines = new List<IngestTranscodeEngine>();
             if (null != tsc.Engines .Find(s => s.InstanceName == instanceName))
                 return; //filter the same engiest instance
-            IngestTranscodeEngine eng = new IngestTranscodeEngine
+            var eng = new IngestTranscodeEngine
             {
                 EngineName = instanceName, InstanceName = instanceName, SectionsName = "engine"
             };
             if (scbin.BodyList != null)
-                foreach (string s in scbin.BodyList)
+                foreach (var s in scbin.BodyList)
                 {
                     if (!s.Trim().EndsWith(";")) continue;
-                    KeyValuePair<string, string> tmpkv = Common.GetKV(s);
+                    var tmpkv = Common.GetKV(s);
                     if (string.IsNullOrEmpty(tmpkv.Key)) continue;
 
-                    string cmd = tmpkv.Key.Trim().ToLower();
+                    var cmd = tmpkv.Key.Trim().ToLower();
                     switch (cmd)
                     {
                         case "enabled":
@@ -1026,10 +1026,10 @@ namespace SrsConfFile.Renders
                 }
 
             if (scbin.SubSections != null)
-                foreach (SectionBody scb in scbin.SubSections)
+                foreach (var scb in scbin.SubSections)
                 {
-                    KeyValuePair<string, string> tmpkv = Common.GetSectionNameAndInstanceNameValue(scb);
-                    string cmd = tmpkv.Key;
+                    var tmpkv = Common.GetSectionNameAndInstanceNameValue(scb);
+                    var cmd = tmpkv.Key;
                     switch (cmd)
                     {
                         case "perfile":
@@ -1065,10 +1065,10 @@ namespace SrsConfFile.Renders
 
             iten.Perfile.SectionsName = "perfile";
             if (scbin.BodyList != null)
-                foreach (string s in scbin.BodyList)
+                foreach (var s in scbin.BodyList)
                 {
                     if (!s.Trim().EndsWith(";")) continue;
-                    KeyValuePair<string, string> tmpkv = Common.GetKV(s);
+                    var tmpkv = Common.GetKV(s);
                     if (string.IsNullOrEmpty(tmpkv.Key) && s.Trim() != "re;")
                     {
                         continue;
@@ -1078,7 +1078,7 @@ namespace SrsConfFile.Renders
                         tmpkv = new KeyValuePair<string, string>("re", "re"); //特殊参数处理
                     }
 
-                    string cmd = tmpkv.Key.Trim().ToLower();
+                    var cmd = tmpkv.Key.Trim().ToLower();
                     switch (cmd)
                     {
                         case "re":
@@ -1105,12 +1105,12 @@ namespace SrsConfFile.Renders
 
             iten.Vfilter.SectionsName = "vfilter";
             if (scbin.BodyList != null)
-                foreach (string s in scbin.BodyList)
+                foreach (var s in scbin.BodyList)
                 {
                     if (!s.Trim().EndsWith(";")) continue;
-                    KeyValuePair<string, string> tmpkv = Common.GetKV(s);
+                    var tmpkv = Common.GetKV(s);
                     if (string.IsNullOrEmpty(tmpkv.Key)) continue;
-                    string cmd = tmpkv.Key.Trim().ToLower();
+                    var cmd = tmpkv.Key.Trim().ToLower();
                     switch (cmd)
                     {
                         case "i":
@@ -1141,12 +1141,12 @@ namespace SrsConfFile.Renders
 
             iten.Vparams.SectionsName = "vparams";
             if (scbin.BodyList != null)
-                foreach (string s in scbin.BodyList)
+                foreach (var s in scbin.BodyList)
                 {
                     if (!s.Trim().EndsWith(";")) continue;
-                    KeyValuePair<string, string> tmpkv = Common.GetKV(s);
+                    var tmpkv = Common.GetKV(s);
                     if (string.IsNullOrEmpty(tmpkv.Key)) continue;
-                    string cmd = tmpkv.Key.Trim().ToLower();
+                    var cmd = tmpkv.Key.Trim().ToLower();
                     switch (cmd)
                     {
                         case "t":
@@ -1182,12 +1182,12 @@ namespace SrsConfFile.Renders
 
             iten.Aparams.SectionsName = "aparams";
             if (scbin.BodyList != null)
-                foreach (string s in scbin.BodyList)
+                foreach (var s in scbin.BodyList)
                 {
                     if (!s.Trim().EndsWith(";")) continue;
-                    KeyValuePair<string, string> tmpkv = Common.GetKV(s);
+                    var tmpkv = Common.GetKV(s);
                     if (string.IsNullOrEmpty(tmpkv.Key)) continue;
-                    string cmd = tmpkv.Key.Trim().ToLower();
+                    var cmd = tmpkv.Key.Trim().ToLower();
                     switch (cmd)
                     {
                         case "profile:a":
@@ -1206,20 +1206,20 @@ namespace SrsConfFile.Renders
             if (svcc.Vingests == null) svcc.Vingests = new List<Ingest>();
             if (null != svcc.Vingests .Find(s => s.InstanceName == instanceName))
                 return; //filter the same ingest instance
-            Ingest igs = new Ingest();
+            var igs = new Ingest();
 
             igs.IngestName = instanceName;
             igs.InstanceName = instanceName;
             igs.SectionsName = "ingest";
 
             if (scbin.BodyList != null)
-                foreach (string s in scbin.BodyList)
+                foreach (var s in scbin.BodyList)
                 {
                     if (!s.Trim().EndsWith(";")) continue;
-                    KeyValuePair<string, string> tmpkv = Common.GetKV(s);
+                    var tmpkv = Common.GetKV(s);
                     if (string.IsNullOrEmpty(tmpkv.Key)) continue;
 
-                    string cmd = tmpkv.Key.Trim().ToLower();
+                    var cmd = tmpkv.Key.Trim().ToLower();
                     switch (cmd)
                     {
                         case "enabled":
@@ -1232,10 +1232,10 @@ namespace SrsConfFile.Renders
                 }
 
             if (scbin.SubSections != null)
-                foreach (SectionBody scb in scbin.SubSections)
+                foreach (var scb in scbin.SubSections)
                 {
-                    KeyValuePair<string, string> tmpkv = Common.GetSectionNameAndInstanceNameValue(scb);
-                    string cmd = tmpkv.Key;
+                    var tmpkv = Common.GetSectionNameAndInstanceNameValue(scb);
+                    var cmd = tmpkv.Key;
                     switch (cmd)
                     {
                         case "input":
@@ -1255,18 +1255,18 @@ namespace SrsConfFile.Renders
             if (svcc.Vtranscodes == null) svcc.Vtranscodes = new List<Transcode>();
             if (null != svcc.Vtranscodes .Find(s => s.InstanceName == instanceName))
                 return; //filter the same ingest instance
-            Transcode trc = new Transcode();
+            var trc = new Transcode();
 
             trc.InstanceName = instanceName;
             trc.SectionsName = "transcode";
 
             if (scbin.BodyList != null)
-                foreach (string s in scbin.BodyList)
+                foreach (var s in scbin.BodyList)
                 {
                     if (!s.Trim().EndsWith(";")) continue;
-                    KeyValuePair<string, string> tmpkv = Common.GetKV(s);
+                    var tmpkv = Common.GetKV(s);
                     if (string.IsNullOrEmpty(tmpkv.Key)) continue;
-                    string cmd = tmpkv.Key.Trim().ToLower();
+                    var cmd = tmpkv.Key.Trim().ToLower();
                     switch (cmd)
                     {
                         case "enabled":
@@ -1279,10 +1279,10 @@ namespace SrsConfFile.Renders
                 }
 
             if (scbin.SubSections != null)
-                foreach (SectionBody scb in scbin.SubSections)
+                foreach (var scb in scbin.SubSections)
                 {
-                    KeyValuePair<string, string> tmpkv = Common.GetSectionNameAndInstanceNameValue(scb);
-                    string cmd = tmpkv.Key;
+                    var tmpkv = Common.GetSectionNameAndInstanceNameValue(scb);
+                    var cmd = tmpkv.Key;
                     switch (cmd)
                     {
                         case "engine":
@@ -1301,19 +1301,19 @@ namespace SrsConfFile.Renders
             if (null != sccout.Vhosts.Find(s => s.InstanceName == instanceName))
                 return; //filter the same vhost instance
 
-            SrsvHostConfClass svcc = new SrsvHostConfClass();
+            var svcc = new SrsvHostConfClass();
             svcc.InstanceName = instanceName;
             svcc.SectionsName = "vhost";
             svcc.VhostDomain = svcc.InstanceName;
 
             if (scbin.BodyList != null)
-                foreach (string s in scbin.BodyList)
+                foreach (var s in scbin.BodyList)
                 {
                     if (!s.Trim().EndsWith(";")) continue;
-                    KeyValuePair<string, string> tmpkv = Common.GetKV(s);
+                    var tmpkv = Common.GetKV(s);
                     if (string.IsNullOrEmpty(tmpkv.Key)) continue;
 
-                    string cmd = tmpkv.Key.Trim().ToLower();
+                    var cmd = tmpkv.Key.Trim().ToLower();
                     switch (cmd)
                     {
                         case "enabled":
@@ -1339,10 +1339,10 @@ namespace SrsConfFile.Renders
 
             if (scbin.SubSections != null && scbin.SubSections.Count > 0)
             {
-                foreach (SectionBody scb in scbin.SubSections)
+                foreach (var scb in scbin.SubSections)
                 {
-                    KeyValuePair<string, string> tmpkv = Common.GetSectionNameAndInstanceNameValue(scb);
-                    string cmd = tmpkv.Key;
+                    var tmpkv = Common.GetSectionNameAndInstanceNameValue(scb);
+                    var cmd = tmpkv.Key;
                     switch (cmd)
                     {
                         case "rtc":

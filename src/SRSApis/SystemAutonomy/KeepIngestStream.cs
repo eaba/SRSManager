@@ -30,7 +30,7 @@ namespace SRSApis.SystemAutonomy
             {
                 try
                 {
-                    string cmd = "kill -9 " + retInt.ToString();
+                    var cmd = "kill -9 " + retInt.ToString();
                     LinuxShell.Run(cmd, 1000);
                 }
                 catch (Exception ex)
@@ -51,20 +51,20 @@ namespace SRSApis.SystemAutonomy
 
         private int FoundProcess(Ingest ingest)
         {
-            string url = ingest.Input!.Url!.Replace("&", @"\&");
-            string cmd = "ps  -aux |grep " + url + "|grep -v grep |awk '{print $2}'";
-            LinuxShell.Run(cmd, 1000, out string sdt, out string err);
+            var url = ingest.Input!.Url!.Replace("&", @"\&");
+            var cmd = "ps  -aux |grep " + url + "|grep -v grep |awk '{print $2}'";
+            LinuxShell.Run(cmd, 1000, out var sdt, out var err);
             if (string.IsNullOrEmpty(sdt) && string.IsNullOrEmpty(err))
             {
                 return -1;
             }
 
-            if (int.TryParse(sdt, out int i))
+            if (int.TryParse(sdt, out var i))
             {
                 return i;
             }
 
-            if (int.TryParse(err, out int j))
+            if (int.TryParse(err, out var j))
             {
                 return j;
             }
@@ -74,7 +74,7 @@ namespace SRSApis.SystemAutonomy
 
         private bool IngestIsDead(string deviceId, Ingest ingest)
         {
-            var onPublishList = FastUsefulApis.GetOnPublishMonitorListByDeviceId(deviceId, out ResponseStruct rs);
+            var onPublishList = FastUsefulApis.GetOnPublishMonitorListByDeviceId(deviceId, out var rs);
             if (onPublishList == null || onPublishList.Count == 0)
             {
                 return true;
@@ -112,7 +112,7 @@ namespace SRSApis.SystemAutonomy
                             if (retSrsManager == null || retSrsManager.Srs == null || !retSrsManager.IsRunning)
                                 continue;
                             var retSrsVhostList =
-                                VhostApis.GetVhostList(retSrsManager.SrsDeviceId, out ResponseStruct rs);
+                                VhostApis.GetVhostList(retSrsManager.SrsDeviceId, out var rs);
                             if (retSrsVhostList == null || retSrsVhostList.Count == 0) continue;
                             foreach (var vhost in retSrsVhostList)
                             {

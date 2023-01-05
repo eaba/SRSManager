@@ -26,7 +26,7 @@ namespace SRSWeb.Controllers
         [Route("/DvrPlan/GetBacklogTaskList")]
         public JsonResult GetBacklogTaskList()
         {
-            var rt = DvrPlanApis.GetBacklogTaskList( out ResponseStruct rs);
+            var rt = DvrPlanApis.GetBacklogTaskList( out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -41,13 +41,13 @@ namespace SRSWeb.Controllers
         [Route("/DvrPlan/GetMergeTaskStatus")]
         public JsonResult GetMergeTaskStatus(string taskId)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {taskId});
+            var rss = CommonFunctions.CheckParams(new object[] {taskId});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = DvrPlanApis.GetMergeTaskStatus(taskId, out ResponseStruct rs);
+            var rt = DvrPlanApis.GetMergeTaskStatus(taskId, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -62,13 +62,13 @@ namespace SRSWeb.Controllers
         [Route("/DvrPlan/CutOrMergeVideoFile")]
         public JsonResult CutOrMergeVideoFile(ReqCutOrMergeVideoFile rcmv)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {rcmv});
+            var rss = CommonFunctions.CheckParams(new object[] {rcmv});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = DvrPlanApis.CutOrMergeVideoFile(rcmv, out ResponseStruct rs);
+            var rt = DvrPlanApis.CutOrMergeVideoFile(rcmv, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -82,13 +82,13 @@ namespace SRSWeb.Controllers
         [Route("/DvrPlan/UndoSoftDelete")]
         public JsonResult UndoSoftDelete(long dvrVideoId)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {dvrVideoId});
+            var rss = CommonFunctions.CheckParams(new object[] {dvrVideoId});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = DvrPlanApis.UndoSoftDelete(dvrVideoId, out ResponseStruct rs);
+            var rt = DvrPlanApis.UndoSoftDelete(dvrVideoId, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -102,13 +102,13 @@ namespace SRSWeb.Controllers
         [Route("/DvrPlan/HardDeleteDvrVideoById")]
         public JsonResult HardDeleteDvrVideoById(long dvrVideoId)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {dvrVideoId});
+            var rss = CommonFunctions.CheckParams(new object[] {dvrVideoId});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = DvrPlanApis.HardDeleteDvrVideoById(dvrVideoId, out ResponseStruct rs);
+            var rt = DvrPlanApis.HardDeleteDvrVideoById(dvrVideoId, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -122,13 +122,13 @@ namespace SRSWeb.Controllers
         [Route("/DvrPlan/SoftDeleteDvrVideoById")]
         public JsonResult SoftDeleteDvrVideoById(long dvrVideoId)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {dvrVideoId});
+            var rss = CommonFunctions.CheckParams(new object[] {dvrVideoId});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = DvrPlanApis.SoftDeleteDvrVideoById(dvrVideoId, out ResponseStruct rs);
+            var rt = DvrPlanApis.SoftDeleteDvrVideoById(dvrVideoId, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -142,13 +142,13 @@ namespace SRSWeb.Controllers
         [Route("/DvrPlan/GetDvrVideoList")]
         public JsonResult GetDvrVideoList(ReqGetDvrVideo rgdv)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {rgdv});
+            var rss = CommonFunctions.CheckParams(new object[] {rgdv});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = DvrPlanApis.GetDvrVideoList(rgdv, out ResponseStruct rs);
+            var rt = DvrPlanApis.GetDvrVideoList(rgdv, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -162,13 +162,13 @@ namespace SRSWeb.Controllers
         [Route("/DvrPlan/DeleteDvrPlanById")]
         public JsonResult DeleteDvrPlanById(long id)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {id});
+            var rss = CommonFunctions.CheckParams(new object[] {id});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = DvrPlanApis.DeleteDvrPlanById(id, out ResponseStruct rs);
+            var rt = DvrPlanApis.DeleteDvrPlanById(id, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -182,13 +182,13 @@ namespace SRSWeb.Controllers
         [Route("/DvrPlan/OnOrOffDvrPlanById")]
         public JsonResult OnOrOffDvrPlanById(long id, bool enable)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {id, enable});
+            var rss = CommonFunctions.CheckParams(new object[] {id, enable});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = DvrPlanApis.OnOrOffDvrPlanById(id, enable, out ResponseStruct rs);
+            var rt = DvrPlanApis.OnOrOffDvrPlanById(id, enable, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -207,13 +207,13 @@ namespace SRSWeb.Controllers
         [Route("/DvrPlan/SetDvrPlanById")]
         public JsonResult SetDvrPlanById(int id,ReqStreamDvrPlan sdp)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {id,sdp});
+            var rss = CommonFunctions.CheckParams(new object[] {id,sdp});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = DvrPlanApis.SetDvrPlanById(id,sdp, out ResponseStruct rs);
+            var rt = DvrPlanApis.SetDvrPlanById(id,sdp, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -227,13 +227,13 @@ namespace SRSWeb.Controllers
         [Route("/DvrPlan/CreateDvrPlan")]
         public JsonResult CreateDvrPlan(ReqStreamDvrPlan sdp)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {sdp});
+            var rss = CommonFunctions.CheckParams(new object[] {sdp});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = DvrPlanApis.CreateDvrPlan(sdp, out ResponseStruct rs);
+            var rt = DvrPlanApis.CreateDvrPlan(sdp, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -268,13 +268,13 @@ namespace SRSWeb.Controllers
         [Route("/DvrPlan/GetDvrPlan")]
         public JsonResult GetDvrPlanList(ReqGetDvrPlan rdp)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {rdp});
+            var rss = CommonFunctions.CheckParams(new object[] {rdp});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = DvrPlanApis.GetDvrPlanList(rdp, out ResponseStruct rs);
+            var rt = DvrPlanApis.GetDvrPlanList(rdp, out var rs);
             return Result.DelApisResult(rt, rs);
         }
     }

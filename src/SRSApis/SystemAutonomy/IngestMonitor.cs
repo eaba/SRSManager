@@ -145,7 +145,7 @@ namespace SRSApis.SystemAutonomy
             {
                 try
                 {
-                    string cmd = "kill -9 " + retInt.ToString();
+                    var cmd = "kill -9 " + retInt.ToString();
                     LinuxShell.Run(cmd, 1000);
                 }
                 catch (Exception ex)
@@ -166,20 +166,20 @@ namespace SRSApis.SystemAutonomy
 
         private int FoundProcess(Ingest ingest)
         {
-            string url = ingest.Input!.Url!.Replace("&", @"\&");
-            string cmd = "ps  -aux |grep " + url + "|grep -v grep |awk '{print $2}'";
-            LinuxShell.Run(cmd, 1000, out string sdt, out string err);
+            var url = ingest.Input!.Url!.Replace("&", @"\&");
+            var cmd = "ps  -aux |grep " + url + "|grep -v grep |awk '{print $2}'";
+            LinuxShell.Run(cmd, 1000, out var sdt, out var err);
             if (string.IsNullOrEmpty(sdt) && string.IsNullOrEmpty(err))
             {
                 return -1;
             }
 
-            if (int.TryParse(sdt, out int i))
+            if (int.TryParse(sdt, out var i))
             {
                 return i;
             }
 
-            if (int.TryParse(err, out int j))
+            if (int.TryParse(err, out var j))
             {
                 return j;
             }
@@ -193,10 +193,10 @@ namespace SRSApis.SystemAutonomy
             var find = MonitorStructList.FindLast(x => x.Filename!.Equals(e.Name));
             if (find == null)
             {
-                string[] strArr = e.Name.Split('-', StringSplitOptions.RemoveEmptyEntries);
-                string app = "";
-                string vhost = "";
-                string stream = "";
+                var strArr = e.Name.Split('-', StringSplitOptions.RemoveEmptyEntries);
+                var app = "";
+                var vhost = "";
+                var stream = "";
                 if (strArr.Length >= 5)
                 {
                     stream = strArr[4].TrimEnd(LogExt.ToCharArray()).Trim();
@@ -216,17 +216,17 @@ namespace SRSApis.SystemAutonomy
                 if (find.TimeOutTimes >= find.HighFrequencyUpdateList.BoundedCapacity) //If the number of timeouts is greater than the maximum number of queues, it is necessary to restart the ingest
                 {
                     Watcher.EnableRaisingEvents = false;
-                    string[] strArr = e.Name.Split('-', StringSplitOptions.RemoveEmptyEntries);
-                    string app = "";
-                    string vhost = "";
-                    string stream = "";
+                    var strArr = e.Name.Split('-', StringSplitOptions.RemoveEmptyEntries);
+                    var app = "";
+                    var vhost = "";
+                    var stream = "";
                     if (strArr.Length >= 5)
                     {
                         stream = strArr[4].TrimEnd(LogExt.ToCharArray()).Trim();
                         app = strArr[3].Trim();
                         vhost = strArr[2].Trim();
                     }
-                    for (int i = 0; i <= MonitorStructList.Count - 1; i++)
+                    for (var i = 0; i <= MonitorStructList.Count - 1; i++)
                     {
                         if (MonitorStructList[i].Filename!.Equals(find.Filename))
                         {
@@ -236,8 +236,8 @@ namespace SRSApis.SystemAutonomy
                         }
                     }
                     SrsManageCommon.Common.RemoveNull(MonitorStructList);
-                    Ingest ingest =
-                        VhostIngestApis.GetVhostIngest(DeviceId!, vhost, stream, out ResponseStruct rs);
+                    var ingest =
+                        VhostIngestApis.GetVhostIngest(DeviceId!, vhost, stream, out var rs);
                     if (ingest != null)
                     {
                         RestartIngest(DeviceId!, vhost, ingest!);

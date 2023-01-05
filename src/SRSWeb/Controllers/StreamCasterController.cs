@@ -25,13 +25,13 @@ namespace SRSWeb.Controllers
         [Route("/StreamCaster/GetStreamCasterInstanceNameList")]
         public JsonResult GetStreamCasterInstanceNameList(string deviceId)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = StreamCasterApis.GetStreamCastersInstanceName(deviceId, out ResponseStruct rs);
+            var rt = StreamCasterApis.GetStreamCastersInstanceName(deviceId, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -45,13 +45,13 @@ namespace SRSWeb.Controllers
         [Route("/StreamCaster/GetStreamCasterInstanceList")]
         public JsonResult GetStreamCasterInstanceList(string deviceId)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = StreamCasterApis.GetStreamCasterList(deviceId, out ResponseStruct rs);
+            var rt = StreamCasterApis.GetStreamCasterList(deviceId, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -65,13 +65,13 @@ namespace SRSWeb.Controllers
         [Route("/StreamCaster/CreateStreamCaster")]
         public JsonResult CreateStreamCaster(string deviceId, SrsStreamCasterConfClass streamcaster)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, streamcaster});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, streamcaster});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = StreamCasterApis.CreateStreamCaster(deviceId, streamcaster, out ResponseStruct rs);
+            var rt = StreamCasterApis.CreateStreamCaster(deviceId, streamcaster, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -85,13 +85,13 @@ namespace SRSWeb.Controllers
         [Route("/StreamCaster/GetStreamCasterTemplate")]
         public JsonResult GetStreamCasterTemplate(CasterEnum casterType)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {casterType});
+            var rss = CommonFunctions.CheckParams(new object[] {casterType});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = StreamCasterApis.GetStreamCasterTemplate(casterType, out ResponseStruct rs);
+            var rt = StreamCasterApis.GetStreamCasterTemplate(casterType, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -105,13 +105,13 @@ namespace SRSWeb.Controllers
         [Route("/StreamCaster/DeleteStreamCasterByInstanceName")]
         public JsonResult DeleteStreamCasterByInstanceName(string deviceId, string instanceName)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, instanceName});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, instanceName});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = StreamCasterApis.DeleteStreamCasterByInstanceName(deviceId, instanceName, out ResponseStruct rs);
+            var rt = StreamCasterApis.DeleteStreamCasterByInstanceName(deviceId, instanceName, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -125,14 +125,14 @@ namespace SRSWeb.Controllers
         [Route("/StreamCaster/ChangeStreamCasterInstanceName")]
         public JsonResult ChangeStreamCasterInstanceName(string deviceId, string instanceName, string newInstanceName)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, instanceName, newInstanceName});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, instanceName, newInstanceName});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
             var rt = StreamCasterApis.ChangeStreamCasterInstanceName(deviceId, instanceName, newInstanceName,
-                out ResponseStruct rs);
+                out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -146,13 +146,13 @@ namespace SRSWeb.Controllers
         [Route("/StreamCaster/OnOrOff")]
         public JsonResult OnOrOff(string deviceId, string instanceName, bool enable)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, instanceName, enable});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, instanceName, enable});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = StreamCasterApis.OnOrOffStreamCaster(deviceId, instanceName, enable, out ResponseStruct rs);
+            var rt = StreamCasterApis.OnOrOffStreamCaster(deviceId, instanceName, enable, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -166,13 +166,13 @@ namespace SRSWeb.Controllers
         [Route("/StreamCaster/SetStreamCaster")]
         public JsonResult SetStreamCaster(string deviceId, SrsStreamCasterConfClass streamcaster)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, streamcaster});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, streamcaster});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = StreamCasterApis.SetStreamCaster(deviceId, streamcaster, out ResponseStruct rs);
+            var rt = StreamCasterApis.SetStreamCaster(deviceId, streamcaster, out var rs);
             return Result.DelApisResult(rt, rs);
         }
     }

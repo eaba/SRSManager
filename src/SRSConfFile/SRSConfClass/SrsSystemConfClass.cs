@@ -87,7 +87,7 @@ namespace SrsConfFile.SRSConfClass
                 ConfigLines.Clear();
                 if (ConfigLinesTrim == null) ConfigLinesTrim = new List<string>();
                 ConfigLinesTrim.Clear();
-                foreach (string str in File.ReadAllLines(confPath, Encoding.Default))
+                foreach (var str in File.ReadAllLines(confPath, Encoding.Default))
                 {
                     var str_tmp = str.Trim();
                     if (!string.IsNullOrEmpty(str_tmp) && !str_tmp.StartsWith('#'))

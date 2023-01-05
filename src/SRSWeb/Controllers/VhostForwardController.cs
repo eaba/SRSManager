@@ -27,13 +27,13 @@ namespace SRSWeb.Controllers
         [Route("/VhostForward/DeleteVhostForward")]
         public JsonResult DeleteVhostForward(string deviceId, string vhostDomain)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostForwardApis.DeleteVhostForward(deviceId, vhostDomain, out ResponseStruct rs);
+            var rt = VhostForwardApis.DeleteVhostForward(deviceId, vhostDomain, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -49,13 +49,13 @@ namespace SRSWeb.Controllers
         [Route("/VhostForward/GetVhostForward")]
         public JsonResult GetVhostForward(string deviceId, string vhostDomain)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostForwardApis.GetVhostForward(deviceId, vhostDomain, out ResponseStruct rs);
+            var rt = VhostForwardApis.GetVhostForward(deviceId, vhostDomain, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -72,13 +72,13 @@ namespace SRSWeb.Controllers
         [Route("/VhostForward/SetVhostForward")]
         public JsonResult SetVhostForward(string deviceId, string vhostDomain, Forward forward)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, forward});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, forward});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostForwardApis.SetVhostForward(deviceId, vhostDomain, forward, out ResponseStruct rs);
+            var rt = VhostForwardApis.SetVhostForward(deviceId, vhostDomain, forward, out var rs);
             return Result.DelApisResult(rt, rs);
         }
     }

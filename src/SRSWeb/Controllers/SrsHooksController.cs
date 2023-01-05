@@ -26,7 +26,7 @@ namespace SRSWeb.Controllers
         [Route("/SrsHooks/OnHeartbeat")]
         public int OnHeartbeat(ReqSrsHeartbeat heartbeat)
         {
-            var rt = SrsHooksApis.OnHeartbeat(heartbeat, out ResponseStruct rs);
+            var rt = SrsHooksApis.OnHeartbeat(heartbeat, out var rs);
             if (rt)
             {
                 return 0;
@@ -69,7 +69,7 @@ namespace SRSWeb.Controllers
         [Route("/SrsHooks/OnUnPublish")]
         public int OnUnPublish(ReqSrsClientOnOrUnPublish client)
         {
-            OnlineClient tmpOnlineClient = new OnlineClient()
+            var tmpOnlineClient = new OnlineClient()
             {
                 Device_Id = client.Device_Id,
                 Client_Id =ushort.Parse(client.Client_Id!),
@@ -100,9 +100,9 @@ namespace SRSWeb.Controllers
         [Route("/SrsHooks/OnDvr")]
         public int OnDvr(ReqSrsDvr dvr)
         {
-            DateTime currentTime = DateTime.Now;
+            var currentTime = DateTime.Now;
 
-            DvrVideo tmpDvrVideo = new DvrVideo()
+            var tmpDvrVideo = new DvrVideo()
             {
                 Device_Id = dvr.Device_Id,
                 Client_Id = ushort.Parse(dvr.Client_Id!),
@@ -116,9 +116,9 @@ namespace SRSWeb.Controllers
                 Dir = Path.GetDirectoryName(dvr.File),
             };
 
-            FileInfo dvrFile = new FileInfo(dvr.File);
+            var dvrFile = new FileInfo(dvr.File);
             tmpDvrVideo.FileSize = dvrFile.Length;
-            if (FFmpegGetDuration.GetDuration(Common.FFmpegBinPath, dvr.File!, out long duration,out string newPath))
+            if (FFmpegGetDuration.GetDuration(Common.FFmpegBinPath, dvr.File!, out var duration,out var newPath))
             {
                 tmpDvrVideo.VideoPath = newPath;
                 tmpDvrVideo.Duration = duration;
@@ -147,7 +147,7 @@ namespace SRSWeb.Controllers
         [Route("/SrsHooks/OnPlay")]
         public int OnPlay(ReqSrsClientOnPlayOnStop client)
         {
-            OnlineClient tmpOnlineClient = new OnlineClient()
+            var tmpOnlineClient = new OnlineClient()
             {
                 Device_Id = client.Device_Id,
                 Client_Id = ushort.Parse(client.Client_Id!),
@@ -177,7 +177,7 @@ namespace SRSWeb.Controllers
         [Route("/SrsHooks/OnStop")]
         public int OnStop(ReqSrsClientOnPlayOnStop client)
         {
-            OnlineClient tmpOnlineClient = new OnlineClient()
+            var tmpOnlineClient = new OnlineClient()
             {
                 Device_Id = client.Device_Id,
                 Client_Id =ushort.Parse(client.Client_Id!),
@@ -208,7 +208,7 @@ namespace SRSWeb.Controllers
         [Route("/SrsHooks/OnPublish")]
         public int OnPublish(ReqSrsClientOnOrUnPublish client)
         {
-            OnlineClient tmpOnlineClient = new OnlineClient()
+            var tmpOnlineClient = new OnlineClient()
             {
                 Device_Id = client.Device_Id,
                 Client_Id =ushort.Parse(client.Client_Id!),

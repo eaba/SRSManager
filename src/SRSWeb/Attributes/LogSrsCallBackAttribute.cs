@@ -23,7 +23,7 @@ namespace SRSWeb.Attributes
         /// <param name="context"></param>
         public void OnActionExecuting(ActionExecutingContext context)
         {
-            string remoteIpAddr = context.HttpContext.Connection.RemoteIpAddress.ToString();
+            var remoteIpAddr = context.HttpContext.Connection.RemoteIpAddress.ToString();
             if (context.HttpContext.Request.Method.Equals("get", StringComparison.InvariantCultureIgnoreCase))
             {
                 LogWebApiWriter.WriteWebApiLog(

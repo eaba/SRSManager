@@ -29,7 +29,7 @@ namespace SRSWeb.Controllers
         public JsonResult DeleteVhostTranscodeByTranscodeInstanceName(string deviceId, string vhostDomain,
             string transcodeInstanceName)
         {
-            ResponseStruct rss =
+            var rss =
                 CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, transcodeInstanceName});
             if (rss.Code != ErrorNumber.None)
             {
@@ -37,7 +37,7 @@ namespace SRSWeb.Controllers
             }
 
             var rt = VhostTranscodeApis.DeleteVhostTranscodeByTranscodeInstanceName(deviceId, vhostDomain,
-                transcodeInstanceName, out ResponseStruct rs);
+                transcodeInstanceName, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -53,13 +53,13 @@ namespace SRSWeb.Controllers
         [Route("/VhostTranscode/GetVhostTranscodeNameList")]
         public JsonResult GetVhostTranscodeNameList(string deviceId, string vhostDomain = "")
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostTranscodeApis.GetVhostTranscodeNameList(deviceId, out ResponseStruct rs, vhostDomain);
+            var rt = VhostTranscodeApis.GetVhostTranscodeNameList(deviceId, out var rs, vhostDomain);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -76,7 +76,7 @@ namespace SRSWeb.Controllers
         [Route("/VhostTranscode/GetVhostTranscode")]
         public JsonResult GetVhostTranscode(string deviceId, string vhostDomain, string transcodeInstanceName)
         {
-            ResponseStruct rss =
+            var rss =
                 CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, transcodeInstanceName});
             if (rss.Code != ErrorNumber.None)
             {
@@ -84,7 +84,7 @@ namespace SRSWeb.Controllers
             }
 
             var rt = VhostTranscodeApis.GetVhostTranscode(deviceId, vhostDomain, transcodeInstanceName,
-                out ResponseStruct rs);
+                out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -103,7 +103,7 @@ namespace SRSWeb.Controllers
         public JsonResult SetVhostTranscode(string deviceId, string vhostDomain, string transcodeInstanceName,
             Transcode transcode)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[]
+            var rss = CommonFunctions.CheckParams(new object[]
                 {deviceId, vhostDomain, transcodeInstanceName, transcode});
             if (rss.Code != ErrorNumber.None)
             {
@@ -111,7 +111,7 @@ namespace SRSWeb.Controllers
             }
 
             var rt = VhostTranscodeApis.SetVhostTranscode(deviceId, vhostDomain, transcodeInstanceName, transcode,
-                out ResponseStruct rs);
+                out var rs);
             return Result.DelApisResult(rt, rs);
         }
     }

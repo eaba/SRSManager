@@ -189,7 +189,7 @@ namespace SrsApis.SrsManager.Apis
                     if (ret > 0)
                     {
                         var retVhost = VhostApis.GetVhostByDomain(rlbp.DeviceId!, rlbp.Vhost!, out rs);
-                        bool retAddVhost = false;
+                        var retAddVhost = false;
                         if (retVhost == null)
                         {
                             var retVhostTemp = VhostApis.GetVhostTemplate(VhostIngestInputType.WebCast, out rs);
@@ -223,7 +223,7 @@ namespace SrsApis.SrsManager.Apis
                     if (ret > 0)
                     {
                         var retVhost = VhostApis.GetVhostByDomain(rlbp.DeviceId!, rlbp.Vhost!, out rs);
-                        bool retAddVhost = false;
+                        var retAddVhost = false;
                         if (retVhost == null)
                         {
                             var retVhostTemp = VhostApis.GetVhostTemplate(VhostIngestInputType.WebCast, out rs);

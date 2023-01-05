@@ -20,8 +20,8 @@ namespace SRSWeb.Attributes
         {
             try
             {
-                string info = $@"StatusCode:{((context.Result as JsonResult)!).StatusCode}";
-                string remoteIpAddr = context.HttpContext.Connection.RemoteIpAddress.ToString();
+                var info = $@"StatusCode:{((context.Result as JsonResult)!).StatusCode}";
+                var remoteIpAddr = context.HttpContext.Connection.RemoteIpAddress.ToString();
                 if (((context.Result as JsonResult)!).StatusCode != (int) HttpStatusCode.OK)
                 {
                     info =
@@ -53,7 +53,7 @@ namespace SRSWeb.Attributes
         {
             try
             {
-                string remoteIpAddr = context.HttpContext.Connection.RemoteIpAddress.ToString();
+                var remoteIpAddr = context.HttpContext.Connection.RemoteIpAddress.ToString();
                 if (context.HttpContext.Request.Method.Equals("get", StringComparison.InvariantCultureIgnoreCase))
                 {
                     LogWebApiWriter.WriteWebApiLog(

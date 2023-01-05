@@ -11,8 +11,8 @@ namespace SRSApis.SystemAutonomy
 
         private void ProcessSrsFileMove(string srsFilePath)
         {
-            string fileName = Path.GetFileName(srsFilePath);
-            string dirPath = Path.GetDirectoryName(srsFilePath)!;
+            var fileName = Path.GetFileName(srsFilePath);
+            var dirPath = Path.GetDirectoryName(srsFilePath)!;
             if (!Directory.Exists(dirPath + "/logbak"))
             {
                 Directory.CreateDirectory(dirPath + "/logbak");
@@ -26,8 +26,8 @@ namespace SRSApis.SystemAutonomy
 
         private void ProcessFFmpegFileMove(string ffmpegFilePath)
         {
-            string fileName = Path.GetFileName(ffmpegFilePath);
-            string dirPath = Path.GetDirectoryName(ffmpegFilePath)!;
+            var fileName = Path.GetFileName(ffmpegFilePath);
+            var dirPath = Path.GetDirectoryName(ffmpegFilePath)!;
             if (!Directory.Exists(dirPath + "/logbak"))
             {
                 Directory.CreateDirectory(dirPath + "/logbak");
@@ -49,15 +49,15 @@ namespace SRSApis.SystemAutonomy
                 {
                     if (srs != null && srs.IsRunning)
                     {
-                        string srsLogFile = srs.Srs.Srs_log_file!;
-                        string ffmpegLogPath = srs.Srs.Ff_log_dir!;
-                        FileInfo srsLog = new FileInfo(srsLogFile);
+                        var srsLogFile = srs.Srs.Srs_log_file!;
+                        var ffmpegLogPath = srs.Srs.Ff_log_dir!;
+                        var srsLog = new FileInfo(srsLogFile);
                         if (srsLog.Exists && srsLog.Length >= (1024 * 1000 * 10)) //10M
                         {
                             ProcessSrsFileMove(srsLogFile);
                         }
 
-                        DirectoryInfo ffmpegDir = new DirectoryInfo(ffmpegLogPath);
+                        var ffmpegDir = new DirectoryInfo(ffmpegLogPath);
                         if (ffmpegDir.Exists)
                         {
                             foreach (var file in ffmpegDir.GetFiles())

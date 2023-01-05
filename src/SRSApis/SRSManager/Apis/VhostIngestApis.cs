@@ -340,7 +340,7 @@ namespace SrsApis.SrsManager.Apis
                     return null!;
                 }
 
-                List<VhostIngestNameModule> result = new List<VhostIngestNameModule>();
+                var result = new List<VhostIngestNameModule>();
                 if (string.IsNullOrEmpty(vhostDomain))
                 {
                     foreach (var vhost in ret.Srs.Vhosts)
@@ -349,7 +349,7 @@ namespace SrsApis.SrsManager.Apis
                         {
                             foreach (var ingest in vhost.Vingests)
                             {
-                                VhostIngestNameModule vn = new VhostIngestNameModule();
+                                var vn = new VhostIngestNameModule();
                                 vn.VhostDomain = vhost.VhostDomain;
                                 vn.IngestInstanceName = ingest.IngestName;
                                 result.Add(vn);
@@ -374,7 +374,7 @@ namespace SrsApis.SrsManager.Apis
 
                 foreach (var ingest in retVhost.Vingests)
                 {
-                    VhostIngestNameModule vn = new VhostIngestNameModule();
+                    var vn = new VhostIngestNameModule();
                     vn.VhostDomain = retVhost.VhostDomain;
                     vn.IngestInstanceName = ingest.IngestName;
                     result.Add(vn);

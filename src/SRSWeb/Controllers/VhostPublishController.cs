@@ -27,13 +27,13 @@ namespace SRSWeb.Controllers
         [Route("/VhostPublish/DeleteVhostPublish")]
         public JsonResult DeleteVhostPublish(string deviceId, string vhostDomain)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostPublishApis.DeleteVhostPublish(deviceId, vhostDomain, out ResponseStruct rs);
+            var rt = VhostPublishApis.DeleteVhostPublish(deviceId, vhostDomain, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -49,13 +49,13 @@ namespace SRSWeb.Controllers
         [Route("/VhostPublish/GetVhostPublish")]
         public JsonResult GetVhostPublish(string deviceId, string vhostDomain)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostPublishApis.GetVhostPublish(deviceId, vhostDomain, out ResponseStruct rs);
+            var rt = VhostPublishApis.GetVhostPublish(deviceId, vhostDomain, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -72,13 +72,13 @@ namespace SRSWeb.Controllers
         [Route("/VhostPublish/SetVhostPublish")]
         public JsonResult SetVhostPublish(string deviceId, string vhostDomain, Publish publish)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, publish});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, publish});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostPublishApis.SetVhostPublish(deviceId, vhostDomain, publish, out ResponseStruct rs);
+            var rt = VhostPublishApis.SetVhostPublish(deviceId, vhostDomain, publish, out var rs);
             return Result.DelApisResult(rt, rs);
         }
     }

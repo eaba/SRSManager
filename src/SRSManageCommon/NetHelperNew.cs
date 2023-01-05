@@ -50,7 +50,7 @@ namespace SrsManageCommon
             ServicePointManager.Expect100Continue = false;
 
 
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+            var request = (HttpWebRequest)WebRequest.Create(url);
             request.KeepAlive = false;
             request.ProtocolVersion = HttpVersion.Version11;
             request.Method = "DELETE";
@@ -69,8 +69,8 @@ namespace SrsManageCommon
             try
             {
                 myResponse = (HttpWebResponse)request.GetResponse();
-                StreamReader reader = new StreamReader(myResponse.GetResponseStream(), Encoding.GetEncoding(encode));
-                string content = reader.ReadToEnd();
+                var reader = new StreamReader(myResponse.GetResponseStream(), Encoding.GetEncoding(encode));
+                var content = reader.ReadToEnd();
                 return content;
             }
             //异常请求  
@@ -78,11 +78,11 @@ namespace SrsManageCommon
             {
                 myResponse = (HttpWebResponse)e.Response;
                 if (myResponse == null) return e.Message;
-                using (Stream errData = myResponse.GetResponseStream())
+                using (var errData = myResponse.GetResponseStream())
                 {
-                    using (StreamReader reader = new StreamReader(errData))
+                    using (var reader = new StreamReader(errData))
                     {
-                        string text = reader.ReadToEnd();
+                        var text = reader.ReadToEnd();
 
                         return text;
                     }
@@ -141,7 +141,7 @@ namespace SrsManageCommon
             ServicePointManager.Expect100Continue = false;
 
 
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+            var request = (HttpWebRequest)WebRequest.Create(url);
             request.KeepAlive = false;
             request.ProtocolVersion = HttpVersion.Version11;
             request.Method = "GET";
@@ -160,8 +160,8 @@ namespace SrsManageCommon
             try
             {
                 myResponse = (HttpWebResponse)request.GetResponse();
-                StreamReader reader = new StreamReader(myResponse.GetResponseStream(), Encoding.GetEncoding(encode));
-                string content = reader.ReadToEnd();
+                var reader = new StreamReader(myResponse.GetResponseStream(), Encoding.GetEncoding(encode));
+                var content = reader.ReadToEnd();
                 return content;
             }
             //异常请求  
@@ -169,11 +169,11 @@ namespace SrsManageCommon
             {
                 myResponse = (HttpWebResponse)e.Response;
                 if (myResponse == null) return e.Message;
-                using (Stream errData = myResponse.GetResponseStream())
+                using (var errData = myResponse.GetResponseStream())
                 {
-                    using (StreamReader reader = new StreamReader(errData))
+                    using (var reader = new StreamReader(errData))
                     {
-                        string text = reader.ReadToEnd();
+                        var text = reader.ReadToEnd();
 
                         return text;
                     }
@@ -231,7 +231,7 @@ namespace SrsManageCommon
             ServicePointManager.Expect100Continue = false;
 
 
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+            var request = (HttpWebRequest)WebRequest.Create(url);
             request.KeepAlive = false;
             request.ProtocolVersion = HttpVersion.Version11;
             request.Method = "GET";
@@ -250,8 +250,8 @@ namespace SrsManageCommon
             try
             {
                 myResponse = (await request.GetResponseAsync() as HttpWebResponse)!;
-                StreamReader reader = new StreamReader(myResponse.GetResponseStream(), Encoding.GetEncoding(encode));
-                string content = reader.ReadToEnd();
+                var reader = new StreamReader(myResponse.GetResponseStream(), Encoding.GetEncoding(encode));
+                var content = reader.ReadToEnd();
                 return content;
             }
             //异常请求  
@@ -259,11 +259,11 @@ namespace SrsManageCommon
             {
                 myResponse = (HttpWebResponse)e.Response;
                 if (myResponse == null) return e.Message;
-                using (Stream errData = myResponse.GetResponseStream())
+                using (var errData = myResponse.GetResponseStream())
                 {
-                    using (StreamReader reader = new StreamReader(errData))
+                    using (var reader = new StreamReader(errData))
                     {
-                        string text = reader.ReadToEnd();
+                        var text = reader.ReadToEnd();
 
                         return text;
                     }
@@ -325,7 +325,7 @@ namespace SrsManageCommon
             ServicePointManager.Expect100Continue = false;
             #endregion
 
-            string result = string.Empty;
+            var result = string.Empty;
             HttpWebRequest request = null!;
             HttpWebResponse response = null!;
             try
@@ -350,17 +350,17 @@ namespace SrsManageCommon
                     }
                 }
 
-                byte[] byteArray = Encoding.UTF8.GetBytes(param);
-                Stream newStream = request.GetRequestStream();
+                var byteArray = Encoding.UTF8.GetBytes(param);
+                var newStream = request.GetRequestStream();
                 newStream.Write(byteArray, 0, byteArray.Length);
                 newStream.Close();
                 newStream.Dispose();
 
                 //获取响应结果
                 response = (request.GetResponse() as HttpWebResponse)!;
-                Stream stream = response.GetResponseStream();
+                var stream = response.GetResponseStream();
 
-                using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+                using (var reader = new StreamReader(stream, Encoding.UTF8))
                 {
                     result = reader.ReadToEnd();
                 }
@@ -374,11 +374,11 @@ namespace SrsManageCommon
             {
                 response = (HttpWebResponse)e.Response;
                 if (response == null) return e.Message;
-                using (Stream errData = response.GetResponseStream())
+                using (var errData = response.GetResponseStream())
                 {
-                    using (StreamReader reader = new StreamReader(errData))
+                    using (var reader = new StreamReader(errData))
                     {
-                        string text = reader.ReadToEnd();
+                        var text = reader.ReadToEnd();
 
                         return text;
                     }
@@ -439,7 +439,7 @@ namespace SrsManageCommon
             ServicePointManager.Expect100Continue = false;
             #endregion
 
-            string result = string.Empty;
+            var result = string.Empty;
             HttpWebRequest request = null!;
             HttpWebResponse response = null!;
             try
@@ -464,17 +464,17 @@ namespace SrsManageCommon
                     }
                 }
 
-                byte[] byteArray = Encoding.UTF8.GetBytes(param);
-                Stream newStream = request.GetRequestStream();
+                var byteArray = Encoding.UTF8.GetBytes(param);
+                var newStream = request.GetRequestStream();
                 newStream.Write(byteArray, 0, byteArray.Length);
                 newStream.Close();
                 newStream.Dispose();
 
                 //获取响应结果
                 response = (await request.GetResponseAsync() as HttpWebResponse)!;
-                Stream stream = response.GetResponseStream();
+                var stream = response.GetResponseStream();
 
-                using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+                using (var reader = new StreamReader(stream, Encoding.UTF8))
                 {
                     result = reader.ReadToEnd();
                 }
@@ -488,11 +488,11 @@ namespace SrsManageCommon
             {
                 response = (HttpWebResponse)e.Response;
                 if (response == null) return e.Message;
-                using (Stream errData = response.GetResponseStream())
+                using (var errData = response.GetResponseStream())
                 {
-                    using (StreamReader reader = new StreamReader(errData))
+                    using (var reader = new StreamReader(errData))
                     {
-                        string text = reader.ReadToEnd();
+                        var text = reader.ReadToEnd();
 
                         return text;
                     }
@@ -540,8 +540,8 @@ namespace SrsManageCommon
 
             try
             {
-                HttpWebRequest req = (HttpWebRequest)HttpWebRequest.Create(url);//打开网络连接
-                HttpWebResponse rsp = (HttpWebResponse)req.GetResponse();
+                var req = (HttpWebRequest)HttpWebRequest.Create(url);//打开网络连接
+                var rsp = (HttpWebResponse)req.GetResponse();
 
                 if (rsp.StatusCode == HttpStatusCode.OK)
                 {
@@ -566,11 +566,11 @@ namespace SrsManageCommon
         /// <returns></returns>
         public static bool Download(string url, string localfile)
         {
-            bool flag = false;
+            var flag = false;
             long startPosition = 0; // 上次下载的文件起始位置
             FileStream writeStream; // 写入本地文件流对象
 
-            long remoteFileLength = GetHttpLength(url);// 取得远程文件长度
+            var remoteFileLength = GetHttpLength(url);// 取得远程文件长度
             System.Console.WriteLine("remoteFileLength=" + remoteFileLength);
             if (remoteFileLength <= 0 || remoteFileLength == 745)
             {
@@ -604,24 +604,24 @@ namespace SrsManageCommon
 
             try
             {
-                HttpWebRequest myRequest = (HttpWebRequest)HttpWebRequest.Create(url);// 打开网络连接
+                var myRequest = (HttpWebRequest)HttpWebRequest.Create(url);// 打开网络连接
 
                 if (startPosition > 0)
                 {
                     myRequest.AddRange((int)startPosition);// 设置Range值,与上面的writeStream.Seek用意相同,是为了定义远程文件读取位置
                 }
 
-                Stream readStream = myRequest.GetResponse().GetResponseStream();// 向服务器请求,获得服务器的回应数据流
+                var readStream = myRequest.GetResponse().GetResponseStream();// 向服务器请求,获得服务器的回应数据流
 
-                byte[] btArray = new byte[512];// 定义一个字节数据,用来向readStream读取内容和向writeStream写入内容
-                int contentSize = readStream.Read(btArray, 0, btArray.Length);// 向远程文件读第一次
+                var btArray = new byte[512];// 定义一个字节数据,用来向readStream读取内容和向writeStream写入内容
+                var contentSize = readStream.Read(btArray, 0, btArray.Length);// 向远程文件读第一次
 
-                long currPostion = startPosition;
+                var currPostion = startPosition;
 
                 while (contentSize > 0)// 如果读取长度大于零则继续读
                 {
                     currPostion += contentSize;
-                    int percent = (int)(currPostion * 100 / remoteFileLength);
+                    var percent = (int)(currPostion * 100 / remoteFileLength);
                     System.Console.WriteLine("percent=" + percent + "%");
 
                     writeStream.Write(btArray, 0, contentSize);// 写入本地文件

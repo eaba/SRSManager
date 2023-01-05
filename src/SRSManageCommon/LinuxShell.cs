@@ -23,7 +23,7 @@ namespace SrsManageCommon
         {
             try
             {
-                using (Process process = new Process())
+                using (var process = new Process())
                 {
                     process.StartInfo.FileName = processName;
                     process.StartInfo.UseShellExecute = false; //Do not use the shell to avoid operating system shell errors
@@ -57,8 +57,8 @@ namespace SrsManageCommon
             stdOutput = null!;
             try
             {
-                string escapedArgs = command.Replace("\"", "\\\"").Replace("$", "\\$");
-                using (Process process = new Process())
+                var escapedArgs = command.Replace("\"", "\\\"").Replace("$", "\\$");
+                using (var process = new Process())
                 {
                     process.StartInfo.FileName = processName;
                     process.StartInfo.UseShellExecute = false; //Do not use the shell to avoid operating system shell errors
@@ -67,7 +67,7 @@ namespace SrsManageCommon
 
                     process.StartInfo.Arguments = $"-c \"{escapedArgs}\"";
 
-                    bool result = process.Start();
+                    var result = process.Start();
                     if (result)
                     {
                         result = process.WaitForExit(milliseconds);
@@ -102,9 +102,9 @@ namespace SrsManageCommon
             stdError = null!;
             try
             {
-                string escapedArgs = command.Replace("\"", "\\\"");
+                var escapedArgs = command.Replace("\"", "\\\"");
 
-                using (Process process = new Process())
+                using (var process = new Process())
                 {
                     process.StartInfo.FileName = processName;
                     process.StartInfo.UseShellExecute = false; //Do not use the shell to avoid operating system shell errors
@@ -112,7 +112,7 @@ namespace SrsManageCommon
                     process.StartInfo.RedirectStandardOutput = true;
                     process.StartInfo.RedirectStandardError = true;
                     process.StartInfo.Arguments = $"-c \"{escapedArgs}\"";
-                    bool result = process.Start();
+                    var result = process.Start();
                     if (result)
                     {
                         result = process.WaitForExit(milliseconds);

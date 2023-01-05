@@ -43,7 +43,7 @@ namespace SRSManageCommon.ManageStructs
                 _liveStream = value;
                 try
                 {
-                    string[] arr = _liveStream!.Split("/", StringSplitOptions.RemoveEmptyEntries);
+                    var arr = _liveStream!.Split("/", StringSplitOptions.RemoveEmptyEntries);
                     _app = arr[0];
                     _stream = arr[1];
                 }

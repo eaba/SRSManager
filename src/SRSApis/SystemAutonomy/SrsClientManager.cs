@@ -27,11 +27,11 @@ namespace SRSApis.SystemAutonomy
                         {
                             var onPublishList =
                                 FastUsefulApis.GetOnPublishMonitorListByDeviceId(srs.SrsDeviceId,
-                                    out ResponseStruct rs);
+                                    out var rs);
                             if (onPublishList == null || onPublishList.Count == 0) continue;
                             var ingestList = FastUsefulApis.GetAllIngestByDeviceId(srs.SrsDeviceId, out rs);
 
-                            ushort? port = srs.Srs.Http_api!.Listen;
+                            var port = srs.Srs.Http_api!.Listen;
                             List<Channels> ret28181 = null!;
                             if (port != null && srs.Srs != null && srs.Srs.Http_api != null &&
                                 srs.Srs.Http_api.Enabled == true)
@@ -89,7 +89,7 @@ namespace SRSApis.SystemAutonomy
 
                                 #region Handle live streams
 
-                                int retj = OrmService.Db.Update<OnlineClient>()
+                                var retj = OrmService.Db.Update<OnlineClient>()
                                     .Set(x => x.MonitorType, MonitorType.Webcast)
                                     .Where(x => x.MonitorType == MonitorType.Unknow &&
                                                 x.ClientType == ClientType.Monitor)
@@ -109,11 +109,11 @@ namespace SRSApis.SystemAutonomy
 
         private List<Channels> GetGB28181Channels(string httpUri)
         {
-            string act = "/api/v1/gb28181?action=query_channel";
-            string url = httpUri + act;
+            var act = "/api/v1/gb28181?action=query_channel";
+            var url = httpUri + act;
             try
             {
-                string tmpStr = NetHelperNew.HttpGetRequest(url, null!);
+                var tmpStr = NetHelperNew.HttpGetRequest(url, null!);
                 var ret = JsonHelper.FromJson<SrsT28181QueryChannelModule>(tmpStr);
                 if (ret.Code == 0 && ret.Data != null)
                 {
@@ -140,7 +140,7 @@ namespace SRSApis.SystemAutonomy
                         if (srs == null || srs.Srs == null) continue;
                         if (srs.IsInit && srs.Srs != null && srs.IsRunning)
                         {
-                            var ret = VhostIngestApis.GetVhostIngestNameList(srs.SrsDeviceId, out ResponseStruct rs);
+                            var ret = VhostIngestApis.GetVhostIngestNameList(srs.SrsDeviceId, out var rs);
                             if (ret != null)
                             {
                                 foreach (var r in ret)
@@ -151,7 +151,7 @@ namespace SRSApis.SystemAutonomy
 
                                     if (ingest != null)
                                     {
-                                        string inputIp =
+                                        var inputIp =
                                             SrsManageCommon.Common
                                                 .GetIngestRtspMonitorUrlIpAddress(ingest.Input!.Url!)!;
                                         if (SrsManageCommon.Common.IsIpAddr(inputIp!))
@@ -200,7 +200,7 @@ namespace SRSApis.SystemAutonomy
                         if (srs == null || srs.Srs == null) continue;
                         if (srs.IsInit && srs.Srs != null && srs.IsRunning)
                         {
-                            ushort? port = srs.Srs.Http_api!.Listen;
+                            var port = srs.Srs.Http_api!.Listen;
                             if (port == null || srs.Srs.Http_api == null || srs.Srs.Http_api.Enabled == false)
                                 continue;
                             var ret = GetGB28181Channels("http://127.0.0.1:" + port.ToString());

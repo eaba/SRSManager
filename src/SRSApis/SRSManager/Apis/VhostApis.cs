@@ -175,7 +175,7 @@ namespace SrsApis.SrsManager.Apis
         /// <returns></returns>
         public static SrsvHostConfClass GetVhostTemplate(VhostIngestInputType vtype, out ResponseStruct rs)
         {
-            SrsvHostConfClass vhost = new SrsvHostConfClass();
+            var vhost = new SrsvHostConfClass();
             vhost.Vingests = new List<Ingest>();
             vhost.InstanceName = "your.domain.com"; //change it 
             vhost.VhostDomain = vhost.InstanceName;
@@ -189,7 +189,7 @@ namespace SrsApis.SrsManager.Apis
             switch (vtype)
             {
                 case VhostIngestInputType.WebCast://add for live
-                    Dvr dvr= new Dvr();
+                    var dvr= new Dvr();
                     dvr.Dvr_apply = "all";
                     dvr.Enabled = true;
                     dvr.Dvr_plan = "segment";
@@ -197,7 +197,7 @@ namespace SrsApis.SrsManager.Apis
                     dvr.Dvr_duration = 120;
                     dvr.Dvr_wait_keyframe = true;
                     dvr.Time_Jitter = PlayTimeJitter.full;
-                    HttpHooks httpHooks = new HttpHooks();
+                    var httpHooks = new HttpHooks();
                     httpHooks.Enabled = true;
                     //httpHooks.On_connect = "http://127.0.0.1:5800/SrsHooks/OnConnect";
                     httpHooks.On_publish = "http://127.0.0.1:5800/SrsHooks/OnPublish";
@@ -208,7 +208,7 @@ namespace SrsApis.SrsManager.Apis
                     httpHooks.On_dvr = "http://127.0.0.1:5800/SrsHooks/OnDvr";
                     httpHooks.On_hls = "http://127.0.0.1:5800/SrsHooks/Test";
                     httpHooks.On_hls_notify = "http://127.0.0.1:5800/SrsHooks/Test";
-                    HttpRemux httpRemux= new HttpRemux();
+                    var httpRemux= new HttpRemux();
                     httpRemux.Enabled = true;
                     httpRemux.Fast_cache = 30;
                     httpRemux.Mount = "[vhost]/[app]/[stream].flv";
@@ -217,13 +217,13 @@ namespace SrsApis.SrsManager.Apis
                     vhost.Vhttp_remux = httpRemux;
                     return vhost;
                 case VhostIngestInputType.Stream: //RTSP or other Stream
-                    Ingest ing = new Ingest();
+                    var ing = new Ingest();
                     ing.Enabled = true;
                     ing.InstanceName = "ingest_template_rtsp";
                     ing.IngestName = ing.InstanceName;
                     ing.SectionsName = "ingest";
-                    IngestInput inginput = new IngestInput();
-                    IngestTranscodeEngine ingeng = new IngestTranscodeEngine();
+                    var inginput = new IngestInput();
+                    var ingeng = new IngestTranscodeEngine();
                     ing.Engines = new List<IngestTranscodeEngine>();
                     ingeng.Perfile = new IngestEnginePerfile();
                     ingeng.Perfile.SectionsName = "perfile";
@@ -246,9 +246,9 @@ namespace SrsApis.SrsManager.Apis
                     vhost.Vingests.Add(ing);
                     return vhost!;
                 case VhostIngestInputType.File: //From File
-                    IngestInput inginput1 = new IngestInput();
-                    IngestTranscodeEngine ingeng1 = new IngestTranscodeEngine();
-                    Ingest ing1 = new Ingest();
+                    var inginput1 = new IngestInput();
+                    var ingeng1 = new IngestTranscodeEngine();
+                    var ing1 = new Ingest();
                     ing1.Enabled = true;
                     ing1.Engines = new List<IngestTranscodeEngine>();
                     ing1.InstanceName = "ingest_template_file";

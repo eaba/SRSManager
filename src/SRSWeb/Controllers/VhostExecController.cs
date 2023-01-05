@@ -27,13 +27,13 @@ namespace SRSWeb.Controllers
         [Route("/VhostExec/DeleteVhostExec")]
         public JsonResult DeleteVhostExec(string deviceId, string vhostDomain)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostExecApis.DeleteVhostExec(deviceId, vhostDomain, out ResponseStruct rs);
+            var rt = VhostExecApis.DeleteVhostExec(deviceId, vhostDomain, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -49,13 +49,13 @@ namespace SRSWeb.Controllers
         [Route("/VhostExec/GetVhostExec")]
         public JsonResult GetVhostExec(string deviceId, string vhostDomain)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostExecApis.GetVhostExec(deviceId, vhostDomain, out ResponseStruct rs);
+            var rt = VhostExecApis.GetVhostExec(deviceId, vhostDomain, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -72,13 +72,13 @@ namespace SRSWeb.Controllers
         [Route("/VhostExec/SetVhostExec")]
         public JsonResult SetVhostExec(string deviceId, string vhostDomain, Exec exec)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, exec});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, exec});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostExecApis.SetVhostExec(deviceId, vhostDomain, exec, out ResponseStruct rs);
+            var rt = VhostExecApis.SetVhostExec(deviceId, vhostDomain, exec, out var rs);
             return Result.DelApisResult(rt, rs);
         }
     }

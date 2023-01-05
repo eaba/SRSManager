@@ -208,7 +208,7 @@ namespace SrsApis.SrsManager.Apis
                     return null!;
                 }
 
-                List<VhostTranscodeNameModule> result = new List<VhostTranscodeNameModule>();
+                var result = new List<VhostTranscodeNameModule>();
                 if (string.IsNullOrEmpty(vhostDomain))
                 {
                     foreach (var vhost in ret.Srs.Vhosts)
@@ -217,7 +217,7 @@ namespace SrsApis.SrsManager.Apis
                         {
                             foreach (var code in vhost.Vtranscodes)
                             {
-                                VhostTranscodeNameModule vn = new VhostTranscodeNameModule();
+                                var vn = new VhostTranscodeNameModule();
                                 vn.VhostDomain = vhost.VhostDomain;
                                 vn.TranscodeInstanceName = code.InstanceName;
                                 result.Add(vn);
@@ -242,7 +242,7 @@ namespace SrsApis.SrsManager.Apis
 
                 foreach (var code in retVhost.Vtranscodes!)
                 {
-                    VhostTranscodeNameModule vn = new VhostTranscodeNameModule();
+                    var vn = new VhostTranscodeNameModule();
                     vn.VhostDomain = retVhost.VhostDomain;
                     vn.TranscodeInstanceName = code.InstanceName;
                     result.Add(vn);

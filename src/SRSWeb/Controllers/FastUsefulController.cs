@@ -49,14 +49,14 @@ namespace SRSWeb.Controllers
         [Route("/FastUseful/GetStreamInfoByVhostIngestName")]
         public async ValueTask<JsonResult> GetStreamInfoByVhostIngestName(string deviceId, string vhostDomain, string ingestName)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, ingestName});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, ingestName});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
             var rt = FastUsefulApis.GetStreamInfoByVhostIngestName(deviceId, vhostDomain, ingestName,
-                out ResponseStruct rs);
+                out var rs);
             var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var a = await _actor.Ask<DelApisResult>(new GlobalSrs(deviceId, "IsRunning", userId));
             return Result.DelApisResult(a.Rt, a.Rs);
@@ -73,13 +73,13 @@ namespace SRSWeb.Controllers
         [Route("/FastUseful/GetAllIngestByDeviceId")]
         public JsonResult GetAllIngestByDeviceId(string deviceId)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = FastUsefulApis.GetAllIngestByDeviceId(deviceId, out ResponseStruct rs);
+            var rt = FastUsefulApis.GetAllIngestByDeviceId(deviceId, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -94,13 +94,13 @@ namespace SRSWeb.Controllers
         [Route("/FastUseful/OnOrOffVhostMinDelay")]
         public JsonResult OnOrOffVhostMinDelay(string deviceId, string vhostDomain, bool enable)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, enable});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, enable});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = FastUsefulApis.OnOrOffVhostMinDelay(deviceId, vhostDomain, enable, out ResponseStruct rs);
+            var rt = FastUsefulApis.OnOrOffVhostMinDelay(deviceId, vhostDomain, enable, out var rs);
             return Result.DelApisResult(rt, rs);
         }
                 
@@ -114,13 +114,13 @@ namespace SRSWeb.Controllers
         [Route("/FastUseful/GetClientInfoByStreamValue")]
         public JsonResult GetClientInfoByStreamValue(string stream)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {stream});
+            var rss = CommonFunctions.CheckParams(new object[] {stream});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = FastUsefulApis.GetClientInfoByStreamValue(stream, out ResponseStruct rs);
+            var rt = FastUsefulApis.GetClientInfoByStreamValue(stream, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -134,7 +134,7 @@ namespace SRSWeb.Controllers
         [Route("/FastUseful/GetRunningSrsInfoList")]
         public JsonResult GetRunningSrsInfoList()
         {
-            var rt = FastUsefulApis.GetRunningSrsInfoList(out ResponseStruct rs);
+            var rt = FastUsefulApis.GetRunningSrsInfoList(out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -148,7 +148,7 @@ namespace SRSWeb.Controllers
         [Route("/FastUseful/StopAllSrs")]
         public JsonResult StopAllSrs()
         {
-            var rt = FastUsefulApis.StopAllSrs(out ResponseStruct rs);
+            var rt = FastUsefulApis.StopAllSrs(out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -162,7 +162,7 @@ namespace SRSWeb.Controllers
         [Route("/FastUseful/InitAndStartAllSrs")]
         public JsonResult InitAndStartAllSrs()
         {
-            var rt = FastUsefulApis.InitAndStartAllSrs(out ResponseStruct rs);
+            var rt = FastUsefulApis.InitAndStartAllSrs(out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -179,13 +179,13 @@ namespace SRSWeb.Controllers
         [Route("/FastUseful/KickoffClient")]
         public JsonResult KickoffClient(string deviceId, string clientId)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, clientId});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, clientId});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = FastUsefulApis.KickoffClient(deviceId, clientId, out ResponseStruct rs);
+            var rt = FastUsefulApis.KickoffClient(deviceId, clientId, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -200,13 +200,13 @@ namespace SRSWeb.Controllers
         [Route("/FastUseful/GetStreamStatusById")]
         public JsonResult GetStreamStatusById(string deviceId, string streamId)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, streamId});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, streamId});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = FastUsefulApis.GetStreamStatusByDeviceIdAndStreamId(deviceId, streamId, out ResponseStruct rs);
+            var rt = FastUsefulApis.GetStreamStatusByDeviceIdAndStreamId(deviceId, streamId, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -221,13 +221,13 @@ namespace SRSWeb.Controllers
         [Route("/FastUseful/GetStreamListStatusByDeviceId")]
         public JsonResult GetStreamListStatusByDeviceId(string deviceId)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = FastUsefulApis.GetStreamListStatusByDeviceId(deviceId, out ResponseStruct rs);
+            var rt = FastUsefulApis.GetStreamListStatusByDeviceId(deviceId, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -241,13 +241,13 @@ namespace SRSWeb.Controllers
         [Route("/FastUseful/GetVhostStatusById")]
         public JsonResult GetVhostStatusById(string deviceId, string vhostId)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {vhostId, deviceId});
+            var rss = CommonFunctions.CheckParams(new object[] {vhostId, deviceId});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = FastUsefulApis.GetVhostStatusByDeviceIdAndVhostId(deviceId, vhostId, out ResponseStruct rs);
+            var rt = FastUsefulApis.GetVhostStatusByDeviceIdAndVhostId(deviceId, vhostId, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -262,13 +262,13 @@ namespace SRSWeb.Controllers
         [Route("/FastUseful/GetVhostListStatusByDeviceId")]
         public JsonResult GetVhostListStatusByDeviceId(string deviceId)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = FastUsefulApis.GetVhostListStatusByDeviceId(deviceId, out ResponseStruct rs);
+            var rt = FastUsefulApis.GetVhostListStatusByDeviceId(deviceId, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -283,13 +283,13 @@ namespace SRSWeb.Controllers
         [Route("/FastUseful/GetOnOnlinePlayerByDeviceId")]
         public JsonResult GetOnOnlinePlayerByDeviceId(string deviceId)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = FastUsefulApis.GetOnlinePlayerByDeviceId(deviceId, out ResponseStruct rs);
+            var rt = FastUsefulApis.GetOnlinePlayerByDeviceId(deviceId, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -304,7 +304,7 @@ namespace SRSWeb.Controllers
         [Route("/FastUseful/GetOnOnlinePlayer")]
         public JsonResult GetOnOnlinePlayer()
         {
-            var rt = FastUsefulApis.GetOnlinePlayer(out ResponseStruct rs);
+            var rt = FastUsefulApis.GetOnlinePlayer(out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -318,13 +318,13 @@ namespace SRSWeb.Controllers
         [Route("/FastUseful/GetOnPublishMonitorListById")]
         public JsonResult GetOnPublishMonitorListById(string deviceId)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = FastUsefulApis.GetOnPublishMonitorListByDeviceId(deviceId, out ResponseStruct rs);
+            var rt = FastUsefulApis.GetOnPublishMonitorListByDeviceId(deviceId, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -338,7 +338,7 @@ namespace SRSWeb.Controllers
         [Route("/FastUseful/GetOnPublishMonitorList")]
         public JsonResult GetOnPublishMonitorList()
         {
-            var rt = FastUsefulApis.GetOnPublishMonitorList(out ResponseStruct rs);
+            var rt = FastUsefulApis.GetOnPublishMonitorList(out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -352,13 +352,13 @@ namespace SRSWeb.Controllers
         [Route("/FastUseful/GetOnPublishMonitorById")]
         public JsonResult GetOnPublishMonitorById(string id)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] {id});
+            var rss = CommonFunctions.CheckParams(new object[] {id});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = FastUsefulApis.GetOnPublishMonitorById(id, out ResponseStruct rs);
+            var rt = FastUsefulApis.GetOnPublishMonitorById(id, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 
@@ -373,13 +373,13 @@ namespace SRSWeb.Controllers
         [Route("/FastUseful/GetOnvifMonitorIngestTemplate")]
         public JsonResult GetOnvifMonitorIngestTemplate(string? username, string? password, string rtspUrl)
         {
-            ResponseStruct rss = CommonFunctions.CheckParams(new object[] { rtspUrl});
+            var rss = CommonFunctions.CheckParams(new object[] { rtspUrl});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = FastUsefulApis.GetOnvifMonitorIngestTemplate(username!, password!, rtspUrl, out ResponseStruct rs);
+            var rt = FastUsefulApis.GetOnvifMonitorIngestTemplate(username!, password!, rtspUrl, out var rs);
             return Result.DelApisResult(rt, rs);
         }
     }

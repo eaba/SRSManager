@@ -32,10 +32,10 @@ namespace SrsApis.SrsManager.Apis
                 var retList= CutMergeService.CutMergeTaskStatusList.FindAll(x => x.TaskStatus == TaskStatus.Create).ToList();
                 if (retList != null && retList.Count > 0)
                 {
-                    List<CutMergeTaskStatusResponse> resultList= new List<CutMergeTaskStatusResponse>();
+                    var resultList= new List<CutMergeTaskStatusResponse>();
                     foreach (var ret in retList!)
                     {
-                        CutMergeTaskStatusResponse res = new CutMergeTaskStatusResponse()
+                        var res = new CutMergeTaskStatusResponse()
                         {
                             CallbakUrl = ret.CallbakUrl,
                             CreateTime = ret.CreateTime,
@@ -68,10 +68,10 @@ namespace SrsApis.SrsManager.Apis
                 Code = ErrorNumber.None,
                 Message = ErrorMessage.ErrorDic![ErrorNumber.None],
             };
-            int startPos = -1;
-            int endPos = -1;
-            DateTime _start = DateTime.Parse(rcmv.StartTime.ToString("yyyy-MM-dd HH:mm:ss")).AddSeconds(-20); //push forward 20 seconds
-            DateTime _end = DateTime.Parse(rcmv.EndTime.ToString("yyyy-MM-dd HH:mm:ss")).AddSeconds(20); //20 seconds backward delay
+            var startPos = -1;
+            var endPos = -1;
+            var _start = DateTime.Parse(rcmv.StartTime.ToString("yyyy-MM-dd HH:mm:ss")).AddSeconds(-20); //push forward 20 seconds
+            var _end = DateTime.Parse(rcmv.EndTime.ToString("yyyy-MM-dd HH:mm:ss")).AddSeconds(20); //20 seconds backward delay
             var videoList = OrmService.Db.Select<DvrVideo>()
                 .Where(x => x.StartTime > _start.AddMinutes(-60) && x.EndTime <= _end.AddMinutes(60))
                 .WhereIf(!string.IsNullOrEmpty(rcmv.DeviceId),
@@ -87,16 +87,16 @@ namespace SrsApis.SrsManager.Apis
             List<DvrVideo> cutMegerList = null!;
             if (videoList != null && videoList.Count > 0)
             {
-                for (int i = 0; i <= videoList.Count - 1; i++)
+                for (var i = 0; i <= videoList.Count - 1; i++)
                 {
                     if (!File.Exists(videoList[i].VideoPath))
                     {
                         continue; //file does not exist, skip
                     }
 
-                    DateTime startInDb =
+                    var startInDb =
                         DateTime.Parse(((DateTime) videoList[i].StartTime!).ToString("yyyy-MM-dd HH:mm:ss"));
-                    DateTime endInDb =
+                    var endInDb =
                         DateTime.Parse(((DateTime) videoList[i].EndTime!).ToString("yyyy-MM-dd HH:mm:ss"));
                     if (startInDb <= _start && endInDb > _start) //Find a video that meets your requirements
                     {
@@ -116,8 +116,8 @@ namespace SrsApis.SrsManager.Apis
 
                 if (startPos < 0 && endPos >= 0) //If the start is not found and the end is found
                 {
-                    List<KeyValuePair<int, double>> tmpStartList = new List<KeyValuePair<int, double>>();
-                    for (int i = 0; i <= videoList.Count - 1; i++)
+                    var tmpStartList = new List<KeyValuePair<int, double>>();
+                    for (var i = 0; i <= videoList.Count - 1; i++)
                     {
                         tmpStartList.Add(new KeyValuePair<int, double>(i,
                             Math.Abs(((DateTime) videoList[i]!.StartTime!).Subtract(_start)
@@ -136,7 +136,7 @@ namespace SrsApis.SrsManager.Apis
 
                     cutMegerList =
                         videoList.GetRange(tmpStartList[0].Key, endPos - tmpStartList[0].Key + 1); //Take the video closest to the requested time as the start video
-                    for (int i = cutMegerList.Count - 1; i >= 0; i--)
+                    for (var i = cutMegerList.Count - 1; i >= 0; i--)
                     {
                         if (cutMegerList[i].StartTime > _end && cutMegerList[i].EndTime > _end
                         ) //If the start time of the video is greater than the required end time and it is not the last video, filter out the video
@@ -153,9 +153,9 @@ namespace SrsApis.SrsManager.Apis
 
                 if (startPos >= 0 && endPos < 0) //The start video was found, but the end video was not found
                 {
-                    List<KeyValuePair<int, double>> tmpEndList = new List<KeyValuePair<int, double>>();
+                    var tmpEndList = new List<KeyValuePair<int, double>>();
 
-                    for (int i = 0; i <= videoList.Count - 1; i++)
+                    for (var i = 0; i <= videoList.Count - 1; i++)
                     {
                         tmpEndList.Add(new KeyValuePair<int, double>(i,
                             Math.Abs(((DateTime) videoList[i]!.EndTime!).Subtract(_end)
@@ -172,7 +172,7 @@ namespace SrsApis.SrsManager.Apis
                             return -1;
                     });
                     cutMegerList = videoList.GetRange(startPos, tmpEndList[0].Key - startPos + 1);
-                    for (int i = cutMegerList.Count - 1; i >= 0; i--)
+                    for (var i = cutMegerList.Count - 1; i >= 0; i--)
                     {
                         if (cutMegerList[i].StartTime > _end && cutMegerList[i].EndTime > _end) //filter
                         {
@@ -193,22 +193,22 @@ namespace SrsApis.SrsManager.Apis
 
             if (cutMegerList != null && cutMegerList.Count > 0) //Get the list of files to merge
             {
-                List<CutMergeStruct> cutMergeStructList = new List<CutMergeStruct>();
-                for (int i = 0; i <= cutMegerList.Count - 1; i++)
+                var cutMergeStructList = new List<CutMergeStruct>();
+                for (var i = 0; i <= cutMegerList.Count - 1; i++)
                 {
                     var tmpCutMeger = cutMegerList[i];
                     if (tmpCutMeger != null && i == 0) //See if the first file needs to be cropped
                     {
-                        DateTime tmpCutMegerStartTime =
+                        var tmpCutMegerStartTime =
                             DateTime.Parse(((DateTime) tmpCutMeger.StartTime!).ToString("yyyy-MM-dd HH:mm:ss"));
-                        DateTime tmpCutMegerEndTime =
+                        var tmpCutMegerEndTime =
                             DateTime.Parse(((DateTime) tmpCutMeger.EndTime!).ToString("yyyy-MM-dd HH:mm:ss"));
                         if (tmpCutMegerStartTime < _start && tmpCutMegerEndTime > _start
                         ) //If the video start time is greater than the desired start time and the video end time is greater than the desired start time
                         {
-                            TimeSpan ts = -tmpCutMegerStartTime.Subtract(_start); //The start time of the video minus the required start time, and then negate
-                            TimeSpan ts2 = tmpCutMegerEndTime.Subtract(_start) + ts; //The end time of the video minus the desired start time, plus the previous value
-                            CutMergeStruct tmpStruct = new CutMergeStruct();
+                            var ts = -tmpCutMegerStartTime.Subtract(_start); //The start time of the video minus the required start time, and then negate
+                            var ts2 = tmpCutMegerEndTime.Subtract(_start) + ts; //The end time of the video minus the desired start time, plus the previous value
+                            var tmpStruct = new CutMergeStruct();
                             tmpStruct.DbId = cutMegerList[i].Id;
                             tmpStruct.Duration = cutMegerList[i].Duration;
                             tmpStruct.EndTime = cutMegerList[i].EndTime;
@@ -235,7 +235,7 @@ namespace SrsApis.SrsManager.Apis
                         }
                         else //If the video time is greater than or equal to the required start time or greater than or equal to the required end time, the time is just right, so add it directly
                         {
-                            CutMergeStruct tmpStruct = new CutMergeStruct()
+                            var tmpStruct = new CutMergeStruct()
                             {
                                 DbId = cutMegerList[i].Id,
                                 CutEndPos = null,
@@ -251,15 +251,15 @@ namespace SrsApis.SrsManager.Apis
                     }
                     else if (tmpCutMeger != null && i == cutMegerList.Count - 1) //Process the last video to see if it needs to be cropped, the follow-up operation is the same as above
                     {
-                        DateTime tmpCutMegerStartTime =
+                        var tmpCutMegerStartTime =
                             DateTime.Parse(((DateTime) tmpCutMeger.StartTime!).ToString("yyyy-MM-dd HH:mm:ss"));
-                        DateTime tmpCutMegerEndTime =
+                        var tmpCutMegerEndTime =
                             DateTime.Parse(((DateTime) tmpCutMeger.EndTime!).ToString("yyyy-MM-dd HH:mm:ss"));
                         if (tmpCutMegerEndTime > _end)
                         {
-                            TimeSpan ts = tmpCutMegerEndTime.Subtract(_end);
+                            var ts = tmpCutMegerEndTime.Subtract(_end);
                             ts = (tmpCutMegerEndTime - tmpCutMegerStartTime).Subtract(ts);
-                            CutMergeStruct tmpStruct = new CutMergeStruct();
+                            var tmpStruct = new CutMergeStruct();
                             tmpStruct.DbId = cutMegerList[i].Id;
                             tmpStruct.Duration = cutMegerList[i].Duration;
                             tmpStruct.EndTime = cutMegerList[i].EndTime;
@@ -284,7 +284,7 @@ namespace SrsApis.SrsManager.Apis
                         }
                         else if (tmpCutMegerEndTime <= _end)
                         {
-                            CutMergeStruct tmpStruct = new CutMergeStruct()
+                            var tmpStruct = new CutMergeStruct()
                             {
                                 DbId = cutMegerList[i].Id,
                                 CutEndPos = null,
@@ -300,7 +300,7 @@ namespace SrsApis.SrsManager.Apis
                     }
                     else //If it is not the first or the last, it is the middle part, directly added to the list
                     {
-                        CutMergeStruct tmpStruct = new CutMergeStruct()
+                        var tmpStruct = new CutMergeStruct()
                         {
                             DbId = cutMegerList[i].Id,
                             CutEndPos = null,
@@ -413,7 +413,7 @@ namespace SrsApis.SrsManager.Apis
 
                 if (mergeList != null && mergeList.Count > 0)
                 {
-                    CutMergeTask task = new CutMergeTask()
+                    var task = new CutMergeTask()
                     {
                         CutMergeFileList = mergeList,
                         CallbakUrl = null,
@@ -438,7 +438,7 @@ namespace SrsApis.SrsManager.Apis
                 var mergeList = AnalysisVideoFile(rcmv, out rs);
                 if (mergeList != null && mergeList.Count > 0)
                 {
-                    CutMergeTask task = new CutMergeTask()
+                    var task = new CutMergeTask()
                     {
                         CutMergeFileList = mergeList,
                         CallbakUrl = rcmv.CallbackUrl,
@@ -538,7 +538,7 @@ namespace SrsApis.SrsManager.Apis
                 Message = ErrorMessage.ErrorDic![ErrorNumber.None],
             };
             List<DvrVideo> retSelect = null!;
-            int retUpdate = -1;
+            var retUpdate = -1;
             lock (Common.LockDbObjForDvrVideo)
             {
                 retSelect = OrmService.Db.Select<DvrVideo>().Where(x => x.Id == id).ToList();
@@ -607,12 +607,12 @@ namespace SrsApis.SrsManager.Apis
                 Code = ErrorNumber.None,
                 Message = ErrorMessage.ErrorDic![ErrorNumber.None],
             };
-            bool idFound = !string.IsNullOrEmpty(rgdv.DeviceId);
-            bool vhostFound = !string.IsNullOrEmpty(rgdv.VhostDomain);
-            bool streamFound = !string.IsNullOrEmpty(rgdv.Stream);
-            bool appFound = !string.IsNullOrEmpty(rgdv.App);
-            bool isPageQuery = (rgdv.PageIndex != null && rgdv.PageIndex >= 1);
-            bool haveOrderBy = rgdv.OrderBy != null;
+            var idFound = !string.IsNullOrEmpty(rgdv.DeviceId);
+            var vhostFound = !string.IsNullOrEmpty(rgdv.VhostDomain);
+            var streamFound = !string.IsNullOrEmpty(rgdv.Stream);
+            var appFound = !string.IsNullOrEmpty(rgdv.App);
+            var isPageQuery = (rgdv.PageIndex != null && rgdv.PageIndex >= 1);
+            var haveOrderBy = rgdv.OrderBy != null;
             if (isPageQuery)
             {
                 if (rgdv.PageSize > 10000)
@@ -636,7 +636,7 @@ namespace SrsApis.SrsManager.Apis
                 }
             }
 
-            string orderBy = "";
+            var orderBy = "";
             if (haveOrderBy)
             {
                 foreach (var order in rgdv.OrderBy!)
@@ -687,7 +687,7 @@ namespace SrsApis.SrsManager.Apis
                 }
             }
 
-            DvrVideoResponseList result = new DvrVideoResponseList();
+            var result = new DvrVideoResponseList();
             result.DvrVideoList = retList;
             if (!isPageQuery)
             {
@@ -730,7 +730,7 @@ namespace SrsApis.SrsManager.Apis
             }
 
             List<StreamDvrPlan> retSelect = null!;
-            int retDelete = -1;
+            var retDelete = -1;
             lock (Common.LockDbObjForStreamDvrPlan)
             {
                 retSelect = OrmService.Db.Select<StreamDvrPlan>().Where(x => x.Id == id).ToList();
@@ -797,10 +797,10 @@ namespace SrsApis.SrsManager.Apis
 
         public static List<StreamDvrPlan> GetDvrPlanList(ReqGetDvrPlan rgdp, out ResponseStruct rs)
         {
-            bool idFound = !string.IsNullOrEmpty(rgdp.DeviceId);
-            bool vhostFound = !string.IsNullOrEmpty(rgdp.VhostDomain);
-            bool streamFound = !string.IsNullOrEmpty(rgdp.Stream);
-            bool appFound = !string.IsNullOrEmpty(rgdp.App);
+            var idFound = !string.IsNullOrEmpty(rgdp.DeviceId);
+            var vhostFound = !string.IsNullOrEmpty(rgdp.VhostDomain);
+            var streamFound = !string.IsNullOrEmpty(rgdp.Stream);
+            var appFound = !string.IsNullOrEmpty(rgdp.App);
             rs = new ResponseStruct()
             {
                 Code = ErrorNumber.None,
@@ -884,7 +884,7 @@ namespace SrsApis.SrsManager.Apis
             try
             {
                 StreamDvrPlan retSelect = null!;
-                int retDelete = -1;
+                var retDelete = -1;
                 lock (Common.LockDbObjForStreamDvrPlan)
                 {
                     retSelect = OrmService.Db.Select<StreamDvrPlan>().Where(x => x.Id == id).First();
@@ -1002,7 +1002,7 @@ namespace SrsApis.SrsManager.Apis
             {
                 lock (Common.LockDbObjForStreamDvrPlan)
                 {
-                    StreamDvrPlan tmpStream = new StreamDvrPlan();
+                    var tmpStream = new StreamDvrPlan();
                     tmpStream.App = sdp.App;
                     tmpStream.Enable = sdp.Enable;
                     tmpStream.Stream = sdp.Stream;
