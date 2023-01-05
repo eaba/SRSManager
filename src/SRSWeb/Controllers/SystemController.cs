@@ -5,6 +5,7 @@ using SrsApis.SrsManager.Apis;
 using SrsManageCommon;
 using SRSManageCommon.ControllerStructs.ResponseModules;
 using SRSManageCommon.ManageStructs;
+using SRSManager.Shared;
 using SRSWeb.Attributes;
 
 namespace SRSWeb.Controllers

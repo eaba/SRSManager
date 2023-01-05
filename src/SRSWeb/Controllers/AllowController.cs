@@ -48,7 +48,7 @@ namespace SRSWeb.Controllers
             {
                 if (request.Expires >= Program.CommonFunctions.GetTimeStampMilliseconds() ||
                     Math.Abs(request.Expires - Program.CommonFunctions.GetTimeStampMilliseconds()) <
-                    (1000 * 60)) //1分钟内要过期的就刷新
+                    (1000 * 60)) //Refresh if it expires within 1 minute
                 {
                     Session session = Program.CommonFunctions.SessionManager.RefreshSession(request);
                     if (session != null)
@@ -240,7 +240,7 @@ namespace SRSWeb.Controllers
 
                 if (found)
                 {
-                    SrsManageCommon.Common.RemoveNull(Common.SystemConfig.AllowKeys);
+                    Common.RemoveNull(Common.SystemConfig.AllowKeys);
                     ResponseStruct rs = new ResponseStruct()
                     {
                         Code = ErrorNumber.None,

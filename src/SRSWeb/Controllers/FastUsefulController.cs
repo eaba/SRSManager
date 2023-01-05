@@ -1,8 +1,14 @@
+using Akka.Actor;
+using Akka.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using SrsApis.SrsManager.Apis;
 using SrsManageCommon;
 using SRSManageCommon.ManageStructs;
+using SRSManager.Actors;
+using SRSManager.Messages;
+using SRSManager.Shared;
 using SRSWeb.Attributes;
+using System.Security.Claims;
 
 namespace SRSWeb.Controllers
 {
@@ -13,6 +19,11 @@ namespace SRSWeb.Controllers
     [Route("")]
     public class FastUsefulController : ControllerBase
     {
+        private readonly IActorRef _actor;
+        public FastUsefulController(IRequiredActor<SRSManagersActor> actor)
+        {
+            _actor = actor.ActorRef;
+        }
         /// <summary>
         /// TESTTEST
         /// </summary>
@@ -36,7 +47,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/FastUseful/GetStreamInfoByVhostIngestName")]
-        public JsonResult GetStreamInfoByVhostIngestName(string deviceId, string vhostDomain, string ingestName)
+        public async ValueTask<JsonResult> GetStreamInfoByVhostIngestName(string deviceId, string vhostDomain, string ingestName)
         {
             ResponseStruct rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, ingestName});
             if (rss.Code != ErrorNumber.None)
@@ -46,6 +57,9 @@ namespace SRSWeb.Controllers
 
             var rt = FastUsefulApis.GetStreamInfoByVhostIngestName(deviceId, vhostDomain, ingestName,
                 out ResponseStruct rs);
+            var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var a = await _actor.Ask<DelApisResult>(new GlobalSrs(deviceId, "IsRunning", userId));
+            return Result.DelApisResult(a.Rt, a.Rs);
             return Result.DelApisResult(rt, rs);
         }
 

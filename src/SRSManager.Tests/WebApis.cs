@@ -3,6 +3,7 @@ using SrsApis.SrsManager;
 using SRSManager.Tests.Fixtures;
 using Xunit.Abstractions;
 using System.Text.Json;
+using SRSManager.Shared;
 
 namespace SRSManager.Tests
 {

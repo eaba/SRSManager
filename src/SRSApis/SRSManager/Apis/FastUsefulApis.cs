@@ -39,9 +39,9 @@ namespace SrsApis.SrsManager.Apis
                 return null!;
             }
 
-            var ret = Common.SrsManagers.FindLast(x =>
+            var rpet = Common.SrsManagers.FindLast(x =>
                 x.SrsDeviceId.Trim().ToLower().Equals(deviceId.Trim().ToLower()));
-            if (ret == null)
+            if (rpet == null)
             {
                 rs.Code = ErrorNumber.SrsObjectNotInit;
                 rs.Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit];

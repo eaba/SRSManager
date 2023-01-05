@@ -2,6 +2,7 @@
 using SrsApis.SrsManager.Apis;
 using SrsManageCommon;
 using SRSManageCommon.ManageStructs;
+using SRSManager.Shared;
 using SRSWeb.Attributes;
 using Publish = SrsConfFile.SRSConfClass.Publish;
 

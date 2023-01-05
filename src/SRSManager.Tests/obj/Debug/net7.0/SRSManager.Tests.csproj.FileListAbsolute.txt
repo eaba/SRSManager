@@ -1108,3 +1108,14 @@ C:\Users\Ebere\source\repos\SRSManager\src\SRSManager.Tests\bin\Debug\net7.0\Sys
 C:\Users\Ebere\source\repos\SRSManager\src\SRSManager.Tests\bin\Debug\net7.0\zlib.net.dll
 C:\Users\Ebere\source\repos\SRSManager\src\SRSManager.Tests\bin\Debug\net7.0\SRSWeb.dll
 C:\Users\Ebere\source\repos\SRSManager\src\SRSManager.Tests\bin\Debug\net7.0\SRSWeb.pdb
+C:\Users\Ebere\source\repos\SRSManager\src\SRSManager.Tests\bin\Debug\net7.0\NBench.dll
+C:\Users\Ebere\source\repos\SRSManager\src\SRSManager.Tests\bin\Debug\net7.0\OpenTelemetry.dll
+C:\Users\Ebere\source\repos\SRSManager\src\SRSManager.Tests\bin\Debug\net7.0\OpenTelemetry.Api.dll
+C:\Users\Ebere\source\repos\SRSManager\src\SRSManager.Tests\bin\Debug\net7.0\Pro.NBench.xUnit.dll
+C:\Users\Ebere\source\repos\SRSManager\src\SRSManager.Tests\bin\Debug\net7.0\SharpPulsar.Trino.dll
+C:\Users\Ebere\source\repos\SRSManager\src\SRSManager.Tests\bin\Debug\net7.0\SRSManager.Actors.dll
+C:\Users\Ebere\source\repos\SRSManager\src\SRSManager.Tests\bin\Debug\net7.0\SRSManager.Messages.dll
+C:\Users\Ebere\source\repos\SRSManager\src\SRSManager.Tests\bin\Debug\net7.0\SRSManager.Shared.dll
+C:\Users\Ebere\source\repos\SRSManager\src\SRSManager.Tests\bin\Debug\net7.0\SRSManager.Actors.pdb
+C:\Users\Ebere\source\repos\SRSManager\src\SRSManager.Tests\bin\Debug\net7.0\SRSManager.Messages.pdb
+C:\Users\Ebere\source\repos\SRSManager\src\SRSManager.Tests\bin\Debug\net7.0\SRSManager.Shared.pdb

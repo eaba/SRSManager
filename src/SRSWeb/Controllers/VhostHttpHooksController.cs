@@ -3,6 +3,7 @@ using SrsApis.SrsManager.Apis;
 using SrsConfFile.SRSConfClass;
 using SrsManageCommon;
 using SRSManageCommon.ManageStructs;
+using SRSManager.Shared;
 using SRSWeb.Attributes;
 
 namespace SRSWeb.Controllers

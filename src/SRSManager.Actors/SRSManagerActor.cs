@@ -16,6 +16,11 @@ namespace SRSManager.Actors
             GlobalSrsApis();
             //Pulsar
         }
+
+        private void FastUsefulApis()
+        {
+
+        }
         private void GlobalSrsApis()
         {
             Receive<GlobalSrs>(deviceIdIf => deviceIdIf.Method == "Start", deviceId =>
