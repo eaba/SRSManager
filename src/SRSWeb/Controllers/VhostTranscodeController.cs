@@ -1,8 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Akka.Actor;
+using Akka.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using SrsApis.SrsManager.Apis;
 using SrsConfFile.SRSConfClass;
 using SrsManageCommon;
 using SRSManageCommon.ManageStructs;
+using SRSManager.Actors;
+using SRSManager.Messages;
 using SRSManager.Shared;
 using SRSWeb.Attributes;
 
@@ -15,6 +19,11 @@ namespace SRSWeb.Controllers
     [Route("")]
     public class VhostTranscodeController
     {
+        private readonly IActorRef _actor;
+        public VhostTranscodeController(IRequiredActor<SRSManagersActor> actor)
+        {
+            _actor = actor.ActorRef;
+        }
         /// <summary>
         /// Delete a Transcode by VhostDomain and TranscodeInstanceName
         /// </summary>
@@ -26,7 +35,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/VhostTranscode/DeleteVhostTranscodeByTranscodeInstanceName")]
-        public JsonResult DeleteVhostTranscodeByTranscodeInstanceName(string deviceId, string vhostDomain,
+        public async ValueTask<JsonResult> DeleteVhostTranscodeByTranscodeInstanceName(string deviceId, string vhostDomain,
             string transcodeInstanceName)
         {
             var rss =
@@ -35,10 +44,9 @@ namespace SRSWeb.Controllers
             {
                 return Result.DelApisResult(null!, rss);
             }
-
-            var rt = VhostTranscodeApis.DeleteVhostTranscodeByTranscodeInstanceName(deviceId, vhostDomain,
-                transcodeInstanceName, out var rs);
-            return Result.DelApisResult(rt, rs);
+ 
+            var a = await _actor.Ask<ApisResult>(new VhostTranscode(deviceId, vhostDomain, transcodeInstanceName, "DeleteVhostTranscodeByTranscodeInstanceName"));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
         /// <summary>
@@ -51,7 +59,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/VhostTranscode/GetVhostTranscodeNameList")]
-        public JsonResult GetVhostTranscodeNameList(string deviceId, string vhostDomain = "")
+        public async ValueTask<JsonResult> GetVhostTranscodeNameList(string deviceId, string vhostDomain = "")
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
@@ -59,8 +67,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostTranscodeApis.GetVhostTranscodeNameList(deviceId, out var rs, vhostDomain);
-            return Result.DelApisResult(rt, rs);
+            var a = await _actor.Ask<ApisResult>(new VhostTranscode(deviceId, vhostDomain, "GetVhostTranscodeNameList"));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
         /// <summary>
@@ -74,7 +82,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/VhostTranscode/GetVhostTranscode")]
-        public JsonResult GetVhostTranscode(string deviceId, string vhostDomain, string transcodeInstanceName)
+        public async ValueTask<JsonResult> GetVhostTranscode(string deviceId, string vhostDomain, string transcodeInstanceName)
         {
             var rss =
                 CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, transcodeInstanceName});
@@ -83,9 +91,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostTranscodeApis.GetVhostTranscode(deviceId, vhostDomain, transcodeInstanceName,
-                out var rs);
-            return Result.DelApisResult(rt, rs);
+            var a = await _actor.Ask<ApisResult>(new VhostTranscode(deviceId, vhostDomain, transcodeInstanceName, "GetVhostTranscode"));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
         /// <summary>
@@ -100,7 +107,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/VhostTranscode/SetVhostTranscode")]
-        public JsonResult SetVhostTranscode(string deviceId, string vhostDomain, string transcodeInstanceName,
+        public async ValueTask<JsonResult> SetVhostTranscode(string deviceId, string vhostDomain, string transcodeInstanceName,
             Transcode transcode)
         {
             var rss = CommonFunctions.CheckParams(new object[]
@@ -110,9 +117,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostTranscodeApis.SetVhostTranscode(deviceId, vhostDomain, transcodeInstanceName, transcode,
-                out var rs);
-            return Result.DelApisResult(rt, rs);
+            var a = await _actor.Ask<ApisResult>(new VhostTranscode(deviceId, vhostDomain, transcodeInstanceName, "SetVhostTranscode"));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
     }
 }

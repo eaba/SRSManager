@@ -3,6 +3,7 @@ using SRSManageCommon.ManageStructs;
 using SrsManageCommon;
 using SrsApis.SrsManager;
 using SRSManager.Messages;
+using SrsConfFile.SRSConfClass;
 
 namespace SRSManager.Actors
 {
@@ -15,11 +16,322 @@ namespace SRSManager.Actors
             _srsManager = new SrsManager();
             GlobalSrsApis();
             //Pulsar
+            VhostTranscodeApis();
         }
 
-        private void FastUsefulApis()
+        private void VhostTranscodeApis()
         {
+            Receive<VhostTranscode>(vhIf => vhIf.Method == "CreateVhostTranscode", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsObjectNotInit,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+                if (_srsManager.Srs.Vhosts == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
 
+                var retVhost = _srsManager.Srs.Vhosts.FindLast(x =>
+                    x.VhostDomain!.Trim().ToUpper().Equals(vh.VHostDomain.Trim().ToUpper()));
+
+                if (retVhost == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+                if (retVhost.Vtranscodes == null)
+                {
+                    retVhost.Vtranscodes = new List<Transcode>();
+                }
+                var retVhostTranscode = retVhost.Vtranscodes.FindLast(x =>
+                    x.InstanceName!.Trim().ToUpper().Equals(vh.TranscodeInstanceName.Trim().ToUpper()));
+
+                if (retVhostTranscode == null)
+                {
+                    retVhost.Vtranscodes.Add(vh.Transcode!);
+                    Sender.Tell(new ApisResult(true, rs));
+                    return;
+                }
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.SrsSubInstanceAlreadyExists,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceAlreadyExists],
+                };
+                Sender.Tell(new ApisResult(false, rs));
+
+            });
+            Receive<VhostTranscode>(vhIf => vhIf.Method == "SetVhostTranscode", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsObjectNotInit,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+                if (_srsManager.Srs.Vhosts == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+
+                var retVhost = _srsManager.Srs.Vhosts.FindLast(x =>
+                    x.VhostDomain!.Trim().ToUpper().Equals(vh.VHostDomain.Trim().ToUpper()));
+
+                if (retVhost == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+                if (retVhost.Vtranscodes == null)
+                {
+                    retVhost.Vtranscodes = new List<Transcode>();
+                }
+                var retVhostTranscode = retVhost.Vtranscodes.FindLast(x =>
+                    x.InstanceName!.Trim().ToUpper().Equals(vh.TranscodeInstanceName.Trim().ToUpper()));
+
+                if (retVhostTranscode == null)
+                {
+                    retVhost.Vtranscodes.Add(vh.Transcode!);
+                    Sender.Tell(new ApisResult(true, rs));
+                    return;
+                }
+                retVhost.Vtranscodes[retVhost.Vtranscodes.IndexOf(retVhostTranscode)] = vh.Transcode!;
+                Sender.Tell(new ApisResult(true, rs));
+
+            });
+            Receive<VhostTranscode>(vhIf => vhIf.Method == "DeleteVhostTranscodeByTranscodeInstanceName", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsObjectNotInit,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+                if (_srsManager.Srs.Vhosts == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+
+                var retVhost = _srsManager.Srs.Vhosts.FindLast(x =>
+                    x.VhostDomain!.Trim().ToUpper().Equals(vh.VHostDomain.Trim().ToUpper()));
+
+                if (retVhost == null || retVhost.Vtranscodes == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+
+                var retVhostTranscode = retVhost.Vtranscodes.FindLast(x =>
+                    x.InstanceName!.Trim().ToUpper().Equals(vh.TranscodeInstanceName.Trim().ToUpper()));
+                
+                if (retVhostTranscode == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+
+                var remove = retVhost.Vtranscodes.Remove(retVhostTranscode);
+                Sender.Tell(new ApisResult(remove, rs));
+
+            });
+            Receive<VhostTranscode>(vhIf => vhIf.Method == "GetVhostTranscodeNameList", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsObjectNotInit,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                    };
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }
+                if (_srsManager.Srs.Vhosts == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }
+                var result = new List<VhostTranscodeNameModule>();
+                if (string.IsNullOrEmpty(vh.VHostDomain))
+                {
+                    foreach (var vhost in _srsManager.Srs.Vhosts)
+                    {
+                        if (vhost.Vtranscodes != null && vhost.Vtranscodes.Count > 0)
+                        {
+                            foreach (var code in vhost.Vtranscodes)
+                            {
+                                var vn = new VhostTranscodeNameModule();
+                                vn.VhostDomain = vhost.VhostDomain;
+                                vn.TranscodeInstanceName = code.InstanceName;
+                                result.Add(vn);
+                            }
+                        }
+                    }
+
+                    Sender.Tell(new ApisResult(result, rs));
+                    return;
+                }
+                var retVhost = _srsManager.Srs.Vhosts.FindLast(x =>
+                    x.VhostDomain!.Trim().ToUpper().Equals(vh.VHostDomain.Trim().ToUpper()));
+
+                if (retVhost!.Vingests == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }
+
+                foreach (var code in retVhost.Vtranscodes!)
+                {
+                    var vn = new VhostTranscodeNameModule();
+                    vn.VhostDomain = retVhost.VhostDomain;
+                    vn.TranscodeInstanceName = code.InstanceName;
+                    result.Add(vn);
+                }
+
+                Sender.Tell(new ApisResult(result, rs));
+
+            });
+            Receive<VhostTranscode>(vhIf => vhIf.Method == "GetVhostTranscode", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsObjectNotInit,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                    };
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }
+                if (_srsManager.Srs.Vhosts == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }
+
+                var retVhost = _srsManager.Srs.Vhosts.FindLast(x =>
+                    x.VhostDomain!.Trim().ToUpper().Equals(vh.VHostDomain.Trim().ToUpper()));
+
+                if (retVhost == null || retVhost.Vtranscodes == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }
+
+                var retVhostTranscode = retVhost.Vtranscodes.FindLast(x =>
+                    x.InstanceName!.Trim().ToUpper().Equals(vh.TranscodeInstanceName.Trim().ToUpper()));
+
+                if (retVhostTranscode == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }
+
+                Sender.Tell(new ApisResult(retVhostTranscode, rs));
+
+            });
         }
         private void GlobalSrsApis()
         {
@@ -34,11 +346,11 @@ namespace SRSManager.Actors
                 {
                     if (_srsManager.IsRunning)
                     {
-                        Sender.Tell(new DelApisResult(true, rs));
+                        Sender.Tell(new ApisResult(true, rs));
                         return;
                     }
                     var rt = _srsManager.Start(out rs);
-                    Sender.Tell(new DelApisResult(rt, rs));
+                    Sender.Tell(new ApisResult(rt, rs));
                     return;
                 }
                
@@ -47,7 +359,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.SrsObjectNotInit,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
                 };
-                Sender.Tell(new DelApisResult(false, rs));
+                Sender.Tell(new ApisResult(false, rs));
 
             });
             Receive<GlobalSrs>(deviceIdIf => deviceIdIf.Method == "Stop", deviceId =>
@@ -60,7 +372,7 @@ namespace SRSManager.Actors
                 if (_srsManager != null)
                 {
                     var rt = _srsManager.Stop(out rs);
-                    Sender.Tell(new DelApisResult(rt, rs));
+                    Sender.Tell(new ApisResult(rt, rs));
                     return;
                 }
                 
@@ -69,7 +381,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.SrsObjectNotInit,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
                 };
-                Sender.Tell(new DelApisResult(false, rs));
+                Sender.Tell(new ApisResult(false, rs));
 
             });
             Receive<GlobalSrs>(deviceIdIf => deviceIdIf.Method == "Restart", deviceId =>
@@ -82,7 +394,7 @@ namespace SRSManager.Actors
                 if (_srsManager != null)
                 {
                     var rt = _srsManager.Restart(out rs);
-                    Sender.Tell(new DelApisResult(rt, rs));
+                    Sender.Tell(new ApisResult(rt, rs));
                     return;
                 }
 
@@ -91,7 +403,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.SrsObjectNotInit,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
                 };
-                Sender.Tell(new DelApisResult(false, rs));
+                Sender.Tell(new ApisResult(false, rs));
 
             });
             Receive<GlobalSrs>(deviceIdIf => deviceIdIf.Method == "Reload", deviceId =>
@@ -104,7 +416,7 @@ namespace SRSManager.Actors
                 if (_srsManager != null)
                 {
                     var rt = _srsManager.Reload(out rs);
-                    Sender.Tell(new DelApisResult(rt, rs));
+                    Sender.Tell(new ApisResult(rt, rs));
                     return;
                 }
 
@@ -113,7 +425,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.SrsObjectNotInit,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
                 };
-                Sender.Tell(new DelApisResult(false, rs));
+                Sender.Tell(new ApisResult(false, rs));
 
             });
             Receive<GlobalSrs>(deviceIdIf => deviceIdIf.Method == "IsRunning", deviceId =>
@@ -126,7 +438,7 @@ namespace SRSManager.Actors
                 if (_srsManager != null)
                 {
                     var rt = _srsManager.IsRunning;
-                    Sender.Tell(new DelApisResult(rt, rs));
+                    Sender.Tell(new ApisResult(rt, rs));
                     return;
                 }
 
@@ -135,7 +447,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.SrsObjectNotInit,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
                 };
-                Sender.Tell(new DelApisResult(false, rs));
+                Sender.Tell(new ApisResult(false, rs));
 
             });
             Receive<GlobalSrs>(deviceIdIf => deviceIdIf.Method == "IsInit", deviceId =>
@@ -148,7 +460,7 @@ namespace SRSManager.Actors
                 if (_srsManager != null)
                 {
                     var rt = _srsManager.IsInit;
-                    Sender.Tell(new DelApisResult(rt, rs));
+                    Sender.Tell(new ApisResult(rt, rs));
                     return;
                 }
 
@@ -157,7 +469,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.SrsObjectNotInit,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
                 };
-                Sender.Tell(new DelApisResult(false, rs));
+                Sender.Tell(new ApisResult(false, rs));
 
             });
             Receive<GlobalSrs>(deviceIdIf => deviceIdIf.Method == "ChangeChunksize", deviceId =>
@@ -170,7 +482,7 @@ namespace SRSManager.Actors
                 if (_srsManager != null && _srsManager.Srs != null)
                 {
                     _srsManager.Srs.Chunk_size = deviceId.Short; 
-                    Sender.Tell(new DelApisResult(true, rs));
+                    Sender.Tell(new ApisResult(true, rs));
                     return;
                 }
 
@@ -179,7 +491,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.SrsObjectNotInit,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
                 };
-                Sender.Tell(new DelApisResult(false, rs));
+                Sender.Tell(new ApisResult(false, rs));
             });
             Receive<GlobalSrs>(deviceIdIf => deviceIdIf.Method == "ChangeHttpApiListen", deviceId =>
             {
@@ -191,7 +503,7 @@ namespace SRSManager.Actors
                 if (_srsManager != null && _srsManager.Srs.Http_api != null)
                 {
                     _srsManager.Srs.Http_api.Listen = deviceId.Short;
-                    Sender.Tell(new DelApisResult(true, rs));
+                    Sender.Tell(new ApisResult(true, rs));
                     return;
                 }
 
@@ -200,7 +512,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.SrsObjectNotInit,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
                 };
-                Sender.Tell(new DelApisResult(false, rs));
+                Sender.Tell(new ApisResult(false, rs));
 
             });
             Receive<GlobalSrs>(deviceIdIf => deviceIdIf.Method == "ChangeHttpApiEnable", deviceId =>
@@ -213,7 +525,7 @@ namespace SRSManager.Actors
                 if (_srsManager != null && _srsManager.Srs.Http_api != null)
                 {
                     _srsManager.Srs.Http_api.Enabled = deviceId.Enable;
-                    Sender.Tell(new DelApisResult(true, rs));
+                    Sender.Tell(new ApisResult(true, rs));
                     return;
                 }
 
@@ -222,7 +534,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.SrsObjectNotInit,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
                 };
-                Sender.Tell(new DelApisResult(false, rs));
+                Sender.Tell(new ApisResult(false, rs));
 
             });
             Receive<GlobalSrs>(deviceIdIf => deviceIdIf.Method == "ChangeMaxConnections", deviceId =>
@@ -235,7 +547,7 @@ namespace SRSManager.Actors
                 if (_srsManager != null && _srsManager.Srs != null)
                 {
                     _srsManager.Srs.Max_connections = deviceId.Short;
-                    Sender.Tell(new DelApisResult(true, rs));
+                    Sender.Tell(new ApisResult(true, rs));
                     return;
                 }
 
@@ -244,7 +556,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.SrsObjectNotInit,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
                 };
-                Sender.Tell(new DelApisResult(false, rs));
+                Sender.Tell(new ApisResult(false, rs));
 
             });
             Receive<GlobalSrs>(deviceIdIf => deviceIdIf.Method == "ChangeRtmpListen", deviceId =>
@@ -257,7 +569,7 @@ namespace SRSManager.Actors
                 if (_srsManager != null && _srsManager.Srs != null)
                 {
                     _srsManager.Srs.Listen = deviceId.Short;
-                    Sender.Tell(new DelApisResult(true, rs));
+                    Sender.Tell(new ApisResult(true, rs));
                     return;
                 }
 
@@ -266,7 +578,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.SrsObjectNotInit,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
                 };
-                Sender.Tell(new DelApisResult(false, rs));
+                Sender.Tell(new ApisResult(false, rs));
 
             });
             Receive<GlobalSrs>(deviceIdIf => deviceIdIf.Method == "ChangeHttpServerListen", deviceId =>
@@ -279,7 +591,7 @@ namespace SRSManager.Actors
                 if (_srsManager != null && _srsManager.Srs.Http_server != null)
                 {
                     _srsManager.Srs.Http_server.Listen = deviceId.Short;
-                    Sender.Tell(new DelApisResult(true, rs));
+                    Sender.Tell(new ApisResult(true, rs));
                     return;
                 }
 
@@ -288,7 +600,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.SrsObjectNotInit,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
                 };
-                Sender.Tell(new DelApisResult(false, rs));
+                Sender.Tell(new ApisResult(false, rs));
 
             });
             Receive<GlobalSrs>(deviceIdIf => deviceIdIf.Method == "ChangeHttpServerPath", deviceId =>
@@ -301,7 +613,7 @@ namespace SRSManager.Actors
                 if (_srsManager != null && _srsManager.Srs.Http_server != null)
                 {
                     _srsManager.Srs.Http_server.Dir = deviceId.Path;
-                    Sender.Tell(new DelApisResult(true, rs));
+                    Sender.Tell(new ApisResult(true, rs));
                     return;
                 }
 
@@ -310,7 +622,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.SrsObjectNotInit,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
                 };
-                Sender.Tell(new DelApisResult(false, rs));
+                Sender.Tell(new ApisResult(false, rs));
 
             });
             Receive<GlobalSrs>(deviceIdIf => deviceIdIf.Method == "ChangeHttpServerEnable", deviceId =>
@@ -323,7 +635,7 @@ namespace SRSManager.Actors
                 if (_srsManager != null && _srsManager.Srs.Http_server != null)
                 {
                     _srsManager.Srs.Http_server.Enabled = deviceId.Enable;
-                    Sender.Tell(new DelApisResult(true, rs));
+                    Sender.Tell(new ApisResult(true, rs));
                     return;
                 }
 
@@ -332,7 +644,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.SrsObjectNotInit,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
                 };
-                Sender.Tell(new DelApisResult(false, rs));
+                Sender.Tell(new ApisResult(false, rs));
 
             });
             Receive<GlobalSrs>(deviceIdIf => deviceIdIf.Method == "GetGlobalParams", deviceId =>
@@ -357,7 +669,7 @@ namespace SRSManager.Actors
                         HeartbeatUrl = _srsManager.Srs.Heartbeat!.Url,
                         HeartbeatSummariesEnable = _srsManager.Srs.Heartbeat!.Summaries,
                     };
-                    Sender.Tell(new DelApisResult(result, rs));
+                    Sender.Tell(new ApisResult(result, rs));
                     return;
                 }
 
@@ -366,7 +678,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.SrsObjectNotInit,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
                 };
-                Sender.Tell(new DelApisResult(null!, rs));
+                Sender.Tell(new ApisResult(null!, rs));
 
             });
             Receive<GlobalSrs>(deviceIdIf => deviceIdIf.Method == "ChangeGlobalParams", deviceId =>
@@ -389,7 +701,7 @@ namespace SRSManager.Actors
                     if (bm?.HeartbeatEnable != null) _srsManager.Srs.Heartbeat!.Enabled = bm.HeartbeatEnable;
                     if (bm?.HeartbeatUrl != null) _srsManager.Srs.Heartbeat!.Url = bm.HeartbeatUrl;
                     if (bm?.HeartbeatSummariesEnable != null) _srsManager.Srs.Heartbeat!.Summaries = bm.HeartbeatSummariesEnable;
-                    Sender.Tell(new DelApisResult(true, rs));
+                    Sender.Tell(new ApisResult(true, rs));
                     return;
                 }
 
@@ -398,7 +710,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.SrsObjectNotInit,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
                 };
-                Sender.Tell(new DelApisResult(false, rs));
+                Sender.Tell(new ApisResult(false, rs));
 
             });
         }

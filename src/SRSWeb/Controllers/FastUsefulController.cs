@@ -58,7 +58,7 @@ namespace SRSWeb.Controllers
             var rt = FastUsefulApis.GetStreamInfoByVhostIngestName(deviceId, vhostDomain, ingestName,
                 out var rs);
             var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var a = await _actor.Ask<DelApisResult>(new GlobalSrs(deviceId, "IsRunning", userId));
+            var a = await _actor.Ask<ApisResult>(new GlobalSrs(deviceId, "IsRunning", userId));
             return Result.DelApisResult(a.Rt, a.Rs);
             return Result.DelApisResult(rt, rs);
         }

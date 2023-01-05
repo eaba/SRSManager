@@ -40,7 +40,7 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
            // var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var a = await _actor.Ask<DelApisResult>(new GlobalSrs(deviceId, "IsRunning"));
+            var a = await _actor.Ask<ApisResult>(new GlobalSrs(deviceId, "IsRunning"));
             return Result.DelApisResult(a.Rt, a.Rs);
         }
 
@@ -60,7 +60,7 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
             //var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var a = await _actor.Ask<DelApisResult>(new GlobalSrs(deviceId, "IsInit"));
+            var a = await _actor.Ask<ApisResult>(new GlobalSrs(deviceId, "IsInit"));
             return Result.DelApisResult(a.Rt, a.Rs);
         }
 
@@ -80,7 +80,7 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
             //var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var a = await _actor.Ask<DelApisResult>(new GlobalSrs(deviceId, "Start"));
+            var a = await _actor.Ask<ApisResult>(new GlobalSrs(deviceId, "Start"));
             return Result.DelApisResult(a.Rt, a.Rs);
         }
 
@@ -100,7 +100,7 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
             //var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var a = await _actor.Ask<DelApisResult>(new GlobalSrs(deviceId, "Stop"));
+            var a = await _actor.Ask<ApisResult>(new GlobalSrs(deviceId, "Stop"));
             return Result.DelApisResult(a.Rt, a.Rs);
         }
 
@@ -120,7 +120,7 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
             //var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var a = await _actor.Ask<DelApisResult>(new GlobalSrs(deviceId, "Restart"));
+            var a = await _actor.Ask<ApisResult>(new GlobalSrs(deviceId, "Restart"));
             return Result.DelApisResult(a.Rt, a.Rs);
         }
 
@@ -140,7 +140,7 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
             //var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var a = await _actor.Ask<DelApisResult>(new GlobalSrs(deviceId, "Reload"));
+            var a = await _actor.Ask<ApisResult>(new GlobalSrs(deviceId, "Reload"));
             return Result.DelApisResult(a.Rt, a.Rs);
         }
 
@@ -160,7 +160,7 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
             //var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var a = await _actor.Ask<DelApisResult>(new GlobalSrs(deviceId, chunkSize, "ChangeChunksize"));
+            var a = await _actor.Ask<ApisResult>(new GlobalSrs(deviceId, chunkSize, "ChangeChunksize"));
             return Result.DelApisResult(a.Rt, a.Rs);
         }
 
@@ -180,7 +180,7 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
             //var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var a = await _actor.Ask<DelApisResult>(new GlobalSrs(deviceId, port, "ChangeHttpApiListen"));
+            var a = await _actor.Ask<ApisResult>(new GlobalSrs(deviceId, port, "ChangeHttpApiListen"));
             return Result.DelApisResult(a.Rt, a.Rs);
         }
 
@@ -200,7 +200,7 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
             //var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var a = await _actor.Ask<DelApisResult>(new GlobalSrs(deviceId, enable, "ChangeHttpApiEnable"));
+            var a = await _actor.Ask<ApisResult>(new GlobalSrs(deviceId, enable, "ChangeHttpApiEnable"));
             return Result.DelApisResult(a.Rt, a.Rs);
         }
 
@@ -220,7 +220,7 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
             //var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var a = await _actor.Ask<DelApisResult>(new GlobalSrs(deviceId, max, "ChangeMaxConnections"));
+            var a = await _actor.Ask<ApisResult>(new GlobalSrs(deviceId, max, "ChangeMaxConnections"));
             return Result.DelApisResult(a.Rt, a.Rs);
         }
 
@@ -240,7 +240,7 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
             //var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var a = await _actor.Ask<DelApisResult>(new GlobalSrs(deviceId, port, "ChangeRtmpListen"));
+            var a = await _actor.Ask<ApisResult>(new GlobalSrs(deviceId, port, "ChangeRtmpListen"));
             return Result.DelApisResult(a.Rt, a.Rs);
         }
 
@@ -260,7 +260,7 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
             //var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var a = await _actor.Ask<DelApisResult>(new GlobalSrs(deviceId, port, "ChangeHttpServerListen"));
+            var a = await _actor.Ask<ApisResult>(new GlobalSrs(deviceId, port, "ChangeHttpServerListen"));
             return Result.DelApisResult(a.Rt, a.Rs);
         }
 
@@ -280,7 +280,7 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
             //var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var a = await _actor.Ask<DelApisResult>(new GlobalSrs(deviceId, path, "ChangeHttpServerPath"));
+            var a = await _actor.Ask<ApisResult>(new GlobalSrs(deviceId, path, "ChangeHttpServerPath"));
             return Result.DelApisResult(a.Rt, a.Rs);
         }
 
@@ -300,7 +300,7 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
             //var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var a = await _actor.Ask<DelApisResult>(new GlobalSrs(deviceId, enable, "ChangeHttpServerEnable"));
+            var a = await _actor.Ask<ApisResult>(new GlobalSrs(deviceId, enable, "ChangeHttpServerEnable"));
             return Result.DelApisResult(a.Rt, a.Rs);
         }
 
@@ -320,7 +320,7 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
             //var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var a = await _actor.Ask<DelApisResult>(new GlobalSrs(deviceId, "GetGlobalParams"));
+            var a = await _actor.Ask<ApisResult>(new GlobalSrs(deviceId, "GetGlobalParams"));
             return Result.DelApisResult(a.Rt, a.Rs);
         }
 
@@ -340,7 +340,7 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
             //var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var a = await _actor.Ask<DelApisResult>(new GlobalSrs(req.Gm, "ChangeGlobalParams"));
+            var a = await _actor.Ask<ApisResult>(new GlobalSrs(req.Gm, "ChangeGlobalParams"));
             return Result.DelApisResult(a.Rt, a.Rs);
         }
     }
