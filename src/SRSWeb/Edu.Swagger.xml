@@ -1,0 +1,1524 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SRSWebApi</name>
+    </assembly>
+    <members>
+        <member name="T:SRSWeb.Attributes.AuthVerifyAttribute">
+            <summary>
+            Classes for verifying session and allowkey
+            </summary>
+        </member>
+        <member name="M:SRSWeb.Attributes.AuthVerifyAttribute.OnActionExecuted(Microsoft.AspNetCore.Mvc.Filters.ActionExecutedContext)">
+            <summary>
+            after the request
+            </summary>
+            <param name="context"></param>
+        </member>
+        <member name="M:SRSWeb.Attributes.AuthVerifyAttribute.OnActionExecuting(Microsoft.AspNetCore.Mvc.Filters.ActionExecutingContext)">
+            <summary>
+            The request is in progress, judging the legitimacy of the user session and allowkey
+            </summary>
+            <param name="context"></param>
+        </member>
+        <member name="T:SRSWeb.Attributes.LogAttribute">
+            <summary>
+            logging
+            </summary>
+        </member>
+        <member name="M:SRSWeb.Attributes.LogAttribute.OnActionExecuted(Microsoft.AspNetCore.Mvc.Filters.ActionExecutedContext)">
+            <summary>
+            after request
+            </summary>
+            <param name="context"></param>
+        </member>
+        <member name="M:SRSWeb.Attributes.LogAttribute.OnActionExecuting(Microsoft.AspNetCore.Mvc.Filters.ActionExecutingContext)">
+            <summary>
+            requesting
+            </summary>
+            <param name="context"></param>
+        </member>
+        <member name="T:SRSWeb.Attributes.LogSrsCallBackAttribute">
+            <summary>
+            logging
+            </summary>
+        </member>
+        <member name="M:SRSWeb.Attributes.LogSrsCallBackAttribute.OnActionExecuted(Microsoft.AspNetCore.Mvc.Filters.ActionExecutedContext)">
+            <summary>
+            请求后
+            </summary>
+            <param name="context"></param>
+        </member>
+        <member name="M:SRSWeb.Attributes.LogSrsCallBackAttribute.OnActionExecuting(Microsoft.AspNetCore.Mvc.Filters.ActionExecutingContext)">
+            <summary>
+            after request
+            </summary>
+            <param name="context"></param>
+        </member>
+        <member name="T:SRSWeb.CommonFunctions">
+            <summary>
+            General class
+            </summary>
+        </member>
+        <member name="M:SRSWeb.CommonFunctions.CheckParams(System.Object[])">
+            <summary>
+            Check the input parameters of the controller
+            </summary>
+            <param name="objs"></param>
+            <returns></returns>
+        </member>
+        <member name="F:SRSWeb.CommonFunctions.IsDebug">
+            <summary>
+            Authorization and session verification are not enabled in debug mode
+            </summary>
+        </member>
+        <member name="F:SRSWeb.CommonFunctions.BaseUrl">
+            <summary>
+            base routing address
+            </summary>
+        </member>
+        <member name="F:SRSWeb.CommonFunctions.ConfPath">
+            <summary>
+            Configuration file address
+            </summary>
+        </member>
+        <member name="F:SRSWeb.CommonFunctions.SessionManager">
+            <summary>
+            Session manager
+            </summary>
+        </member>
+        <member name="F:SRSWeb.CommonFunctions.WorkPath">
+            <summary>
+            Work list
+            </summary>
+        </member>
+        <member name="M:SRSWeb.CommonFunctions.GetTimeStampMilliseconds">
+            <summary>
+            Get timestamp (millisecond level)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.CommonFunctions.CommonInit">
+            <summary>
+            Generic class initialization
+            </summary>
+        </member>
+        <member name="M:SRSWeb.CommonFunctions.CheckAuth(System.String,System.String,System.String)">
+            <summary>
+            Detect session and allow
+            </summary>
+            <param name="ipAddr"></param>
+            <param name="allowKey"></param>
+            <param name="sessionCode"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.CommonFunctions.CheckPassword(System.String)">
+            <summary>
+            check password
+            </summary>
+            <param name="password"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.CommonFunctions.CheckSession(System.String)">
+            <summary>
+            Check whether the Session is normal
+            </summary>
+            <param name="sessionCode"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.CommonFunctions.CheckAllow(System.String,System.String)">
+            <summary>
+            check appkey
+            </summary>
+            <param name="ipAddr"></param>
+            <param name="allowKey"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.CommonFunctions.DelApisResult(System.Object,SRSManageCommon.ManageStructs.ResponseStruct)">
+            <summary>
+            Unified processing of apis return results
+            </summary>
+            <param name="rt">return value</param>
+            <param name="rs">ResponseStruct</param>
+            <returns></returns>
+        </member>
+        <member name="T:SRSWeb.Controllers.AllowController">
+            <summary>
+            Authorized Access Interface Class
+            </summary>
+        </member>
+        <member name="M:SRSWeb.Controllers.AllowController.#ctor(Microsoft.AspNetCore.Http.IHttpContextAccessor)">
+            <summary>
+            inject httpcontext
+            </summary>
+            <param name="httpContextAccessor"></param>
+        </member>
+        <member name="M:SRSWeb.Controllers.AllowController.RefreshSession(SRSWeb.Session)">
+            <summary>
+            refresh session
+            </summary>
+            <param name="request">old session</param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.AllowController.GetSession(SRSManageCommon.ControllerStructs.RequestModules.ReqGetSession)">
+            <summary>
+            Get a session for communication
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.AllowController.SetAllowByKey(SRSManageCommon.ControllerStructs.RequestModules.ReqSetOrAddAllow)">
+            <summary>
+            Modify setting an allow
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.AllowController.DelAllowByKey(SRSManageCommon.ControllerStructs.RequestModules.ReqDelAllow)">
+            <summary>
+            delete an allow
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.AllowController.AddAllow(SRSManageCommon.ControllerStructs.RequestModules.ReqSetOrAddAllow)">
+            <summary>
+            add an allow
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.AllowController.GetAllows(SRSManageCommon.ControllerStructs.RequestModules.ReqGetAllows)">
+            <summary>
+            Get authorization list
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="T:SRSWeb.Controllers.DvrPlanController">
+            <summary>
+            Authorized Access Interface Class
+            </summary>
+        </member>
+        <member name="M:SRSWeb.Controllers.DvrPlanController.GetBacklogTaskList">
+            <summary>
+            Get Merge Crop Task Backlog List
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.DvrPlanController.GetMergeTaskStatus(System.String)">
+            <summary>
+            Get the progress information of the merge clip task
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.DvrPlanController.CutOrMergeVideoFile(SRSManageCommon.ControllerStructs.RequestModules.ReqCutOrMergeVideoFile)">
+            <summary>
+            Cut and merge video files, if the callbackurl is empty and the time interval does not exceed 10 minutes, it will return synchronously, otherwise, the callbackurl address will be called back asynchronously after completion
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.DvrPlanController.UndoSoftDelete(System.Int64)">
+            <summary>
+            Recover soft-deleted video files
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.DvrPlanController.HardDeleteDvrVideoById(System.Int64)">
+            <summary>
+            Delete a video file ById (hard delete, delete the file immediately, mark the database as delete)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.DvrPlanController.SoftDeleteDvrVideoById(System.Int64)">
+            <summary>
+            Delete a video file ById (soft delete, only mark, do not delete the file, the file will be deleted after 24 hours)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.DvrPlanController.GetDvrVideoList(SRSManageCommon.ControllerStructs.RequestModules.ReqGetDvrVideo)">
+            <summary>
+            Get video files (conditions are flexible)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.DvrPlanController.DeleteDvrPlanById(System.Int64)">
+            <summary>
+            Delete a recording plan ById
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.DvrPlanController.OnOrOffDvrPlanById(System.Int64,System.Boolean)">
+            <summary>
+            Enable or disable a recording schedule
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.DvrPlanController.SetDvrPlanById(System.Int32,SRSManageCommon.ControllerStructs.RequestModules.ReqStreamDvrPlan)">
+            <summary>
+            Personalized Recording Plan ById
+            </summary>
+            <param name="id"></param>
+            <param name="sdp"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.DvrPlanController.CreateDvrPlan(SRSManageCommon.ControllerStructs.RequestModules.ReqStreamDvrPlan)">
+            <summary>
+            Create a recording schedule
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.DvrPlanController.GetDvrPlanList(SRSManageCommon.ControllerStructs.RequestModules.ReqGetDvrPlan)">
+            <summary>
+            Get Recording Schedule
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:SRSWeb.Controllers.FastUsefulController">
+            <summary>
+            Quick use of interface classes
+            </summary>
+        </member>
+        <member name="M:SRSWeb.Controllers.FastUsefulController.Test(SRSManageCommon.ManageStructs.CutMergeTaskResponse)">
+            <summary>
+            TESTTEST
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.FastUsefulController.GetStreamInfoByVhostIngestName(System.String,System.String,System.String)">
+            <summary>
+            Get Flow Information ByIngestName
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.FastUsefulController.GetAllIngestByDeviceId(System.String)">
+            <summary>
+            Get Ingest list
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.FastUsefulController.OnOrOffVhostMinDelay(System.String,System.String,System.Boolean)">
+            <summary>
+            Set a vhost to low latency mode/normal mode
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.FastUsefulController.GetClientInfoByStreamValue(System.String)">
+            <summary>
+            Obtain camera connection information through the value of stream
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.FastUsefulController.GetRunningSrsInfoList">
+            <summary>
+            Get information about all running srs instances
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.FastUsefulController.StopAllSrs">
+            <summary>
+            Stop all running srs instances
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.FastUsefulController.InitAndStartAllSrs">
+            <summary>
+            Start all unstarted srs instances
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.FastUsefulController.KickoffClient(System.String,System.String)">
+            <summary>
+            Kick a camera or a player from the Client list
+            </summary>
+            <param name="deviceId"></param>
+            <param name="clientId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.FastUsefulController.GetStreamStatusById(System.String,System.String)">
+            <summary>
+            Get the status information of Stream in SRS
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.FastUsefulController.GetStreamListStatusByDeviceId(System.String)">
+            <summary>
+            Get the status information of StreamList in SRS
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.FastUsefulController.GetVhostStatusById(System.String,System.String)">
+            <summary>
+            Obtain the status information of Vhost in SRS
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.FastUsefulController.GetVhostListStatusByDeviceId(System.String)">
+            <summary>
+            Obtain the status information of VhostList in SRS
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.FastUsefulController.GetOnOnlinePlayerByDeviceId(System.String)">
+            <summary>
+            Obtain the online player client through the srs instance id
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.FastUsefulController.GetOnOnlinePlayer">
+            <summary>
+            Get Streaming Client
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.FastUsefulController.GetOnPublishMonitorListById(System.String)">
+            <summary>
+            Get the list of online cameras through the srs instance id
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.FastUsefulController.GetOnPublishMonitorList">
+            <summary>
+            Get a list of online cams
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.FastUsefulController.GetOnPublishMonitorById(System.String)">
+            <summary>
+            Get online camera ById, support multiple ids, separated by spaces
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.FastUsefulController.GetOnvifMonitorIngestTemplate(System.String,System.String,System.String)">
+            <summary>
+            Get an ingest configuration for rtsp streaming
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:SRSWeb.Controllers.GlobalSrsController">
+            <summary>
+            Global SRS interface class
+            </summary>
+        </member>
+        <member name="M:SRSWeb.Controllers.GlobalSrsController.IsRunning(System.String)">
+            <summary>
+            Is srs running
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.GlobalSrsController.IsInit(System.String)">
+            <summary>
+            Whether srs is initialized
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.GlobalSrsController.StartSrs(System.String)">
+            <summary>
+            start srs
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.GlobalSrsController.StopSrs(System.String)">
+            <summary>
+            stop srs
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.GlobalSrsController.RestartSrs(System.String)">
+            <summary>
+            restart srs
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.GlobalSrsController.ReloadtSrs(System.String)">
+            <summary>
+            Reload the srs configuration (srs.reload)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.GlobalSrsController.GlobalChangeChunksize(System.String,System.UInt16)">
+            <summary>
+            Modify the global parameter Chunksize
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.GlobalSrsController.GlobalChangeHttpApiListen(System.String,System.UInt16)">
+            <summary>
+            Modify the global parameter HttpApiListen
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.GlobalSrsController.GlobalChangeHttpApiEnable(System.String,System.Boolean)">
+            <summary>
+            Modify the global parameter HttpApiEnable
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.GlobalSrsController.GlobalChangeMaxConnections(System.String,System.UInt16)">
+            <summary>
+            Modify the global parameter Maxconnections
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.GlobalSrsController.GlobalChangeRtmpListen(System.String,System.UInt16)">
+            <summary>
+            Modify the global parameter rtmp listen
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.GlobalSrsController.GlobalChangeHttpServerListen(System.String,System.UInt16)">
+            <summary>
+            Modify the global parameter Httpserver listen
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.GlobalSrsController.GlobalChangeHttpServerPath(System.String,System.String)">
+            <summary>
+            Modify the global parameter HttpserverPath
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.GlobalSrsController.GlobalChangeHttpServerEnable(System.String,System.Boolean)">
+            <summary>
+            Modify the global parameter Httpserver enable
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.GlobalSrsController.GetGlobalParams(System.String)">
+            <summary>
+            Get the global parameters of the srs instance
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.GlobalSrsController.ChangeGlobalParams(SRSManageCommon.ControllerStructs.RequestModules.ReqChangeSrsGlobalParams)">
+            <summary>
+            Modify the global parameters of the srs instance
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:SRSWeb.Controllers.LiveBroadcastController">
+            <summary>
+            Live plan interface class
+            </summary>
+        </member>
+        <member name="M:SRSWeb.Controllers.LiveBroadcastController.CheckIsLivePlan(SRSManageCommon.DBMoudle.LiveBroadcastPlan)">
+            <summary>
+            Check whether the push live broadcast connection is in the plan
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.LiveBroadcastController.CheckLiveCh(SRSManageCommon.DBMoudle.OnlineClient)">
+            <summary>
+            Check if the client connection is a live stream
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.LiveBroadcastController.DeleteLivePlanById(System.Int64)">
+            <summary>
+            Delete Live Plan byId
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.LiveBroadcastController.GetLivePlanList(SrsManageCommon.ControllerStructs.ReqLiveBroadcastPlan)">
+            <summary>
+            Get a list of live broadcast plans
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.LiveBroadcastController.SetLivePlan(SrsManageCommon.ControllerStructs.ReqLiveBroadcastPlan)">
+            <summary>
+            Create or modify a live schedule
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:SRSWeb.Controllers.RtcServerController">
+            <summary>
+            SRSRtcServer device interface class
+            </summary>
+        </member>
+        <member name="M:SRSWeb.Controllers.RtcServerController.GetSrsRtcServer(System.String)">
+            <summary>
+            Get rtcserver configuration
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.RtcServerController.SetSrsRtcServer(System.String,SrsConfFile.SRSConfClass.SrsRtcServerConfClass)">
+            <summary>
+            Set or create rtcserver
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.RtcServerController.DelSrsRtcServer(System.String)">
+            <summary>
+            delete rtcserver
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:SRSWeb.Controllers.SrsHooksController">
+            <summary>
+            SRSHooks control class
+            </summary>
+        </member>
+        <member name="M:SRSWeb.Controllers.SrsHooksController.OnHeartbeat(SRSManageCommon.ManageStructs.ReqSrsHeartbeat)">
+            <summary>
+            Handle heartbeat information
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.SrsHooksController.OnUnPublish(SRSManageCommon.ControllerStructs.RequestModules.ReqSrsClientOnOrUnPublish)">
+            <summary>
+            When a camera stops streaming
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.SrsHooksController.OnDvr(SRSManageCommon.ControllerStructs.RequestModules.ReqSrsDvr)">
+            <summary>
+            When the recording is complete
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.SrsHooksController.OnPlay(SRSManageCommon.ControllerStructs.RequestModules.ReqSrsClientOnPlayOnStop)">
+            <summary>
+            When a client plays
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.SrsHooksController.OnStop(SRSManageCommon.ControllerStructs.RequestModules.ReqSrsClientOnPlayOnStop)">
+            <summary>
+            When the client stops playing
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.SrsHooksController.OnPublish(SRSManageCommon.ControllerStructs.RequestModules.ReqSrsClientOnOrUnPublish)">
+            <summary>
+            When there is a camera for streaming
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:SRSWeb.Controllers.SrtServerController">
+            <summary>
+            SRSRtcServer device interface class
+            </summary>
+        </member>
+        <member name="M:SRSWeb.Controllers.SrtServerController.GetSrtServer(System.String)">
+            <summary>
+            Get srtserver configuration
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.SrtServerController.SetSrsSrtServer(System.String,SrsConfFile.SRSConfClass.SrsSrtServerConfClass)">
+            <summary>
+            Set up or create srtserver
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.SrtServerController.DelSrsSrtServer(System.String)">
+            <summary>
+            delete srtserver
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:SRSWeb.Controllers.StatsController">
+            <summary>
+            SRSRtcServer device interface class
+            </summary>
+        </member>
+        <member name="M:SRSWeb.Controllers.StatsController.GetSrsStats(System.String)">
+            <summary>
+            Get Stats configuration
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.StatsController.SetSrsStats(System.String,SrsConfFile.SRSConfClass.SrsStatsConfClass)">
+            <summary>
+            set or create stats
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.StatsController.DelStats(System.String)">
+            <summary>
+            Delete Stats
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:SRSWeb.Controllers.StreamCasterController">
+            <summary>
+            SRSStreamCaster interface class
+            </summary>
+        </member>
+        <member name="M:SRSWeb.Controllers.StreamCasterController.GetStreamCasterInstanceNameList(System.String)">
+            <summary>
+            Get all StreamCaster instance names
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.StreamCasterController.GetStreamCasterInstanceList(System.String)">
+            <summary>
+            Get all instances of StreamCaster
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.StreamCasterController.CreateStreamCaster(System.String,SrsConfFile.SRSConfClass.SrsStreamCasterConfClass)">
+            <summary>
+            Create an instance of StreamCaster
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.StreamCasterController.GetStreamCasterTemplate(SrsConfFile.SRSConfClass.CasterEnum)">
+            <summary>
+            Get the StreamCaster template
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.StreamCasterController.DeleteStreamCasterByInstanceName(System.String,System.String)">
+            <summary>
+            Delete a streamcaster with instance name
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.StreamCasterController.ChangeStreamCasterInstanceName(System.String,System.String,System.String)">
+            <summary>
+            Modify the instance name of streamcaster
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.StreamCasterController.OnOrOff(System.String,System.String,System.Boolean)">
+            <summary>
+            Stop or start a StreamCaster
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.StreamCasterController.SetStreamCaster(System.String,SrsConfFile.SRSConfClass.SrsStreamCasterConfClass)">
+            <summary>
+            Setting up a StreamCaster
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:SRSWeb.Controllers.SystemController">
+            <summary>
+            System information interface class
+            </summary>
+        </member>
+        <member name="M:SRSWeb.Controllers.SystemController.RefreshSrsObject(System.String)">
+            <summary>
+            Write the configuration file of the SRS instance to disk
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.SystemController.GetAllSrsManagerDeviceId">
+            <summary>
+            Get deviceid in all Srs managers
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.SystemController.CreateNewSrsInstance(SrsApis.SrsManager.SrsManager)">
+            <summary>
+            Create a SrsInstance
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.SystemController.GetSrsInstanceTemplate">
+            <summary>
+            Get the SRS instance template
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.SystemController.DelSrsInstanceByDeviceId(System.String)">
+            <summary>
+            Delete an SRS instance
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.SystemController.GetSrsInstanceByDeviceId(System.String)">
+            <summary>
+            Get the SRS instance according to DeviceID
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.SystemController.GetSystemInfo">
+            <summary>
+            Get system information
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.SystemController.GetSrsInstanceList">
+            <summary>
+            Get the list of SRS instances
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:SRSWeb.Controllers.VhostBandcheckController">
+            <summary>
+            vhostbandcheck interface class
+            </summary>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostBandcheckController.DeleteVhostBandcheck(System.String,System.String)">
+            <summary>
+            Delete Bandcheck configuration
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostBandcheckController.GetVhostBandcheck(System.String,System.String)">
+            <summary>
+            Get Bandcheck in Vhost
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostBandcheckController.SetVhostBandcheck(System.String,System.String,SrsConfFile.SRSConfClass.Bandcheck)">
+            <summary>
+            Set up or create a Bandcheck
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <param name="bandcheck"></param>
+            <returns></returns>
+        </member>
+        <member name="T:SRSWeb.Controllers.VhostClusterController">
+            <summary>
+            vhostcluster interface class
+            </summary>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostClusterController.DeleteVhostCluster(System.String,System.String)">
+            <summary>
+            Delete the Cluster configuration
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostClusterController.GetVhostCluster(System.String,System.String)">
+            <summary>
+            Get the Cluster in Vhost
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostClusterController.SetVhostCluster(System.String,System.String,SrsConfFile.SRSConfClass.Cluster)">
+            <summary>
+            Set up or create a Cluster
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <param name="cluster"></param>
+            <returns></returns>
+        </member>
+        <member name="T:SRSWeb.Controllers.VhostController">
+            <summary>
+            vhost control class
+            </summary>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostController.GetVhostsInstanceName(System.String)">
+            <summary>
+            Obtain the list of Instance names of the Vhost list
+            </summary>
+            <param name="deviceId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostController.GetVhostByDomain(System.String,System.String)">
+            <summary>
+            Get vhost by domain
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostController.GetVhostList(System.String)">
+            <summary>
+            Get list of Vhosts
+            </summary>
+            <param name="deviceId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostController.GetVhostTemplate(SRSManageCommon.ManageStructs.VhostIngestInputType)">
+            <summary>
+            Get various templates of Vhost [0:Stream] [1:File] [2:Device]
+            </summary>
+            <param name="vtype"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostController.SetVhost(System.String,SrsConfFile.SRSConfClass.SrsvHostConfClass)">
+            <summary>
+            Set or create Vhost parameters
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhost"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostController.DeleteVhostByDomain(System.String,System.String)">
+            <summary>
+            Delete a vhost, use the domain name
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostController.ChangeVhostDomain(System.String,System.String,System.String)">
+            <summary>
+            Modify the domain name of the vhost
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <param name="newVhostDomain"></param>
+            <returns></returns>
+        </member>
+        <member name="T:SRSWeb.Controllers.VhostDashController">
+            <summary>
+            vhostdash interface class
+            </summary>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostDashController.DeleteVhostDash(System.String,System.String)">
+            <summary>
+            Delete Dash configuration
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostDashController.GetVhostDash(System.String,System.String)">
+            <summary>
+            Get Dash in Vhost
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostDashController.SetVhostDash(System.String,System.String,SrsConfFile.SRSConfClass.Dash)">
+            <summary>
+            Set up or create a Dash
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <param name="dash"></param>
+            <returns></returns>
+        </member>
+        <member name="T:SRSWeb.Controllers.VhostDvrController">
+            <summary>
+            vhost dvr interface class
+            </summary>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostDvrController.DeleteVhostDvr(System.String,System.String)">
+            <summary>
+            Delete Dvr configuration
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostDvrController.GetVhostDvr(System.String,System.String)">
+            <summary>
+            Get Dvr in Vhost
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostDvrController.SetVhostDvr(System.String,System.String,SrsConfFile.SRSConfClass.Dvr)">
+            <summary>
+            Set up or create a Dvr
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <param name="dvr"></param>
+            <returns></returns>
+        </member>
+        <member name="T:SRSWeb.Controllers.VhostExecController">
+            <summary>
+            vhostexec interface class
+            </summary>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostExecController.DeleteVhostExec(System.String,System.String)">
+            <summary>
+            Delete Exec configuration
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostExecController.GetVhostExec(System.String,System.String)">
+            <summary>
+            Get Exec in Vhost
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostExecController.SetVhostExec(System.String,System.String,SrsConfFile.SRSConfClass.Exec)">
+            <summary>
+            Set up or create Exec
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <param name="exec"></param>
+            <returns></returns>
+        </member>
+        <member name="T:SRSWeb.Controllers.VhostForwardController">
+            <summary>
+            vhostforward interface class
+            </summary>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostForwardController.DeleteVhostForward(System.String,System.String)">
+            <summary>
+            Delete Forward configuration
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostForwardController.GetVhostForward(System.String,System.String)">
+            <summary>
+            Get Forward in Vhost
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostForwardController.SetVhostForward(System.String,System.String,SrsConfFile.SRSConfClass.Forward)">
+            <summary>
+            Set Forward
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <param name="forward"></param>
+            <returns></returns>
+        </member>
+        <member name="T:SRSWeb.Controllers.VhostHdsController">
+            <summary>
+            vhosthds interface class
+            </summary>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostHdsController.DeleteVhostHds(System.String,System.String)">
+            <summary>
+            Delete Hds configuration
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostHdsController.GetVhostHds(System.String,System.String)">
+            <summary>
+            Get Hds in Vhost
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostHdsController.SetVhostHds(System.String,System.String,SrsConfFile.SRSConfClass.Hds)">
+            <summary>
+            Set or create Hds
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <param name="hds"></param>
+            <returns></returns>
+        </member>
+        <member name="T:SRSWeb.Controllers.VhostHlsController">
+            <summary>
+            vhosthls interface class
+            </summary>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostHlsController.DeleteVhostHls(System.String,System.String)">
+            <summary>
+            Delete HLS configuration
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostHlsController.GetVhostHls(System.String,System.String)">
+            <summary>
+            Get Hls in Vhost
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostHlsController.SetVhostHls(System.String,System.String,SrsConfFile.SRSConfClass.Hls)">
+            <summary>
+            Set or create Hls
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <param name="hostHls"></param>
+            <returns></returns>
+        </member>
+        <member name="T:SRSWeb.Controllers.VhostHttpHooksController">
+            <summary>
+            vhosthttphooks interface class
+            </summary>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostHttpHooksController.DeleteVhostHttpHooks(System.String,System.String)">
+            <summary>
+            Delete HttpHooks configuration
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostHttpHooksController.GetVhostHttpHooks(System.String,System.String)">
+            <summary>
+            Get HttpHooks in Vhost
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostHttpHooksController.SetVhostHttpHooks(System.String,System.String,SrsConfFile.SRSConfClass.HttpHooks)">
+            <summary>
+            Set or create HttpHooks
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <param name="httpHooks"></param>
+            <returns></returns>
+        </member>
+        <member name="T:SRSWeb.Controllers.VhostHttpRemux">
+            <summary>
+            vhosthttpremux interface class
+            </summary>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostHttpRemux.DeleteVhostHttpRemux(System.String,System.String)">
+            <summary>
+            Delete HttpRemux configuration
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostHttpRemux.GetVhostHttpRemux(System.String,System.String)">
+            <summary>
+            Get HttpRemux in Vhost
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostHttpRemux.SetVhostHttpRemux(System.String,System.String,SrsConfFile.SRSConfClass.HttpRemux)">
+            <summary>
+            Set up or create HttpRemux
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <param name="httpRemux"></param>
+            <returns></returns>
+        </member>
+        <member name="T:SRSWeb.Controllers.VhostHttpStaticController">
+            <summary>
+            vhosthttpstatic interface class
+            </summary>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostHttpStaticController.DeleteVhostHttpStatic(System.String,System.String)">
+            <summary>
+            Delete the HttpStatic configuration
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostHttpStaticController.GetVhostHttpStatic(System.String,System.String)">
+            <summary>
+            Get HttpStatic in Vhost
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostHttpStaticController.SetVhostHttpStatic(System.String,System.String,SrsConfFile.SRSConfClass.HttpStatic)">
+            <summary>
+            Set or create HttpStatic
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <param name="httpStatic"></param>
+            <returns></returns>
+        </member>
+        <member name="T:SRSWeb.Controllers.VhostIngestController">
+            <summary>
+            vhostingest interface class
+            </summary>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostIngestController.GetVhostIngestList(System.String,System.String)">
+            <summary>
+            Get IngestList by deviceId, vhostDomain
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostIngestController.DeleteVhostIngestByIngestInstanceName(System.String,System.String,System.String)">
+            <summary>
+            Delete an Ingest by VhostDomain and IngestInstanceName
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <param name="ingestInstanceName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostIngestController.GetVhostIngestNameList(System.String,System.String)">
+            <summary>
+            Get all or specified ingest instance names in vhost
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostIngestController.GetVhostIngest(System.String,System.String,System.String)">
+            <summary>
+            Get an Ingest configuration
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <param name="ingestInstanceName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostIngestController.SetVhostIngest(System.String,System.String,System.String,SrsConfFile.SRSConfClass.Ingest)">
+            <summary>
+            Set up or create an Ingest
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <param name="ingest"></param>
+            <param name="ingestInstanceName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostIngestController.OnOrOffIngest(System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            enable or disable an ingest
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <param name="ingestInstanceName"></param>
+            <param name="enable"></param>
+            <returns></returns>
+        </member>
+        <member name="T:SRSWeb.Controllers.VhostPlayController">
+            <summary>
+            vhostplay interface class
+            </summary>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostPlayController.DeleteVhostPlay(System.String,System.String)">
+            <summary>
+            Delete Play configuration
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostPlayController.GetVhostPlay(System.String,System.String)">
+            <summary>
+            Get Play in Vhost
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostPlayController.SetVhostPlay(System.String,System.String,SrsConfFile.SRSConfClass.Play)">
+            <summary>
+            Set up or create a Play
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <param name="play"></param>
+            <returns></returns>
+        </member>
+        <member name="T:SRSWeb.Controllers.VhostPublishController">
+            <summary>
+            vhostpublish interface class
+            </summary>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostPublishController.DeleteVhostPublish(System.String,System.String)">
+            <summary>
+            Delete the Publish configuration
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostPublishController.GetVhostPublish(System.String,System.String)">
+            <summary>
+            Get Publish in Vhost
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostPublishController.SetVhostPublish(System.String,System.String,SrsConfFile.SRSConfClass.Publish)">
+            <summary>
+            Set up or create a Publish
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <param name="publish"></param>
+            <returns></returns>
+        </member>
+        <member name="T:SRSWeb.Controllers.VhostReferController">
+            <summary>
+            vhostrefer interface class
+            </summary>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostReferController.DeleteVhostRefer(System.String,System.String)">
+            <summary>
+            Delete Refer configuration
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostReferController.GetVhostRefer(System.String,System.String)">
+            <summary>
+            Get Refer from Vhost
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostReferController.SetVhostRefer(System.String,System.String,SrsConfFile.SRSConfClass.Refer)">
+            <summary>
+            Set up or create a Refer
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <param name="refer"></param>
+            <returns></returns>
+        </member>
+        <member name="T:SRSWeb.Controllers.VhostRtcController">
+            <summary>
+            vhostrtc interface class
+            </summary>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostRtcController.DeleteVhostRtc(System.String,System.String)">
+            <summary>
+            Delete Rtc configuration
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostRtcController.GetVhostRtc(System.String,System.String)">
+            <summary>
+            Get Rtc in Vhost
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostRtcController.SetVhostRtc(System.String,System.String,SrsConfFile.SRSConfClass.Rtc)">
+            <summary>
+            Set or create Rtc
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <param name="rtc"></param>
+            <returns></returns>
+        </member>
+        <member name="T:SRSWeb.Controllers.VhostSecurityController">
+            <summary>
+            vhostsecurity interface class
+            </summary>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostSecurityController.DeleteVhostSecurity(System.String,System.String)">
+            <summary>
+            Delete the Security configuration
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostSecurityController.GetVhostSecurity(System.String,System.String)">
+            <summary>
+            Get Security in Vhost
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostSecurityController.SetVhostSecurity(System.String,System.String,SrsConfFile.SRSConfClass.Security)">
+            <summary>
+            Set or create Security
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <param name="security"></param>
+            <returns></returns>
+        </member>
+        <member name="T:SRSWeb.Controllers.VhostTranscodeController">
+            <summary>
+            vhosttranscode interface class
+            </summary>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostTranscodeController.DeleteVhostTranscodeByTranscodeInstanceName(System.String,System.String,System.String)">
+            <summary>
+            Delete a Transcode by VhostDomain and TranscodeInstanceName
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <param name="transcodeInstanceName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostTranscodeController.GetVhostTranscodeNameList(System.String,System.String)">
+            <summary>
+            Get all or specified transcode instance names in vhost
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostTranscodeController.GetVhostTranscode(System.String,System.String,System.String)">
+            <summary>
+            Get a Transcode configuration
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <param name="transcodeInstanceName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.Controllers.VhostTranscodeController.SetVhostTranscode(System.String,System.String,System.String,SrsConfFile.SRSConfClass.Transcode)">
+            <summary>
+            Set up or create Transcode
+            </summary>
+            <param name="deviceId"></param>
+            <param name="vhostDomain"></param>
+            <param name="transcodeInstanceName"></param>
+            <param name="transcode"></param>
+            <returns></returns>
+        </member>
+        <member name="T:SRSWeb.Program">
+            <summary>
+            Entry class
+            </summary>
+        </member>
+        <member name="F:SRSWeb.Program.CommonFunctions">
+            <summary>
+            Generic class for webapi
+            </summary>
+        </member>
+        <member name="M:SRSWeb.Program.Main(System.String[])">
+            <summary>
+            program entry
+            </summary>
+            <param name="args"></param>
+        </member>
+        <member name="M:SRSWeb.Program.CreateHostBuilder(System.String[])">
+            <summary>
+            create httpwebserver
+            </summary>
+            <param name="args"></param>
+            <returns></returns>
+        </member>
+        <member name="T:SRSWeb.Session">
+            <summary>
+            session class structure
+            </summary>
+        </member>
+        <member name="P:SRSWeb.Session.AllowKey">
+            <summary>
+            authorization key
+            </summary>
+        </member>
+        <member name="P:SRSWeb.Session.RefreshCode">
+            <summary>
+            session refresh code
+            </summary>
+        </member>
+        <member name="P:SRSWeb.Session.SessionCode">
+            <summary>
+            session code
+            </summary>
+        </member>
+        <member name="P:SRSWeb.Session.Expires">
+            <summary>
+            expire date
+            </summary>
+        </member>
+        <member name="T:SRSWeb.SessionManager">
+            <summary>
+            session management
+            </summary>
+        </member>
+        <member name="M:SRSWeb.SessionManager.#ctor">
+            <summary>
+            Session management constructor
+            </summary>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="P:SRSWeb.SessionManager.SessionList">
+            <summary>
+            session list
+            </summary>
+        </member>
+        <member name="M:SRSWeb.SessionManager.ClearExpires">
+            <summary>
+            Clear expired sessions
+            </summary>
+        </member>
+        <member name="M:SRSWeb.SessionManager.RefreshSession(SRSWeb.Session)">
+            <summary>
+            refresh session
+            </summary>
+            <param name="session">old session</param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.SessionManager.NewSession(System.String)">
+            <summary>
+            Create a new session
+            </summary>
+            <param name="allowKey"></param>
+            <returns></returns>
+        </member>
+        <member name="T:SRSWeb.DatetimeJsonConverter">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:SRSWeb.DatetimeJsonConverter.Read(System.Text.Json.Utf8JsonReader@,System.Type,System.Text.Json.JsonSerializerOptions)">
+            <summary>
+            
+            </summary>
+            <param name="reader"></param>
+            <param name="typeToConvert"></param>
+            <param name="options"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SRSWeb.DatetimeJsonConverter.Write(System.Text.Json.Utf8JsonWriter,System.DateTime,System.Text.Json.JsonSerializerOptions)">
+            <summary>
+            
+            </summary>
+            <param name="writer"></param>
+            <param name="value"></param>
+            <param name="options"></param>
+        </member>
+        <member name="T:SRSWeb.Startup">
+            <summary>
+            webapi configuration startup class
+            </summary>
+        </member>
+        <member name="M:SRSWeb.Startup.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            webapi configuration startup class structure
+            </summary>
+            <param name="configuration"></param>
+        </member>
+        <member name="P:SRSWeb.Startup.Configuration">
+            <summary>
+            configuration class
+            </summary>
+        </member>
+        <member name="M:SRSWeb.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            This method gets called by the runtime. Use this method to add services to the container.
+            </summary>
+            <param name="services"></param>
+        </member>
+        <member name="M:SRSWeb.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IWebHostEnvironment)">
+            <summary>
+             This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+            </summary>
+            <param name="app"></param>
+            <param name="env"></param>
+        </member>
+    </members>
+</doc>
