@@ -1,10 +1,12 @@
 ﻿using Akka.Actor;
+using SharpPulsar;
 using SRSManager.Messages;
 
 namespace SRSManager.Actors
 {
     public class SRSManagersActor : ReceiveActor
     {
+        private PulsarSystem _pulsarSystem = PulsarSystem.GetInstance(Context.System, actorSystemName: "Pulsar");
         private Dictionary<string, IActorRef> _srs = new Dictionary<string, IActorRef>();
         public SRSManagersActor()
         {
@@ -25,12 +27,13 @@ namespace SRSManager.Actors
                 return _srs[deviceId];
             else
             {
-                var s = Context.ActorOf(SRSManagerActor.Prop());
+                var s = Context.ActorOf(SRSManagerActor.Prop(_pulsarSystem));
                 _srs[deviceId] = s;
                 return s;
             }
 
         }
+        
         public static Props Prop()
         {
             return Props.Create(() => new SRSManagersActor());

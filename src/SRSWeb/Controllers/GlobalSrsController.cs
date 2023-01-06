@@ -9,6 +9,7 @@ using SRSManager.Messages;
 using SRSManager.Shared;
 using System.Security.Claims;
 using SRSWeb.Attributes;
+using SharpPulsar.Builder;
 
 namespace SRSWeb.Controllers
 {
@@ -340,8 +341,257 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
             //var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var a = await _actor.Ask<ApisResult>(new GlobalSrs(req.Gm, "ChangeGlobalParams"));
+            var a = await _actor.Ask<ApisResult>(new GlobalSrs(req.DeviceId, req.Gm, "ChangeGlobalParams"));
+            return Result.DelApisResult(a.Rt, a.Rs);
+        }
+        /// <summary>
+        /// Set Pulsar Client
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [AuthVerify]
+        [Log]
+        [Route("/GlobalSrs/SetPulsarClient")]
+        public async ValueTask<JsonResult> SetPulsarClient(string deviceId, PulsarClientConfigBuilder client)
+        {
+            var rss = CommonFunctions.CheckParams(new object[] { deviceId, client });
+            if (rss.Code != ErrorNumber.None)
+            {
+                return Result.DelApisResult(null!, rss);
+            }
+            //var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var a = await _actor.Ask<ApisResult>(new GlobalSrs(deviceId, client, "SetPulsarClient"));
+            return Result.DelApisResult(a.Rt, a.Rs);
+        }
+        /// <summary>
+        /// Get Pulsar Client
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [AuthVerify]
+        [Log]
+        [Route("/GlobalSrs/GetPulsarClient")]
+        public async ValueTask<JsonResult> GetPulsarClient(string deviceId)
+        {
+            var rss = CommonFunctions.CheckParams(new object[] { deviceId});
+            if (rss.Code != ErrorNumber.None)
+            {
+                return Result.DelApisResult(null!, rss);
+            }
+            //var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var a = await _actor.Ask<ApisResult>(new GlobalSrs(deviceId, "GetPulsarClient"));
+            return Result.DelApisResult(a.Rt, a.Rs);
+        }
+        /// <summary>
+        /// Start Pulsar Client
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [AuthVerify]
+        [Log]
+        [Route("/GlobalSrs/StartPulsarClient")]
+        public async ValueTask<JsonResult> StartPulsarClient(string deviceId)
+        {
+            var rss = CommonFunctions.CheckParams(new object[] { deviceId});
+            if (rss.Code != ErrorNumber.None)
+            {
+                return Result.DelApisResult(null!, rss);
+            }
+            //var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var a = await _actor.Ask<ApisResult>(new GlobalSrs(deviceId, "StartPulsarClient"));
+            return Result.DelApisResult(a.Rt, a.Rs);
+        }
+        /// <summary>
+        /// Start Pulsar Client
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [AuthVerify]
+        [Log]
+        [Route("/GlobalSrs/StopPulsarClient")]
+        public async ValueTask<JsonResult> StopPulsarClient(string deviceId)
+        {
+            var rss = CommonFunctions.CheckParams(new object[] { deviceId });
+            if (rss.Code != ErrorNumber.None)
+            {
+                return Result.DelApisResult(null!, rss);
+            }
+            //var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var a = await _actor.Ask<ApisResult>(new GlobalSrs(deviceId, "StopPulsarClient"));
+            return Result.DelApisResult(a.Rt, a.Rs);
+        }
+        /// <summary>
+        /// Set Pulsar Producer
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [AuthVerify]
+        [Log]
+        [Route("/GlobalSrs/SetPulsarProducer")]
+        public async ValueTask<JsonResult> SetPulsarProducer(string deviceId, ProducerConfigBuilder<byte[]> producer)
+        {
+            var rss = CommonFunctions.CheckParams(new object[] { deviceId, producer });
+            if (rss.Code != ErrorNumber.None)
+            {
+                return Result.DelApisResult(null!, rss);
+            }
+            //var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var a = await _actor.Ask<ApisResult>(new GlobalSrs(deviceId, producer, "SetPulsarProducer"));
+            return Result.DelApisResult(a.Rt, a.Rs);
+        }
+        /// <summary>
+        /// Get Pulsar Producer
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [AuthVerify]
+        [Log]
+        [Route("/GlobalSrs/GetPulsarProducer")]
+        public async ValueTask<JsonResult> GetPulsarProducer(string deviceId)
+        {
+            var rss = CommonFunctions.CheckParams(new object[] { deviceId});
+            if (rss.Code != ErrorNumber.None)
+            {
+                return Result.DelApisResult(null!, rss);
+            }
+            //var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var a = await _actor.Ask<ApisResult>(new GlobalSrs(deviceId, "GetPulsarProducer"));
+            return Result.DelApisResult(a.Rt, a.Rs);
+        }
+        /// <summary>
+        /// Get Pulsar Producer
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [AuthVerify]
+        [Log]
+        [Route("/GlobalSrs/PulsarProducer")]
+        public async ValueTask<JsonResult> PulsarProducer(string deviceId, byte[] data)
+        {
+            var rss = CommonFunctions.CheckParams(new object[] { deviceId, data });
+            if (rss.Code != ErrorNumber.None)
+            {
+                return Result.DelApisResult(null!, rss);
+            }
+            //var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var a = await _actor.Ask<ApisResult>(new GlobalSrs(deviceId, data, "PulsarProducer"));
+            return Result.DelApisResult(a.Rt, a.Rs);
+        }
+        /// <summary>
+        /// Set Pulsar Consumer
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [AuthVerify]
+        [Log]
+        [Route("/GlobalSrs/SetPulsarConsumer")]
+        public async ValueTask<JsonResult> SetPulsarConsumer(string deviceId, ConsumerConfigBuilder<byte[]> consumer)
+        {
+            var rss = CommonFunctions.CheckParams(new object[] { deviceId, consumer });
+            if (rss.Code != ErrorNumber.None)
+            {
+                return Result.DelApisResult(null!, rss);
+            }
+            //var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var a = await _actor.Ask<ApisResult>(new GlobalSrs(deviceId, consumer, "SetPulsarConsumer"));
+            return Result.DelApisResult(a.Rt, a.Rs);
+        }
+        /// <summary>
+        /// Get Pulsar Consumer
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [AuthVerify]
+        [Log]
+        [Route("/GlobalSrs/GetPulsarConsumer")]
+        public async ValueTask<JsonResult> GetPulsarConsumer(string deviceId)
+        {
+            var rss = CommonFunctions.CheckParams(new object[] { deviceId });
+            if (rss.Code != ErrorNumber.None)
+            {
+                return Result.DelApisResult(null!, rss);
+            }
+            //var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var a = await _actor.Ask<ApisResult>(new GlobalSrs(deviceId, "GetPulsarConsumer"));
+            return Result.DelApisResult(a.Rt, a.Rs);
+        }
+        /// <summary>
+        /// Pulsar Consumer
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [AuthVerify]
+        [Log]
+        [Route("/GlobalSrs/PulsarConsumer")]
+        public async ValueTask<JsonResult> PulsarConsumer(string deviceId)
+        {
+            var rss = CommonFunctions.CheckParams(new object[] { deviceId });
+            if (rss.Code != ErrorNumber.None)
+            {
+                return Result.DelApisResult(null!, rss);
+            }
+            //var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var a = await _actor.Ask<ApisResult>(new GlobalSrs(deviceId, "PulsarConsumer"));
+            return Result.DelApisResult(a.Rt, a.Rs);
+        }
+        /// <summary>
+        /// Set Pulsar Reader
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [AuthVerify]
+        [Log]
+        [Route("/GlobalSrs/SetPulsarReader")]
+        public async ValueTask<JsonResult> SetPulsarReader(string deviceId, ReaderConfigBuilder<byte[]> reader)
+        {
+            var rss = CommonFunctions.CheckParams(new object[] { deviceId, reader });
+            if (rss.Code != ErrorNumber.None)
+            {
+                return Result.DelApisResult(null!, rss);
+            }
+            //var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var a = await _actor.Ask<ApisResult>(new GlobalSrs(deviceId, reader, "SetPulsarReader"));
+            return Result.DelApisResult(a.Rt, a.Rs);
+        }
+        /// <summary>
+        /// Get Pulsar Reader
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [AuthVerify]
+        [Log]
+        [Route("/GlobalSrs/GetPulsarReader")]
+        public async ValueTask<JsonResult> GetPulsarReader(string deviceId)
+        {
+            var rss = CommonFunctions.CheckParams(new object[] { deviceId});
+            if (rss.Code != ErrorNumber.None)
+            {
+                return Result.DelApisResult(null!, rss);
+            }
+            //var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var a = await _actor.Ask<ApisResult>(new GlobalSrs(deviceId, "GetPulsarReader"));
+            return Result.DelApisResult(a.Rt, a.Rs);
+        }
+
+        /// <summary>
+        /// Pulsar Reader
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [AuthVerify]
+        [Log]
+        [Route("/GlobalSrs/PulsarReader")]
+        public async ValueTask<JsonResult> PulsarReader(string deviceId)
+        {
+            var rss = CommonFunctions.CheckParams(new object[] { deviceId });
+            if (rss.Code != ErrorNumber.None)
+            {
+                return Result.DelApisResult(null!, rss);
+            }
+            //var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var a = await _actor.Ask<ApisResult>(new GlobalSrs(deviceId, "PulsarReader"));
             return Result.DelApisResult(a.Rt, a.Rs);
         }
     }
+   
 }

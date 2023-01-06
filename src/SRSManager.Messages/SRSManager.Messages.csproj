@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="SharpPulsar" Version="2.10.0-rc1191" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\SRSConfFile\SRSConfFile.csproj" />
     <ProjectReference Include="..\SRSManageCommon\SRSManageCommon.csproj" />
   </ItemGroup>

@@ -26,7 +26,7 @@ public class Program
             configurationBuilder.WithActors((system, registry) =>
             {
                 //v2.11.0 
-                Pulsar.System = PulsarSystem.GetInstance(system, actorSystemName: "Pulsar");
+                //Pulsar.System = PulsarSystem.GetInstance(system, actorSystemName: "Pulsar");
                 var srs = system.ActorOf(SRSManagersActor.Prop(), "SRSManager");
                 registry.TryRegister<SRSManagersActor>(srs); // register for DI
             });

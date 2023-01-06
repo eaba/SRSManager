@@ -4,19 +4,30 @@ using SrsManageCommon;
 using SrsApis.SrsManager;
 using SRSManager.Messages;
 using SrsConfFile.SRSConfClass;
+using SharpPulsar.User;
+using SharpPulsar;
+using SharpPulsar.Interfaces;
+using System.Text.Json;
+using System.Text;
 
 namespace SRSManager.Actors
 {
     internal class SRSManagerActor : ReceiveActor
     {
         private SrsManager _srsManager;
-
-        public SRSManagerActor()
+        private PulsarSystem _pulsarSystem;
+        private PulsarClient _client;
+        private Producer<byte[]> _producer;
+        private Consumer<byte[]> _consumer;
+        private Reader<byte[]> _reader;
+        public SRSManagerActor(PulsarSystem pulsarSystem)
         {
+            _pulsarSystem = pulsarSystem;
             _srsManager = new SrsManager();
             GlobalSrsApis();
             //Pulsar
             VhostTranscodeApis();
+            _pulsarSystem = pulsarSystem;
         }
 
         private void VhostTranscodeApis()
@@ -713,10 +724,361 @@ namespace SRSManager.Actors
                 Sender.Tell(new ApisResult(false, rs));
 
             });
+            Receive<GlobalSrs>(deviceIdIf => deviceIdIf.Method == "SetPulsarClient", deviceId =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager != null && _srsManager.Srs.Pulsar!.Client == null)
+                {
+                    _srsManager.Srs.Pulsar.Client = deviceId.Client; 
+                    Sender.Tell(new ApisResult(true, rs));
+                    return;
+                }
+
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.SrsObjectNotInit,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                };
+                Sender.Tell(new ApisResult(false, rs));
+
+            });
+            ReceiveAsync<GlobalSrs>(deviceIdIf => deviceIdIf.Method == "StartPulsarClient", async deviceId =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager.Srs.Pulsar!.Client == null)
+                {
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+                if (_client == null)
+                {
+                    try
+                    {
+                        _client = await _pulsarSystem.NewClient(_srsManager.Srs.Pulsar.Client);
+                        Sender.Tell(new ApisResult(true, rs));
+                    }
+                    catch(Exception ex)  
+                    {
+                        _client = null!;
+                        Sender.Tell(new ApisResult(ex, rs)); 
+                    }
+                    return;
+                }
+                Sender.Tell(new ApisResult(true, rs));
+                return;
+
+            });
+            ReceiveAsync<GlobalSrs>(deviceIdIf => deviceIdIf.Method == "StopPulsarClient", async deviceId =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager.Srs.Pulsar!.Client == null)
+                {
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+                if (_client != null)
+                {
+                    try
+                    {
+                        await _client.ShutdownAsync();
+                        _client = null!;
+                        Sender.Tell(new ApisResult(true, rs));
+                    }
+                    catch(Exception ex)
+                    {
+                        _client = null!;
+                        Sender.Tell(new ApisResult(ex, rs));
+                    }
+                    return;
+                }
+                Sender.Tell(new ApisResult(true, rs));
+                return;
+
+            });
+            Receive<GlobalSrs>(deviceIdIf => deviceIdIf.Method == "GetPulsarClient", deviceId =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager != null && _srsManager.Srs.Pulsar!.Client != null)
+                {
+                    Sender.Tell(new ApisResult(_srsManager.Srs.Pulsar.Client, rs));
+                    return;
+                }
+
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.SrsObjectNotInit,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                };
+                Sender.Tell(new ApisResult(null!, rs));
+
+            });
+            Receive<GlobalSrs>(deviceIdIf => deviceIdIf.Method == "SetPulsarProducer", deviceId =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager != null && _srsManager.Srs.Pulsar!.Producer == null)
+                {
+                    _srsManager.Srs.Pulsar.Producer = deviceId.Producer;
+                    Sender.Tell(new ApisResult(true, rs));
+                    return;
+                }
+
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.SrsObjectNotInit,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                };
+                Sender.Tell(new ApisResult(false, rs));
+
+            });
+            ReceiveAsync<GlobalSrs>(deviceIdIf => deviceIdIf.Method == "PulsarProducer", async deviceId =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_client == null)
+                {
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+                if (_srsManager.Srs.Pulsar!.Producer != null)
+                {
+                    try
+                    {
+                        if (_producer == null)
+                            _producer = await _client.NewProducerAsync(_srsManager.Srs.Pulsar.Producer);
+
+                        var receipt = await _producer.SendAsync(deviceId.Data);
+                        Sender.Tell(new ApisResult(receipt, rs));
+                    }
+                    catch (Exception ex)
+                    {
+                        Sender.Tell(new ApisResult(ex, rs));
+                    }                    
+                    return;
+                }
+
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.SrsObjectNotInit,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                };
+                Sender.Tell(new ApisResult(null!, rs));
+
+            });
+            Receive<GlobalSrs>(deviceIdIf => deviceIdIf.Method == "GetPulsarProducer", deviceId =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager != null && _srsManager.Srs.Pulsar!.Producer != null)
+                {
+                    Sender.Tell(new ApisResult(_srsManager.Srs.Pulsar.Producer, rs));
+                    return;
+                }
+
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.SrsObjectNotInit,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                };
+                Sender.Tell(new ApisResult(null!, rs));
+
+            });
+            Receive<GlobalSrs>(deviceIdIf => deviceIdIf.Method == "SetPulsarConsumer", deviceId =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager != null && _srsManager.Srs.Pulsar!.Consumer == null)
+                {
+                    _srsManager.Srs.Pulsar.Consumer = deviceId.Consumer;
+                    Sender.Tell(new ApisResult(true, rs));
+                    return;
+                }
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.SrsObjectNotInit,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                };
+                Sender.Tell(new ApisResult(false, rs));
+
+            });
+            ReceiveAsync<GlobalSrs>(deviceIdIf => deviceIdIf.Method == "PulsarConsumer", async deviceId =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_client == null)
+                {
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+                if (_srsManager.Srs.Pulsar!.Consumer != null)
+                {
+                    try
+                    {
+                        if (_consumer == null)
+                            _consumer = await _client.NewConsumerAsync(_srsManager.Srs.Pulsar.Consumer);
+
+                        var message = await _consumer.ReceiveAsync(TimeSpan.FromMilliseconds(1000));
+                        if (message == null) 
+                            Sender.Tell(new ApisResult(null!, rs));
+                        else
+                        {
+                            Sender.Tell(new ApisResult(message.Data, rs));
+                            await _consumer.AcknowledgeAsync(message);    
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Sender.Tell(new ApisResult(ex, rs));
+                    }
+                    return;
+                }
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.SrsObjectNotInit,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                };
+                Sender.Tell(new ApisResult(null!, rs));
+
+            });
+            Receive<GlobalSrs>(deviceIdIf => deviceIdIf.Method == "GetPulsarConsumer", deviceId =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager != null && _srsManager.Srs.Pulsar!.Consumer != null)
+                {
+                    Sender.Tell(new ApisResult(_srsManager.Srs.Pulsar.Consumer, rs));
+                    return;
+                }
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.SrsObjectNotInit,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                };
+                Sender.Tell(new ApisResult(null!, rs));
+
+            });
+            Receive<GlobalSrs>(deviceIdIf => deviceIdIf.Method == "SetPulsarReader", deviceId =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager != null && _srsManager.Srs.Pulsar!.Reader == null)
+                {
+                    _srsManager.Srs.Pulsar.Reader = deviceId.Reader;
+                    Sender.Tell(new ApisResult(true, rs));
+                    return;
+                }
+
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.SrsObjectNotInit,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                };
+                Sender.Tell(new ApisResult(false, rs));
+
+            });
+            Receive<GlobalSrs>(deviceIdIf => deviceIdIf.Method == "GetPulsarReader", deviceId =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager != null && _srsManager.Srs.Pulsar!.Reader != null)
+                {
+                    Sender.Tell(new ApisResult(_srsManager.Srs.Pulsar.Reader, rs));
+                    return;
+                }
+
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.SrsObjectNotInit,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                };
+                Sender.Tell(new ApisResult(null!, rs));
+
+            });
+            ReceiveAsync<GlobalSrs>(deviceIdIf => deviceIdIf.Method == "PulsarReader", async deviceId =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_client == null)
+                {
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+                if (_srsManager.Srs.Pulsar!.Reader != null)
+                {
+                    try
+                    {
+                        if (_reader == null)
+                            _reader = await _client.NewReaderAsync(_srsManager.Srs.Pulsar.Reader);
+
+                        var message = await _reader.ReadNextAsync(TimeSpan.FromMilliseconds(1000));
+                        if (message == null)
+                            Sender.Tell(new ApisResult(null!, rs));
+                        else
+                        {
+                            Sender.Tell(new ApisResult(message.Data, rs));
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Sender.Tell(new ApisResult(ex, rs));
+                    }
+                    return;
+                }
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.SrsObjectNotInit,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                };
+                Sender.Tell(new ApisResult(null!, rs));
+
+            });
         }
-        public static Props Prop()
+        public static Props Prop(PulsarSystem pulsarSystem)
         {
-            return Props.Create(() => new SRSManagerActor());
+            return Props.Create(() => new SRSManagerActor(pulsarSystem));
         }
     }
 }
