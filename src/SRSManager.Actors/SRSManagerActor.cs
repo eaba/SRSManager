@@ -26,6 +26,8 @@ namespace SRSManager.Actors
             _srsManager = new SrsManager();
             GlobalSrsApis();
             //Pulsar
+            VhostRtcApis();        
+            VhostSecurityApis();    
             VhostTranscodeApis();
             _pulsarSystem = pulsarSystem;
         }
@@ -211,6 +213,65 @@ namespace SRSManager.Actors
                 var remove = retVhost.Vtranscodes.Remove(retVhostTranscode);
                 Sender.Tell(new ApisResult(remove, rs));
 
+            });            
+            Receive<VhostTranscode>(vhIf => vhIf.Method == "GetVhostTranscode", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsObjectNotInit,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                    };
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }
+                if (_srsManager.Srs.Vhosts == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }
+
+                var retVhost = _srsManager.Srs.Vhosts.FindLast(x =>
+                    x.VhostDomain!.Trim().ToUpper().Equals(vh.VHostDomain.Trim().ToUpper()));
+
+                if (retVhost == null || retVhost.Vtranscodes == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }
+
+                var retVhostTranscode = retVhost.Vtranscodes.FindLast(x =>
+                    x.InstanceName!.Trim().ToUpper().Equals(vh.TranscodeInstanceName.Trim().ToUpper()));
+
+                if (retVhostTranscode == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }
+
+                Sender.Tell(new ApisResult(retVhostTranscode, rs));
+
             });
             Receive<VhostTranscode>(vhIf => vhIf.Method == "GetVhostTranscodeNameList", vh =>
             {
@@ -282,65 +343,6 @@ namespace SRSManager.Actors
                 }
 
                 Sender.Tell(new ApisResult(result, rs));
-
-            });
-            Receive<VhostTranscode>(vhIf => vhIf.Method == "GetVhostTranscode", vh =>
-            {
-                var rs = new ResponseStruct()
-                {
-                    Code = ErrorNumber.None,
-                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
-                };
-                if (_srsManager == null)
-                {
-                    rs = new ResponseStruct()
-                    {
-                        Code = ErrorNumber.SrsObjectNotInit,
-                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
-                    };
-                    Sender.Tell(new ApisResult(null!, rs));
-                    return;
-                }
-                if (_srsManager.Srs.Vhosts == null)
-                {
-                    rs = new ResponseStruct()
-                    {
-                        Code = ErrorNumber.SrsSubInstanceNotFound,
-                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
-                    };
-                    Sender.Tell(new ApisResult(null!, rs));
-                    return;
-                }
-
-                var retVhost = _srsManager.Srs.Vhosts.FindLast(x =>
-                    x.VhostDomain!.Trim().ToUpper().Equals(vh.VHostDomain.Trim().ToUpper()));
-
-                if (retVhost == null || retVhost.Vtranscodes == null)
-                {
-                    rs = new ResponseStruct()
-                    {
-                        Code = ErrorNumber.SrsSubInstanceNotFound,
-                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
-                    };
-                    Sender.Tell(new ApisResult(null!, rs));
-                    return;
-                }
-
-                var retVhostTranscode = retVhost.Vtranscodes.FindLast(x =>
-                    x.InstanceName!.Trim().ToUpper().Equals(vh.TranscodeInstanceName.Trim().ToUpper()));
-
-                if (retVhostTranscode == null)
-                {
-                    rs = new ResponseStruct()
-                    {
-                        Code = ErrorNumber.SrsSubInstanceNotFound,
-                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
-                    };
-                    Sender.Tell(new ApisResult(null!, rs));
-                    return;
-                }
-
-                Sender.Tell(new ApisResult(retVhostTranscode, rs));
 
             });
         }
@@ -1074,6 +1076,287 @@ namespace SRSManager.Actors
                 };
                 Sender.Tell(new ApisResult(null!, rs));
 
+            });
+        }
+        private void VhostSecurityApis()
+        {
+            Receive<VhostSecurity>(vhIf => vhIf.Method == "SetVhostSecurity", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsObjectNotInit,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+                if (_srsManager.Srs.Vhosts == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+
+                var retVhost = _srsManager.Srs.Vhosts.FindLast(x =>
+                    x.VhostDomain!.Trim().ToUpper().Equals(vh.VHostDomain.Trim().ToUpper()));
+
+                if (retVhost == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+
+
+                retVhost.Vsecurity = vh.Security; 
+                Sender.Tell(new ApisResult(true, rs));
+
+            });
+            Receive<VhostSecurity>(vhIf => vhIf.Method == "DeleteVhostSecurity", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsObjectNotInit,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+                if (_srsManager.Srs.Vhosts == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+
+                var retVhost = _srsManager.Srs.Vhosts.FindLast(x =>
+                    x.VhostDomain!.Trim().ToUpper().Equals(vh.VHostDomain.Trim().ToUpper()));
+
+                if (retVhost == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+
+
+                retVhost.Vsecurity = null; ;
+                Sender.Tell(new ApisResult(true, rs));
+
+            });
+            Receive<VhostSecurity>(vhIf => vhIf.Method == "GetVhostSecurity", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsObjectNotInit,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                    };
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }
+                if (_srsManager.Srs.Vhosts == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }
+
+                var retVhost = _srsManager.Srs.Vhosts.FindLast(x =>
+                    x.VhostDomain!.Trim().ToUpper().Equals(vh.VHostDomain.Trim().ToUpper()));
+
+                if (retVhost == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }
+                Sender.Tell(new ApisResult(retVhost.Vsecurity!, rs));
+            });
+        }
+
+        private void VhostRtcApis()
+        {
+            Receive<VhostRtc>(vhIf => vhIf.Method == "SetVhostRtc", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsObjectNotInit,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+                if (_srsManager.Srs.Vhosts == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+
+                var retVhost = _srsManager.Srs.Vhosts.FindLast(x =>
+                    x.VhostDomain!.Trim().ToUpper().Equals(vh.VHostDomain.Trim().ToUpper()));
+
+                if (retVhost == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+
+
+                retVhost.Rtc = vh.Rtc;
+                Sender.Tell(new ApisResult(true, rs));
+
+            });
+            Receive<VhostRtc>(vhIf => vhIf.Method == "DeleteVhostRtc", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsObjectNotInit,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+                if (_srsManager.Srs.Vhosts == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+
+                var retVhost = _srsManager.Srs.Vhosts.FindLast(x =>
+                    x.VhostDomain!.Trim().ToUpper().Equals(vh.VHostDomain.Trim().ToUpper()));
+
+                if (retVhost == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+
+
+                retVhost.Rtc = null; ;
+                Sender.Tell(new ApisResult(true, rs));
+
+            });
+            Receive<VhostRtc>(vhIf => vhIf.Method == "GetVhostRtc", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsObjectNotInit,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                    };
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }
+                if (_srsManager.Srs.Vhosts == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }
+
+                var retVhost = _srsManager.Srs.Vhosts.FindLast(x =>
+                    x.VhostDomain!.Trim().ToUpper().Equals(vh.VHostDomain.Trim().ToUpper()));
+
+                if (retVhost == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }
+                Sender.Tell(new ApisResult(retVhost.Rtc!, rs));
             });
         }
         public static Props Prop(PulsarSystem pulsarSystem)

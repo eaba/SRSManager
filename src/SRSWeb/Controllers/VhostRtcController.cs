@@ -1,8 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Akka.Actor;
+using Akka.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using SrsApis.SrsManager.Apis;
 using SrsConfFile.SRSConfClass;
 using SrsManageCommon;
 using SRSManageCommon.ManageStructs;
+using SRSManager.Actors;
+using SRSManager.Messages;
 using SRSManager.Shared;
 using SRSWeb.Attributes;
 
@@ -15,6 +19,11 @@ namespace SRSWeb.Controllers
     [Route("")]
     public class VhostRtcController
     {
+        private readonly IActorRef _actor;
+        public VhostRtcController(IRequiredActor<SRSManagersActor> actor)
+        {
+            _actor = actor.ActorRef;
+        }
         /// <summary>
         /// Delete Rtc configuration
         /// </summary>
@@ -25,7 +34,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/VhostRtc/DeleteVhostRtc")]
-        public JsonResult DeleteVhostRtc(string deviceId, string vhostDomain)
+        public async ValueTask<JsonResult> DeleteVhostRtc(string deviceId, string vhostDomain)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
@@ -33,8 +42,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostRtcApis.DeleteVhostRtc(deviceId, vhostDomain, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var rt = await _actor.Ask<ApisResult>(new VhostRtc(deviceId, vhostDomain, "DeleteVhostRtc"));
+            return Result.DelApisResult(rt.Rt, rt.Rs);
         }
 
         /// <summary>
@@ -47,7 +56,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/VhostRtc/GetVhostRtc")]
-        public JsonResult GetVhostRtc(string deviceId, string vhostDomain)
+        public async ValueTask<JsonResult> GetVhostRtc(string deviceId, string vhostDomain)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
@@ -55,8 +64,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostRtcApis.GetVhostRtc(deviceId, vhostDomain, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var rt = await _actor.Ask<ApisResult>(new VhostRtc(deviceId, vhostDomain, "GetVhostRtc"));
+            return Result.DelApisResult(rt.Rt, rt.Rs);
         }
 
         /// <summary>
@@ -70,7 +79,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/VhostRtc/SetVhostRtc")]
-        public JsonResult SetVhostRtc(string deviceId, string vhostDomain, Rtc rtc)
+        public async ValueTask<JsonResult> SetVhostRtc(string deviceId, string vhostDomain, Rtc rtc)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, rtc});
             if (rss.Code != ErrorNumber.None)
@@ -78,8 +87,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostRtcApis.SetVhostRtc(deviceId, vhostDomain, rtc, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var rt = await _actor.Ask<ApisResult>(new VhostRtc(deviceId, vhostDomain, rtc, "SetVhostRtc"));
+            return Result.DelApisResult(rt.Rt, rt.Rs);
         }
     }
 }

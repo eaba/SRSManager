@@ -51,7 +51,7 @@ namespace SRSManager.Tests
                 var rtc = new Rtc();
                 rtc.KeepBFrame = false;
                 rtc.Enabled = true;
-                VhostRtcApis.SetVhostRtc(srsm.SrsDeviceId, d, rtc, out rs);
+                //VhostRtcApis.SetVhostRtc(srsm.SrsDeviceId, d, rtc, out rs);
                 var dvr = new Dvr();
                 dvr.Enabled = true;
                 dvr.Dvr_path = "/dvr/path/";
@@ -69,7 +69,7 @@ namespace SRSManager.Tests
                 SrtServerApis.SetSrtServer(srsm.SrsDeviceId, srt, out rs);
 
                 VhostApis.DeleteVhostByDomain(srsm.SrsDeviceId, "__defaultvhost__", out rs);
-                VhostRtcApis.DeleteVhostRtc(srsm.SrsDeviceId, d, out rs);
+                //VhostRtcApis.DeleteVhostRtc(srsm.SrsDeviceId, d, out rs);
                 VhostHdsApis.DeleteVhostHds(srsm.SrsDeviceId, d, out rs);
 
                 var b = SrsConfigBuild.Build(srsm.Srs, srsm.SrsConfigPath);

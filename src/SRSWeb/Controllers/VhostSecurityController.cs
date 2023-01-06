@@ -1,8 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Akka.Actor;
+using Akka.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using SrsApis.SrsManager.Apis;
 using SrsConfFile.SRSConfClass;
 using SrsManageCommon;
 using SRSManageCommon.ManageStructs;
+using SRSManager.Actors;
+using SRSManager.Messages;
 using SRSManager.Shared;
 using SRSWeb.Attributes;
 
@@ -15,6 +19,11 @@ namespace SRSWeb.Controllers
     [Route("")]
     public class VhostSecurityController
     {
+        private readonly IActorRef _actor;
+        public VhostSecurityController(IRequiredActor<SRSManagersActor> actor)
+        {
+            _actor = actor.ActorRef;
+        }
         /// <summary>
         /// Delete the Security configuration
         /// </summary>
@@ -25,7 +34,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/VhostSecurity/DeleteVhostSecurity")]
-        public JsonResult DeleteVhostSecurity(string deviceId, string vhostDomain)
+        public async ValueTask<JsonResult> DeleteVhostSecurity(string deviceId, string vhostDomain)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
@@ -33,8 +42,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostSecurityApis.DeleteVhostSecurity(deviceId, vhostDomain, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var a = await _actor.Ask<ApisResult>(new VhostSecurity(deviceId, vhostDomain, "DeleteVhostSecurity"));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
         /// <summary>
@@ -47,7 +56,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/VhostSecurity/GetVhostSecurity")]
-        public JsonResult GetVhostSecurity(string deviceId, string vhostDomain)
+        public async ValueTask<JsonResult> GetVhostSecurity(string deviceId, string vhostDomain)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
@@ -55,8 +64,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostSecurityApis.GetVhostSecurity(deviceId, vhostDomain, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var a = await _actor.Ask<ApisResult>(new VhostSecurity(deviceId, vhostDomain, "GetVhostSecurity"));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
         /// <summary>
@@ -70,7 +79,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/VhostSecurity/SetVhostSecurity")]
-        public JsonResult SetVhostSecurity(string deviceId, string vhostDomain, Security security)
+        public async ValueTask<JsonResult> SetVhostSecurity(string deviceId, string vhostDomain, Security security)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, security});
             if (rss.Code != ErrorNumber.None)
@@ -78,8 +87,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostSecurityApis.SetVhostSecurity(deviceId, vhostDomain, security, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var a = await _actor.Ask<ApisResult>(new VhostSecurity(deviceId, vhostDomain, security, "SetVhostSecurity"));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
     }
 }

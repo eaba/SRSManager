@@ -20,6 +20,11 @@ namespace SRSManager.Actors
                 var srs = SRSManager(v.DeviceId);
                 srs.Forward(v);
             });
+            Receive<VhostSecurity>(v =>
+            {
+                var srs = SRSManager(v.DeviceId);
+                srs.Forward(v);
+            });
         }
         private IActorRef SRSManager(string deviceId)
         {
