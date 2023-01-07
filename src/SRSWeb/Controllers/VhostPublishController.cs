@@ -1,13 +1,19 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Akka.Actor;
+using Akka.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using SrsApis.SrsManager.Apis;
+using SrsConfFile.SRSConfClass;
 using SrsManageCommon;
 using SRSManageCommon.ManageStructs;
+using SRSManager.Actors;
+using SRSManager.Messages;
 using SRSManager.Shared;
 using SRSWeb.Attributes;
 using Publish = SrsConfFile.SRSConfClass.Publish;
 
 namespace SRSWeb.Controllers
 {
+
     /// <summary>
     /// vhostpublish interface class
     /// </summary>
@@ -15,6 +21,11 @@ namespace SRSWeb.Controllers
     [Route("")]
     public class VhostPublishController
     {
+        private readonly IActorRef _actor;
+        public VhostPublishController(IRequiredActor<SRSManagersActor> actor)
+        {
+            _actor = actor.ActorRef;
+        }
         /// <summary>
         /// Delete the Publish configuration
         /// </summary>
@@ -25,7 +36,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/VhostPublish/DeleteVhostPublish")]
-        public JsonResult DeleteVhostPublish(string deviceId, string vhostDomain)
+        public async ValueTask<JsonResult> DeleteVhostPublish(string deviceId, string vhostDomain)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
@@ -33,8 +44,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostPublishApis.DeleteVhostPublish(deviceId, vhostDomain, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var rt = await _actor.Ask<ApisResult>(new VhostPublish(deviceId, vhostDomain, "DeleteVhostPublish"));
+            return Result.DelApisResult(rt.Rt, rt.Rs);
         }
 
         /// <summary>
@@ -47,7 +58,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/VhostPublish/GetVhostPublish")]
-        public JsonResult GetVhostPublish(string deviceId, string vhostDomain)
+        public async ValueTask<JsonResult> GetVhostPublish(string deviceId, string vhostDomain)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
@@ -55,8 +66,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostPublishApis.GetVhostPublish(deviceId, vhostDomain, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var rt = await _actor.Ask<ApisResult>(new VhostPublish(deviceId, vhostDomain, "GetVhostPublish"));
+            return Result.DelApisResult(rt.Rt, rt.Rs);
         }
 
         /// <summary>
@@ -70,7 +81,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/VhostPublish/SetVhostPublish")]
-        public JsonResult SetVhostPublish(string deviceId, string vhostDomain, Publish publish)
+        public async ValueTask<JsonResult> SetVhostPublish(string deviceId, string vhostDomain, Publish publish)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, publish});
             if (rss.Code != ErrorNumber.None)
@@ -78,8 +89,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostPublishApis.SetVhostPublish(deviceId, vhostDomain, publish, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var rt = await _actor.Ask<ApisResult>(new VhostPublish(deviceId, vhostDomain, publish, "SetVhostPublish"));
+            return Result.DelApisResult(rt.Rt, rt.Rs);
         }
     }
 }

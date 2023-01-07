@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Akka.Actor;
+using Akka.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using SrsApis.SrsManager.Apis;
 using SrsConfFile.SRSConfClass;
 using SrsManageCommon;
 using SRSManageCommon.ManageStructs;
+using SRSManager.Actors;
 using SRSManager.Shared;
 using SRSWeb.Attributes;
 
@@ -15,6 +18,11 @@ namespace SRSWeb.Controllers
     [Route("")]
     public class VhostPlayController
     {
+        private readonly IActorRef _actor;
+        public VhostPlayController(IRequiredActor<SRSManagersActor> actor)
+        {
+            _actor = actor.ActorRef;
+        }
         /// <summary>
         /// Delete Play configuration
         /// </summary>
@@ -25,7 +33,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/VhostPlay/DeleteVhostPlay")]
-        public JsonResult DeleteVhostPlay(string deviceId, string vhostDomain)
+        public async ValueTask<JsonResult> DeleteVhostPlay(string deviceId, string vhostDomain)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
@@ -47,7 +55,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/VhostPlay/GetVhostPlay")]
-        public JsonResult GetVhostPlay(string deviceId, string vhostDomain)
+        public async ValueTask<JsonResult> GetVhostPlay(string deviceId, string vhostDomain)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
@@ -70,7 +78,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/VhostPlay/SetVhostPlay")]
-        public JsonResult SetVhostPlay(string deviceId, string vhostDomain, Play play)
+        public async ValueTask<JsonResult> SetVhostPlay(string deviceId, string vhostDomain, Play play)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, play});
             if (rss.Code != ErrorNumber.None)

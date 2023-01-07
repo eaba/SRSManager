@@ -1,8 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Akka.Actor;
+using Akka.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using SrsApis.SrsManager.Apis;
 using SrsConfFile.SRSConfClass;
 using SrsManageCommon;
 using SRSManageCommon.ManageStructs;
+using SRSManager.Actors;
+using SRSManager.Messages;
 using SRSManager.Shared;
 using SRSWeb.Attributes;
 
@@ -15,6 +19,11 @@ namespace SRSWeb.Controllers
     [Route("")]
     public class VhostReferController
     {
+        private readonly IActorRef _actor;
+        public VhostReferController(IRequiredActor<SRSManagersActor> actor)
+        {
+            _actor = actor.ActorRef;
+        }
         /// <summary>
         /// Delete Refer configuration
         /// </summary>
@@ -25,7 +34,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/VhostRefer/DeleteVhostRefer")]
-        public JsonResult DeleteVhostRefer(string deviceId, string vhostDomain)
+        public async ValueTask<JsonResult> DeleteVhostRefer(string deviceId, string vhostDomain)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
@@ -33,8 +42,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostReferApis.DeleteVhostRefer(deviceId, vhostDomain, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var rt = await _actor.Ask<ApisResult>(new VhostRefer(deviceId, vhostDomain, "DeleteVhostRefer"));
+            return Result.DelApisResult(rt.Rt, rt.Rs);
         }
 
         /// <summary>
@@ -47,7 +56,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/VhostRefer/GetVhostRefer")]
-        public JsonResult GetVhostRefer(string deviceId, string vhostDomain)
+        public async ValueTask<JsonResult> GetVhostRefer(string deviceId, string vhostDomain)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
@@ -55,8 +64,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostReferApis.GetVhostRefer(deviceId, vhostDomain, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var rt = await _actor.Ask<ApisResult>(new VhostRefer(deviceId, vhostDomain, "GetVhostRefer"));
+            return Result.DelApisResult(rt.Rt, rt.Rs);
         }
 
         /// <summary>
@@ -70,16 +79,16 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/VhostRefer/SetVhostRefer")]
-        public JsonResult SetVhostRefer(string deviceId, string vhostDomain, Refer refer)
+        public async ValueTask<JsonResult> SetVhostRefer(string deviceId, string vhostDomain, Refer refer)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, refer});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
-
-            var rt = VhostReferApis.SetVhostRefer(deviceId, vhostDomain, refer, out var rs);
-            return Result.DelApisResult(rt, rs);
+            
+            var rt = await _actor.Ask<ApisResult>(new VhostRefer(deviceId, vhostDomain, refer, "SetVhostRefer"));
+            return Result.DelApisResult(rt.Rt, rt.Rs);
         }
     }
 }
