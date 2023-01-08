@@ -64,29 +64,7 @@ namespace SRSApis.SystemAutonomy
 
                                 #endregion
 
-                                #region Handle onvif devices
-
-                                if (ingestList != null && ingestList.Count > 0)
-                                {
-                                    foreach (var ingest in ingestList)
-                                    {
-                                        if (ingest != null && ingest.Input != null
-                                                           && client.RtspUrl != null &&
-                                                           ingest.Input!.Url!.Equals(client.RtspUrl))
-                                        {
-                                            lock (SrsManageCommon.Common.LockDbObjForOnlineClient)
-                                            {
-                                                var reti = OrmService.Db.Update<OnlineClient>()
-                                                    .Set(x => x.MonitorType, MonitorType.Onvif)
-                                                    .Where(x => x.Client_Id == client.Client_Id)
-                                                    .ExecuteAffrows();
-                                            }
-                                        }
-                                    }
-                                }
-
-                                #endregion
-
+                                
                                 #region Handle live streams
 
                                 var retj = OrmService.Db.Update<OnlineClient>()
@@ -271,9 +249,9 @@ namespace SRSApis.SystemAutonomy
             {
                 #region Complete the monitorip address from ingest
 
-                CompletionOnvifIpAddress();
+                //CompletionOnvifIpAddress();
 
-                Thread.Sleep(500);
+                //Thread.Sleep(500);
 
                 #endregion
 

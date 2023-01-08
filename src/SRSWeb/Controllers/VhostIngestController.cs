@@ -1,8 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Reactive.Joins;
+using Akka.Actor;
+using Akka.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using SrsApis.SrsManager.Apis;
 using SrsConfFile.SRSConfClass;
 using SrsManageCommon;
 using SRSManageCommon.ManageStructs;
+using SRSManager.Actors;
+using SRSManager.Messages;
 using SRSManager.Shared;
 using SRSWeb.Attributes;
 
@@ -15,6 +20,11 @@ namespace SRSWeb.Controllers
     [Route("")]
     public class VhostIngestController
     {
+        private readonly IActorRef _actor;
+        public VhostIngestController(IRequiredActor<SRSManagersActor> actor)
+        {
+            _actor = actor.ActorRef;
+        }
         /// <summary>
         /// Get IngestList by deviceId, vhostDomain
         /// </summary>
@@ -25,7 +35,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/VhostIngest/GetVhostIngestList")]
-        public JsonResult GetVhostIngestList(string deviceId, string vhostDomain)
+        public async ValueTask<JsonResult> GetVhostIngestList(string deviceId, string vhostDomain)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
@@ -33,9 +43,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostIngestApis.GetVhostIngestList(deviceId, vhostDomain,
-                out var rs);
-            return Result.DelApisResult(rt, rs);
+            var rt = await _actor.Ask<ApisResult>(new VhostIngest(deviceId, vhostDomain, "GetVhostIngestList"));
+            return Result.DelApisResult(rt.Rt, rt.Rs);
         }
 
 
@@ -50,7 +59,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/VhostIngest/DeleteVhostIngestByIngestInstanceName")]
-        public JsonResult DeleteVhostIngestByIngestInstanceName(string deviceId, string vhostDomain,
+        public async ValueTask<JsonResult> DeleteVhostIngestByIngestInstanceName(string deviceId, string vhostDomain,
             string ingestInstanceName)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, ingestInstanceName});
@@ -59,9 +68,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostIngestApis.DeleteVhostIngestByIngestInstanceName(deviceId, vhostDomain, ingestInstanceName,
-                out var rs);
-            return Result.DelApisResult(rt, rs);
+            var rt = await _actor.Ask<ApisResult>(new VhostIngest(deviceId, vhostDomain, ingestInstanceName, "DeleteVhostIngestByIngestInstanceName"));
+            return Result.DelApisResult(rt.Rt, rt.Rs);
         }
 
         /// <summary>
@@ -74,7 +82,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/VhostIngest/GetVhostIngestNameList")]
-        public JsonResult GetVhostIngestNameList(string deviceId, string vhostDomain = "")
+        public async ValueTask<JsonResult> GetVhostIngestNameList(string deviceId, string vhostDomain = "")
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
@@ -82,8 +90,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostIngestApis.GetVhostIngestNameList(deviceId, out var rs, vhostDomain);
-            return Result.DelApisResult(rt, rs);
+            var rt = await _actor.Ask<ApisResult>(new VhostIngest(deviceId, vhostDomain, "GetVhostIngestNameList"));
+            return Result.DelApisResult(rt.Rt, rt.Rs);
         }
 
         /// <summary>
@@ -97,7 +105,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/VhostIngest/GetVhostIngest")]
-        public JsonResult GetVhostIngest(string deviceId, string vhostDomain, string ingestInstanceName)
+        public async ValueTask<JsonResult> GetVhostIngest(string deviceId, string vhostDomain, string ingestInstanceName)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, ingestInstanceName});
             if (rss.Code != ErrorNumber.None)
@@ -105,8 +113,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostIngestApis.GetVhostIngest(deviceId, vhostDomain, ingestInstanceName, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var rt = await _actor.Ask<ApisResult>(new VhostIngest(deviceId, vhostDomain, ingestInstanceName, "GetVhostIngest"));
+            return Result.DelApisResult(rt.Rt, rt.Rs);
         }
 
         /// <summary>
@@ -121,7 +129,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/VhostIngest/SetVhostIngest")]
-        public JsonResult SetVhostIngest(string deviceId, string vhostDomain, string ingestInstanceName, Ingest ingest)
+        public async ValueTask<JsonResult> SetVhostIngest(string deviceId, string vhostDomain, string ingestInstanceName, Ingest ingest)
         {
             var rss = CommonFunctions.CheckParams(new object[]
                 {deviceId, vhostDomain, ingest, ingestInstanceName});
@@ -130,9 +138,9 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostIngestApis.SetVhostIngest(deviceId, vhostDomain, ingestInstanceName, ingest,
-                out var rs);
-            return Result.DelApisResult(rt, rs);
+            var rt = await _actor.Ask<ApisResult>(new VhostIngest(deviceId, vhostDomain, ingestInstanceName,
+                ingest, "SetVhostIngest"));
+            return Result.DelApisResult(rt.Rt, rt.Rs);
         }
 
 
@@ -148,7 +156,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/VhostIngest/OnOrOffIngest")]
-        public JsonResult OnOrOffIngest(string deviceId, string vhostDomain, string ingestInstanceName, bool enable)
+        public async ValueTask<JsonResult> OnOrOffIngest(string deviceId, string vhostDomain, string ingestInstanceName, bool enable)
         {
             var rss = CommonFunctions.CheckParams(new object[]
                 {deviceId, vhostDomain, enable, ingestInstanceName});
@@ -157,9 +165,9 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostIngestApis.OnOrOffIngest(deviceId, vhostDomain, ingestInstanceName, enable,
-                out var rs);
-            return Result.DelApisResult(rt, rs);
+            var rt = await _actor.Ask<ApisResult>(new VhostIngest(deviceId, vhostDomain, ingestInstanceName,
+                enable, "OnOrOffIngest"));
+            return Result.DelApisResult(rt.Rt, rt.Rs);
         }
     }
 }

@@ -9,6 +9,8 @@ using SharpPulsar;
 using SharpPulsar.Interfaces;
 using System.Text.Json;
 using System.Text;
+using Org.BouncyCastle.Ocsp;
+using MySqlX.XDevAPI.Relational;
 
 namespace SRSManager.Actors
 {
@@ -26,13 +28,13 @@ namespace SRSManager.Actors
             _srsManager = new SrsManager();
             GlobalSrsApis();
             //Pulsar
+            VhostIngestApis();
             VhostPlayApis();
             VhostPublishApis();
             VhostReferApis();
             VhostRtcApis();        
             VhostSecurityApis();    
             VhostTranscodeApis();
-            _pulsarSystem = pulsarSystem;
         }
 
         private void VhostTranscodeApis()
@@ -326,7 +328,7 @@ namespace SRSManager.Actors
                 var retVhost = _srsManager.Srs.Vhosts.FindLast(x =>
                     x.VhostDomain!.Trim().ToUpper().Equals(vh.VHostDomain.Trim().ToUpper()));
 
-                if (retVhost!.Vingests == null)
+                if (retVhost!.Vtranscodes == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -1780,6 +1782,425 @@ namespace SRSManager.Actors
                     return;
                 }
                 Sender.Tell(new ApisResult(retVhost.Vplay!, rs));
+            });
+        }
+
+        private void VhostIngestApis()
+        {
+            Receive<VhostIngest>(vhIf => vhIf.Method == "OnOrOffIngest", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsObjectNotInit,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+                if (_srsManager.Srs.Vhosts == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+
+                var retVhost = _srsManager.Srs.Vhosts.FindLast(x =>
+                    x.VhostDomain!.Trim().ToUpper().Equals(vh.VHostDomain.Trim().ToUpper()));
+
+                if (retVhost == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+                if (retVhost.Vingests == null)
+                {
+                    retVhost.Vingests = new List<Ingest>();
+                }
+                var retVhostIngest = retVhost.Vingests.FindLast(x =>
+                    x.IngestName!.Trim().ToUpper().Equals(vh.IngestName!.Trim().ToUpper()));
+
+                if (retVhostIngest != null)
+                {
+                    retVhostIngest.Enabled = vh.Enable;
+                    Sender.Tell(new ApisResult(true, rs));
+                    return;
+                }
+                
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.SrsSubInstanceAlreadyExists,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceAlreadyExists],
+                };
+                Sender.Tell(new ApisResult(false, rs));
+
+            });
+            Receive<VhostIngest>(vhIf => vhIf.Method == "CreateVhostIngest", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsObjectNotInit,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+                if (_srsManager.Srs.Vhosts == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+
+                var retVhost = _srsManager.Srs.Vhosts.FindLast(x =>
+                    x.VhostDomain!.Trim().ToUpper().Equals(vh.VHostDomain.Trim().ToUpper()));
+
+                if (retVhost == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+                if (retVhost.Vingests == null)
+                {
+                    retVhost.Vingests = new List<Ingest>();
+                }
+                var retVhostIngest = retVhost.Vingests.FindLast(x =>
+                    x.IngestName!.Trim().ToUpper().Equals(vh.IngestName!.Trim().ToUpper()));
+
+                if (retVhostIngest == null)
+                {
+                    retVhost.Vingests.Add(vh.Ingest!);
+                    Sender.Tell(new ApisResult(true, rs));
+                    return;
+                }
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.SrsSubInstanceAlreadyExists,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceAlreadyExists],
+                };
+                Sender.Tell(new ApisResult(false, rs));
+
+            });
+            Receive<VhostIngest>(vhIf => vhIf.Method == "SetVhostIngest", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsObjectNotInit,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+                if (_srsManager.Srs.Vhosts == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+
+                var retVhost = _srsManager.Srs.Vhosts.FindLast(x =>
+                    x.VhostDomain!.Trim().ToUpper().Equals(vh.VHostDomain.Trim().ToUpper()));
+
+                if (retVhost == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+                if (retVhost.Vingests == null)
+                {
+                    retVhost.Vingests = new List<Ingest>();
+                }
+                var retVhostIngest = retVhost.Vingests.FindLast(x =>
+                    x.IngestName!.Trim().ToUpper().Equals(vh.IngestName.Trim().ToUpper()));
+
+                if (retVhostIngest == null)
+                {
+                    retVhost.Vingests.Add(vh.Ingest!);
+                    Sender.Tell(new ApisResult(true, rs));
+                    return;
+                }
+                retVhost.Vingests[retVhost.Vingests.IndexOf(retVhostIngest)] = vh.Ingest!;
+                Sender.Tell(new ApisResult(true, rs));
+
+            });
+            Receive<VhostIngest>(vhIf => vhIf.Method == "DeleteVhostIngestByIngestInstanceName", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsObjectNotInit,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+                if (_srsManager.Srs.Vhosts == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+
+                var retVhost = _srsManager.Srs.Vhosts.FindLast(x =>
+                    x.VhostDomain!.Trim().ToUpper().Equals(vh.VHostDomain.Trim().ToUpper()));
+
+                if (retVhost == null || retVhost.Vingests == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+
+                var retVhostIngest = retVhost.Vingests.FindLast(x =>
+                    x.IngestName!.Trim().ToUpper().Equals(vh.IngestName.Trim().ToUpper()));
+                if (retVhostIngest == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+                 
+                var remove = retVhost.Vingests.Remove(retVhostIngest);
+                Sender.Tell(new ApisResult(remove, rs));
+
+            });
+            Receive<VhostIngest>(vhIf => vhIf.Method == "GetVhostIngest", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsObjectNotInit,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                    };
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }
+                if (_srsManager.Srs.Vhosts == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }
+
+                var retVhost = _srsManager.Srs.Vhosts.FindLast(x =>
+                    x.VhostDomain!.Trim().ToUpper().Equals(vh.VHostDomain.Trim().ToUpper()));
+
+                if (retVhost == null || retVhost.Vingests == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }
+
+                var retVhostIngest = retVhost.Vingests.FindLast(x =>
+                    x.IngestName!.Trim().ToUpper().Equals(vh.IngestName.Trim().ToUpper()));
+
+                if (retVhostIngest == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }
+                
+                Sender.Tell(new ApisResult(retVhostIngest, rs));
+
+            });
+            Receive<VhostIngest>(vhIf => vhIf.Method == "GetVhostIngestList", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsObjectNotInit,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                    };
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }
+                if (_srsManager.Srs.Vhosts == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }
+
+                var retVhost = _srsManager.Srs.Vhosts.FindLast(x =>
+                    x.VhostDomain!.Trim().ToUpper().Equals(vh.VHostDomain.Trim().ToUpper()));
+
+                if (retVhost == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }
+                Sender.Tell(new ApisResult(retVhost.Vingests!, rs));
+            });
+            Receive<VhostIngest>(vhIf => vhIf.Method == "GetVhostIngestNameList", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsObjectNotInit,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                    };
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }
+                if (_srsManager.Srs.Vhosts == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }
+                var result = new List<VhostIngestNameModule>();
+                if (string.IsNullOrEmpty(vh.VHostDomain))
+                {
+                    foreach (var vhost in _srsManager.Srs.Vhosts)
+                    {
+                        if (vhost.Vingests != null && vhost.Vingests.Count > 0)
+                        {
+                            foreach (var ingest in vhost.Vingests)
+                            {
+                                var vn = new VhostIngestNameModule();
+                                vn.VhostDomain = vhost.VhostDomain;
+                                vn.IngestInstanceName = ingest.IngestName;
+                                result.Add(vn);
+                            }
+                        }
+                    }
+                    Sender.Tell(new ApisResult(result, rs));
+                    return;
+                }
+
+                var retVhost = _srsManager.Srs.Vhosts.FindLast(x =>
+                    x.VhostDomain!.Trim().ToUpper().Equals(vh.VHostDomain.Trim().ToUpper()));
+
+                if (retVhost!.Vingests == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }
+
+                foreach (var ingest in retVhost.Vingests)
+                {
+                    var vn = new VhostIngestNameModule();
+                    vn.VhostDomain = retVhost.VhostDomain;
+                    vn.IngestInstanceName = ingest.IngestName;
+                    result.Add(vn);
+                }
+
+                Sender.Tell(new ApisResult(result, rs));
             });
         }
         public static Props Prop(PulsarSystem pulsarSystem)
