@@ -17,7 +17,7 @@ namespace SRSWeb.Controllers
     /// </summary>
     [ApiController]
     [Route("")]
-    public class VhostRtcController
+    public class VhostRtcController : ControllerBase
     {
         private readonly IActorRef _actor;
         public VhostRtcController(IRequiredActor<SRSManagersActor> actor)

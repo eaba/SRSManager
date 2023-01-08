@@ -1,7 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Akka.Actor;
+using Akka.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using SrsApis.SrsManager.Apis;
 using SrsManageCommon;
 using SRSManageCommon.ManageStructs;
+using SRSManager.Actors;
+using SRSManager.Messages;
 using SRSManager.Shared;
 using SRSWeb.Attributes;
 using Hls = SrsConfFile.SRSConfClass.Hls;
@@ -13,8 +17,13 @@ namespace SRSWeb.Controllers
     /// </summary>
     [ApiController]
     [Route("")]
-    public class VhostHlsController
+    public class VhostHlsController : ControllerBase
     {
+        private readonly IActorRef _actor;
+        public VhostHlsController(IRequiredActor<SRSManagersActor> actor)
+        {
+            _actor = actor.ActorRef;
+        }
         /// <summary>
         /// Delete HLS configuration
         /// </summary>
@@ -25,7 +34,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/VhostHls/DeleteVhostHls")]
-        public JsonResult DeleteVhostHls(string deviceId, string vhostDomain)
+        public async ValueTask<JsonResult> DeleteVhostHls(string deviceId, string vhostDomain)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
@@ -33,8 +42,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostHlsApis.DeleteVhostHls(deviceId, vhostDomain, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var rt = await _actor.Ask<ApisResult>(new VhostHls(deviceId, vhostDomain, "DeleteVhostHls"));
+            return Result.DelApisResult(rt.Rt, rt.Rs);
         }
 
         /// <summary>
@@ -47,7 +56,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/VhostHls/GetVhostHls")]
-        public JsonResult GetVhostHls(string deviceId, string vhostDomain)
+        public async ValueTask<JsonResult> GetVhostHls(string deviceId, string vhostDomain)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
@@ -55,8 +64,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostHlsApis.GetVhostHls(deviceId, vhostDomain, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var rt = await _actor.Ask<ApisResult>(new VhostHls(deviceId, vhostDomain, "GetVhostHls"));
+            return Result.DelApisResult(rt.Rt, rt.Rs);
         }
 
         /// <summary>
@@ -70,7 +79,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/VhostHls/SetVhostHls")]
-        public JsonResult SetVhostHls(string deviceId, string vhostDomain, Hls hostHls)
+        public async ValueTask<JsonResult> SetVhostHls(string deviceId, string vhostDomain, Hls hostHls)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, hostHls});
             if (rss.Code != ErrorNumber.None)
@@ -78,8 +87,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostHlsApis.SetVhostHls(deviceId, vhostDomain, hostHls, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var rt = await _actor.Ask<ApisResult>(new VhostHls(deviceId, vhostDomain, hostHls, "SetVhostHls"));
+            return Result.DelApisResult(rt.Rt, rt.Rs);
         }
     }
 }

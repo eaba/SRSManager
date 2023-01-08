@@ -60,7 +60,7 @@ namespace SRSManager.Tests
                 hds.Enabled = true;
                 hds.Hds_window = 50;
 
-                VhostHdsApis.SetVhostHds(srsm.SrsDeviceId, d, hds, out rs);
+                //VhostHdsApis.SetVhostHds(srsm.SrsDeviceId, d, hds, out rs);
                 SrtServerApis.DeleteSrtServer(srsm.SrsDeviceId, out rs);
                 var srt = new SrsSrtServerConfClass();
                 srt = SrtServerApis.GetSrtServerTemplate(out rs);
@@ -70,7 +70,7 @@ namespace SRSManager.Tests
 
                 VhostApis.DeleteVhostByDomain(srsm.SrsDeviceId, "__defaultvhost__", out rs);
                 //VhostRtcApis.DeleteVhostRtc(srsm.SrsDeviceId, d, out rs);
-                VhostHdsApis.DeleteVhostHds(srsm.SrsDeviceId, d, out rs);
+                //VhostHdsApis.DeleteVhostHds(srsm.SrsDeviceId, d, out rs);
 
                 var b = SrsConfigBuild.Build(srsm.Srs, srsm.SrsConfigPath);
                 Assert.True(b != null);

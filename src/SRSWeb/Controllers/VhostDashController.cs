@@ -1,8 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Akka.Actor;
+using Akka.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using SrsApis.SrsManager.Apis;
 using SrsConfFile.SRSConfClass;
 using SrsManageCommon;
 using SRSManageCommon.ManageStructs;
+using SRSManager.Actors;
+using SRSManager.Messages;
 using SRSManager.Shared;
 using SRSWeb.Attributes;
 
@@ -13,8 +17,13 @@ namespace SRSWeb.Controllers
     /// </summary>
     [ApiController]
     [Route("")]
-    public class VhostDashController
+    public class VhostDashController : ControllerBase
     {
+        private readonly IActorRef _actor;
+        public VhostDashController(IRequiredActor<SRSManagersActor> actor)
+        {
+            _actor = actor.ActorRef;
+        }
         /// <summary>
         /// Delete Dash configuration
         /// </summary>
@@ -25,7 +34,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/VhostDash/DeleteVhostDash")]
-        public JsonResult DeleteVhostDash(string deviceId, string vhostDomain)
+        public async ValueTask<JsonResult> DeleteVhostDash(string deviceId, string vhostDomain)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
@@ -33,8 +42,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostDashApis.DeleteVhostDash(deviceId, vhostDomain, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var rt = await _actor.Ask<ApisResult>(new VhostDash(deviceId, vhostDomain, "DeleteVhostDash"));
+            return Result.DelApisResult(rt.Rt, rt.Rs);
         }
 
         /// <summary>
@@ -47,7 +56,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/VhostDash/GetVhostDash")]
-        public JsonResult GetVhostDash(string deviceId, string vhostDomain)
+        public async ValueTask<JsonResult> GetVhostDash(string deviceId, string vhostDomain)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
@@ -55,8 +64,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostDashApis.GetVhostDash(deviceId, vhostDomain, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var rt = await _actor.Ask<ApisResult>(new VhostDash(deviceId, vhostDomain, "GetVhostDash"));
+            return Result.DelApisResult(rt.Rt, rt.Rs);
         }
 
         /// <summary>
@@ -70,7 +79,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/VhostDash/SetVhostDash")]
-        public JsonResult SetVhostDash(string deviceId, string vhostDomain, Dash dash)
+        public async ValueTask<JsonResult> SetVhostDash(string deviceId, string vhostDomain, Dash dash)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, dash});
             if (rss.Code != ErrorNumber.None)
@@ -78,8 +87,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostDashApis.SetVhostDash(deviceId, vhostDomain, dash, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var rt = await _actor.Ask<ApisResult>(new VhostDash(deviceId, vhostDomain, dash, "SetVhostDash"));
+            return Result.DelApisResult(rt.Rt, rt.Rs);
         }
     }
 }

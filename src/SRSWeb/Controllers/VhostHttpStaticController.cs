@@ -1,8 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Akka.Actor;
+using Akka.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using SrsApis.SrsManager.Apis;
 using SrsConfFile.SRSConfClass;
 using SrsManageCommon;
 using SRSManageCommon.ManageStructs;
+using SRSManager.Actors;
+using SRSManager.Messages;
 using SRSManager.Shared;
 using SRSWeb.Attributes;
 
@@ -13,8 +17,13 @@ namespace SRSWeb.Controllers
     /// </summary>
     [ApiController]
     [Route("")]
-    public class VhostHttpStaticController
+    public class VhostHttpStaticController : ControllerBase
     {
+        private readonly IActorRef _actor;
+        public VhostHttpStaticController(IRequiredActor<SRSManagersActor> actor)
+        {
+            _actor = actor.ActorRef;
+        }
         /// <summary>
         /// Delete the HttpStatic configuration
         /// </summary>
@@ -25,7 +34,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/VhostHttpStatic/DeleteVhostHttpStatic")]
-        public JsonResult DeleteVhostHttpStatic(string deviceId, string vhostDomain)
+        public async ValueTask<JsonResult> DeleteVhostHttpStatic(string deviceId, string vhostDomain)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
@@ -33,8 +42,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostHttpStaticApis.DeleteVhostHttpStatic(deviceId, vhostDomain, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var rt = await _actor.Ask<ApisResult>(new VhostHttpStatic(deviceId, vhostDomain, "DeleteVhostHttpStatic"));
+            return Result.DelApisResult(rt.Rt, rt.Rs);
         }
 
         /// <summary>
@@ -47,7 +56,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/VhostHttpStatic/GetVhostHttpStatic")]
-        public JsonResult GetVhostHttpStatic(string deviceId, string vhostDomain)
+        public async ValueTask<JsonResult> GetVhostHttpStatic(string deviceId, string vhostDomain)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
@@ -55,8 +64,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostHttpStaticApis.GetVhostHttpStatic(deviceId, vhostDomain, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var rt = await _actor.Ask<ApisResult>(new VhostHttpStatic(deviceId, vhostDomain, "GetVhostHttpStatic"));
+            return Result.DelApisResult(rt.Rt, rt.Rs);
         }
 
         /// <summary>
@@ -70,7 +79,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/VhostHttpStatic/SetVhostHttpStatic")]
-        public JsonResult SetVhostHttpStatic(string deviceId, string vhostDomain, HttpStatic httpStatic)
+        public async ValueTask<JsonResult> SetVhostHttpStatic(string deviceId, string vhostDomain, HttpStatic httpStatic)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, httpStatic});
             if (rss.Code != ErrorNumber.None)
@@ -78,8 +87,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostHttpStaticApis.SetVhostHttpStatic(deviceId, vhostDomain, httpStatic, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var rt = await _actor.Ask<ApisResult>(new VhostHttpStatic(deviceId, vhostDomain, httpStatic, "SetVhostHttpStatic"));
+            return Result.DelApisResult(rt.Rt, rt.Rs);
         }
     }
 }

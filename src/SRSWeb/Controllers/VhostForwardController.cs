@@ -1,8 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Akka.Actor;
+using Akka.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using SrsApis.SrsManager.Apis;
 using SrsConfFile.SRSConfClass;
 using SrsManageCommon;
 using SRSManageCommon.ManageStructs;
+using SRSManager.Actors;
+using SRSManager.Messages;
 using SRSManager.Shared;
 using SRSWeb.Attributes;
 
@@ -13,8 +17,13 @@ namespace SRSWeb.Controllers
     /// </summary>
     [ApiController]
     [Route("")]
-    public class VhostForwardController
+    public class VhostForwardController : ControllerBase
     {
+        private readonly IActorRef _actor;
+        public VhostForwardController(IRequiredActor<SRSManagersActor> actor)
+        {
+            _actor = actor.ActorRef;
+        }
         /// <summary>
         /// Delete Forward configuration
         /// </summary>
@@ -25,7 +34,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/VhostForward/DeleteVhostForward")]
-        public JsonResult DeleteVhostForward(string deviceId, string vhostDomain)
+        public async ValueTask<JsonResult> DeleteVhostForward(string deviceId, string vhostDomain)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
@@ -33,8 +42,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostForwardApis.DeleteVhostForward(deviceId, vhostDomain, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var rt = await _actor.Ask<ApisResult>(new VhostForward(deviceId, vhostDomain, "DeleteVhostForward"));
+            return Result.DelApisResult(rt.Rt, rt.Rs);
         }
 
         /// <summary>
@@ -47,7 +56,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/VhostForward/GetVhostForward")]
-        public JsonResult GetVhostForward(string deviceId, string vhostDomain)
+        public async ValueTask<JsonResult> GetVhostForward(string deviceId, string vhostDomain)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
@@ -55,8 +64,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostForwardApis.GetVhostForward(deviceId, vhostDomain, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var rt = await _actor.Ask<ApisResult>(new VhostForward(deviceId, vhostDomain, "GetVhostForward"));
+            return Result.DelApisResult(rt.Rt, rt.Rs);
         }
 
         /// <summary>
@@ -70,7 +79,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/VhostForward/SetVhostForward")]
-        public JsonResult SetVhostForward(string deviceId, string vhostDomain, Forward forward)
+        public async ValueTask<JsonResult> SetVhostForward(string deviceId, string vhostDomain, Forward forward)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, forward});
             if (rss.Code != ErrorNumber.None)
@@ -78,8 +87,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostForwardApis.SetVhostForward(deviceId, vhostDomain, forward, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var rt = await _actor.Ask<ApisResult>(new VhostForward(deviceId, vhostDomain, forward, "SetVhostForward"));
+            return Result.DelApisResult(rt.Rt, rt.Rs);
         }
     }
 }

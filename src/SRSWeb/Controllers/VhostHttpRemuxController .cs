@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Akka.Actor;
+using Akka.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using SrsApis.SrsManager.Apis;
 using SrsConfFile.SRSConfClass;
 using SrsManageCommon;
-using SRSManageCommon.ManageStructs;
+using SRSManager.Actors;
+using SRSManager.Messages;
 using SRSManager.Shared;
 using SRSWeb.Attributes;
 
@@ -13,8 +16,13 @@ namespace SRSWeb.Controllers
     /// </summary>
     [ApiController]
     [Route("")]
-    public class VhostHttpRemux
+    public class VhostHttpRemuxController : ControllerBase
     {
+        private readonly IActorRef _actor;
+        public VhostHttpRemuxController(IRequiredActor<SRSManagersActor> actor)
+        {
+            _actor = actor.ActorRef;
+        }
         /// <summary>
         /// Delete HttpRemux configuration
         /// </summary>
@@ -25,7 +33,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/VhostHttpRemux/DeleteVhostHttpRemux")]
-        public JsonResult DeleteVhostHttpRemux(string deviceId, string vhostDomain)
+        public async ValueTask<JsonResult> DeleteVhostHttpRemux(string deviceId, string vhostDomain)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
@@ -33,8 +41,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostHttpRemuxApis.DeleteVhostHttpRemux(deviceId, vhostDomain, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var rt = await _actor.Ask<ApisResult>(new VhostHttpRemux(deviceId, vhostDomain, "DeleteVhostHttpRemux"));
+            return Result.DelApisResult(rt.Rt, rt.Rs);
         }
 
         /// <summary>
@@ -47,7 +55,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/VhostHttpRemux/GetVhostHttpRemux")]
-        public JsonResult GetVhostHttpRemux(string deviceId, string vhostDomain)
+        public async ValueTask<JsonResult> GetVhostHttpRemux(string deviceId, string vhostDomain)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
@@ -55,8 +63,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostHttpRemuxApis.GetVhostHttpRemux(deviceId, vhostDomain, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var rt = await _actor.Ask<ApisResult>(new VhostHttpRemux(deviceId, vhostDomain, "GetVhostHttpRemux"));
+            return Result.DelApisResult(rt.Rt, rt.Rs);
         }
 
         /// <summary>
@@ -70,7 +78,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/VhostHttpRemux/SetVhostHttpRemux")]
-        public JsonResult SetVhostHttpRemux(string deviceId, string vhostDomain, HttpRemux httpRemux)
+        public async ValueTask<JsonResult> SetVhostHttpRemux(string deviceId, string vhostDomain, HttpRemux httpRemux)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, httpRemux});
             if (rss.Code != ErrorNumber.None)
@@ -78,8 +86,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostHttpRemuxApis.SetVhostHttpRemux(deviceId, vhostDomain, httpRemux, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var rt = await _actor.Ask<ApisResult>(new VhostHttpRemux(deviceId, vhostDomain, httpRemux, "SetVhostHttpRemux"));
+            return Result.DelApisResult(rt.Rt, rt.Rs);
         }
     }
 }

@@ -19,7 +19,7 @@ namespace SRSWeb.Controllers
     /// </summary>
     [ApiController]
     [Route("")]
-    public class VhostPublishController
+    public class VhostPublishController : ControllerBase
     {
         private readonly IActorRef _actor;
         public VhostPublishController(IRequiredActor<SRSManagersActor> actor)

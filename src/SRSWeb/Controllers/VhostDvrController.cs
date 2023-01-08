@@ -1,8 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Akka.Actor;
+using Akka.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using SrsApis.SrsManager.Apis;
 using SrsConfFile.SRSConfClass;
 using SrsManageCommon;
 using SRSManageCommon.ManageStructs;
+using SRSManager.Actors;
+using SRSManager.Messages;
 using SRSManager.Shared;
 using SRSWeb.Attributes;
 
@@ -13,8 +17,13 @@ namespace SRSWeb.Controllers
     /// </summary>
     [ApiController]
     [Route("")]
-    public class VhostDvrController
+    public class VhostDvrController : ControllerBase
     {
+        private readonly IActorRef _actor;
+        public VhostDvrController(IRequiredActor<SRSManagersActor> actor)
+        {
+            _actor = actor.ActorRef;
+        }
         /// <summary>
         /// Delete Dvr configuration
         /// </summary>
@@ -24,7 +33,7 @@ namespace SRSWeb.Controllers
         [HttpGet]
         [AuthVerify]
         [Route("/VhostDvr/DeleteVhostDvr")]
-        public JsonResult DeleteVhostDvr(string deviceId, string vhostDomain)
+        public async ValueTask<JsonResult> DeleteVhostDvr(string deviceId, string vhostDomain)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
@@ -32,8 +41,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostDvrApis.DeleteVhostDvr(deviceId, vhostDomain, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var rt = await _actor.Ask<ApisResult>(new VhostDvr(deviceId, vhostDomain, "DeleteVhostDvr"));
+            return Result.DelApisResult(rt.Rt, rt.Rs);
         }
 
         /// <summary>
@@ -46,7 +55,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/VhostDvr/GetVhostDvr")]
-        public JsonResult GetVhostDvr(string deviceId, string vhostDomain)
+        public async ValueTask<JsonResult> GetVhostDvr(string deviceId, string vhostDomain)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
@@ -54,8 +63,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostDvrApis.GetVhostDvr(deviceId, vhostDomain, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var rt = await _actor.Ask<ApisResult>(new VhostDvr(deviceId, vhostDomain, "GetVhostDvr"));
+            return Result.DelApisResult(rt.Rt, rt.Rs);
         }
 
         /// <summary>
@@ -69,16 +78,16 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/VhostDvr/SetVhostDvr")]
-        public JsonResult SetVhostDvr(string deviceId, string vhostDomain, Dvr dvr)
+        public async ValueTask<JsonResult> SetVhostDvr(string deviceId, string vhostDomain, Dvr dvr)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, dvr});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
-
-            var rt = VhostDvrApis.SetVhostDvr(deviceId, vhostDomain, dvr, out var rs);
-            return Result.DelApisResult(rt, rs);
+            
+            var rt = await _actor.Ask<ApisResult>(new VhostDvr(deviceId, vhostDomain, dvr, "SetVhostDvr"));
+            return Result.DelApisResult(rt.Rt, rt.Rs);
         }
     }
 }
