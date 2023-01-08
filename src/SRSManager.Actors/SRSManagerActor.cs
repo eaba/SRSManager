@@ -29,6 +29,7 @@ namespace SRSManager.Actors
             _srsManager = new SrsManager();
             GlobalSrsApis();
             //Pulsar
+            VhostApis();
             VhostDashApis();
             VhostDvrApis();
             VhostExecApis();
@@ -3472,6 +3473,385 @@ namespace SRSManager.Actors
                 Sender.Tell(new ApisResult(true, rs));
 
             });
+        }
+        private void VhostApis()
+        {
+            Receive<Vhost>(vhIf => vhIf.Method == "GetVhostsInstanceName", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsObjectNotInit,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                    };
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }
+                if (_srsManager.Srs.Vhosts == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }
+
+                Sender.Tell(new ApisResult(_srsManager.Srs.Vhosts.Select(x => x.InstanceName).ToList()!, rs));
+                return;
+
+            });
+            Receive<Vhost>(vhIf => vhIf.Method == "GetVhostByDomain", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsObjectNotInit,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                    };
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }
+                if (_srsManager.Srs.Vhosts == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }
+
+                var retVhost = _srsManager.Srs.Vhosts.FindLast(x =>
+                    x.VhostDomain!.Trim().ToUpper().Equals(vh.VHostDomain.Trim().ToUpper()))!;
+                if (retVhost != null)
+                {
+                    Sender.Tell(new ApisResult(retVhost, rs));
+                    return;
+                }
+
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.SrsSubInstanceNotFound,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                };
+                Sender.Tell(new ApisResult(null!, rs));
+                return;
+
+            });
+            Receive<Vhost>(vhIf => vhIf.Method == "GetVhostList", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsObjectNotInit,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                    };
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }
+                if (_srsManager.Srs.Vhosts == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }
+
+                Sender.Tell(new ApisResult(_srsManager.Srs.Vhosts!, rs));
+                return;
+
+            });
+            Receive<Vhost>(vhIf => vhIf.Method == "GetVhostTemplate", vh =>
+            {
+                var vhost = new SrsvHostConfClass();
+                vhost.Vingests = new List<Ingest>();
+                vhost.InstanceName = "your.domain.com"; //change it 
+                vhost.VhostDomain = vhost.InstanceName;
+                vhost.SectionsName = "vhost";
+                vhost.Enabled = false;
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None] + "\r\n" + JsonHelper.ToJson(vh.VType),
+                };
+                switch (vh.VType)
+                {
+                    case VhostIngestInputType.WebCast://add for live
+                        var dvr = new Dvr();
+                        dvr.Dvr_apply = "all";
+                        dvr.Enabled = true;
+                        dvr.Dvr_plan = "segment";
+                        dvr.Dvr_path = "please replace";
+                        dvr.Dvr_duration = 120;
+                        dvr.Dvr_wait_keyframe = true;
+                        dvr.Time_Jitter = PlayTimeJitter.full;
+                        var httpHooks = new HttpHooks();
+                        httpHooks.Enabled = true;
+                        //httpHooks.On_connect = "http://127.0.0.1:5800/SrsHooks/OnConnect";
+                        httpHooks.On_publish = "http://127.0.0.1:5800/SrsHooks/OnPublish";
+                        //httpHooks.On_close = "http://127.0.0.1:5800/SrsHooks/OnClose";
+                        httpHooks.On_play = "http://127.0.0.1:5800/SrsHooks/OnPlay";
+                        httpHooks.On_unpublish = "http://127.0.0.1:5800/SrsHooks/OnUnPublish";
+                        httpHooks.On_stop = "http://127.0.0.1:5800/SrsHooks/OnStop";
+                        httpHooks.On_dvr = "http://127.0.0.1:5800/SrsHooks/OnDvr";
+                        httpHooks.On_hls = "http://127.0.0.1:5800/SrsHooks/Test";
+                        httpHooks.On_hls_notify = "http://127.0.0.1:5800/SrsHooks/Test";
+                        var httpRemux = new HttpRemux();
+                        httpRemux.Enabled = true;
+                        httpRemux.Fast_cache = 30;
+                        httpRemux.Mount = "[vhost]/[app]/[stream].flv";
+                        vhost.Vdvr = dvr;
+                        vhost.Vhttp_hooks = httpHooks;
+                        vhost.Vhttp_remux = httpRemux;
+                        Sender.Tell(new ApisResult(vhost!, rs));
+                        break;
+                    case VhostIngestInputType.Stream: //RTSP or other Stream
+                        var ing = new Ingest();
+                        ing.Enabled = true;
+                        ing.InstanceName = "ingest_template_rtsp";
+                        ing.IngestName = ing.InstanceName;
+                        ing.SectionsName = "ingest";
+                        var inginput = new IngestInput();
+                        var ingeng = new IngestTranscodeEngine();
+                        ing.Engines = new List<IngestTranscodeEngine>();
+                        ingeng.Perfile = new IngestEnginePerfile();
+                        ingeng.Perfile.SectionsName = "perfile";
+                        ingeng.Enabled = true;
+                        inginput.SectionsName = "input";
+                        inginput.Type = IngestInputType.stream;
+                        inginput.Url =
+                            "rtsp://admin:12345678@192.168.2.21:554/Streaming/Channels/501?transportmode=unicast";
+                        ing.Input = inginput;
+                        ing.Ffmpeg = SrsManageCommon.Common.FFmpegBinPath;
+                        ingeng.SectionsName = "engine";
+                        ingeng.Enabled = true;
+                        ingeng.Vcodec = "copy";
+                        ingeng.Acodec = "copy";
+                        ingeng.Perfile.Rtsp_transport = "tcp";
+                        ingeng.Perfile.SectionsName = "perfile";
+                        ingeng.Output = "rtmp://127.0.0.1/[vhost]/[live]/[livestream]";
+                        ing.Engines.Add(ingeng);
+                        ing.Input = inginput;
+                        vhost.Vingests.Add(ing);
+                        Sender.Tell(new ApisResult(vhost!, rs));
+                        break;
+                    case VhostIngestInputType.File: //From File
+                        var inginput1 = new IngestInput();
+                        var ingeng1 = new IngestTranscodeEngine();
+                        var ing1 = new Ingest();
+                        ing1.Enabled = true;
+                        ing1.Engines = new List<IngestTranscodeEngine>();
+                        ing1.InstanceName = "ingest_template_file";
+                        ing1.IngestName = ing1.InstanceName;
+                        ing1.SectionsName = "ingest";
+                        ingeng1.Enabled = true;
+                        inginput1.SectionsName = "input";
+                        inginput1.Type = IngestInputType.file;
+                        inginput1.Url =
+                            "./demo.mp4";
+                        ing1.Input = inginput1;
+                        ing1.Ffmpeg = SrsManageCommon.Common.FFmpegBinPath;
+                        ingeng1.SectionsName = "engine";
+                        ingeng1.Enabled = true;
+                        ingeng1.Output = "rtmp://127.0.0.1/[vhost]/[live]/[livestream]";
+                        ing1.Engines.Add(ingeng1);
+                        ing1.Input = inginput1;
+                        vhost.Vingests.Add(ing1);
+                        Sender.Tell(new ApisResult(vhost!, rs));
+                        break;
+                    case VhostIngestInputType.Device: //From Device
+                        rs = new ResponseStruct()
+                        {
+                            Code = ErrorNumber.SrsConfigFunctionUnsupported,
+                            Message = ErrorMessage.ErrorDic![ErrorNumber.SrsConfigFunctionUnsupported] + "\r\n" +
+                                      JsonHelper.ToJson(vh.VType),
+                        };
+                        Sender.Tell(new ApisResult(null!, rs));
+                        break;
+                    default:
+                        rs = new ResponseStruct()
+                        {
+                            Code = ErrorNumber.FunctionInputParamsError,
+                            Message = ErrorMessage.ErrorDic![ErrorNumber.FunctionInputParamsError] + "\r\n" +
+                                      JsonHelper.ToJson(vh.VType),
+                        };
+                        Sender.Tell(new ApisResult(null!, rs));
+                        break;
+                }
+
+            });
+            Receive<Vhost>(vhIf => vhIf.Method == "SetVhost", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsObjectNotInit,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+                if (_srsManager.Srs.Vhosts == null)
+                {
+                    _srsManager.Srs.Vhosts = new List<SrsvHostConfClass>
+                    {
+                        vh.VHost!
+                    };
+                    Sender.Tell(new ApisResult(true, rs));
+                    return;
+                }
+
+                var retVhost = _srsManager.Srs.Vhosts.FindLast(x =>
+                    x.VhostDomain!.Trim().ToUpper().Equals(vh.VHostDomain.Trim().ToUpper()))!;
+                if (retVhost != null)
+                {
+                    _srsManager.Srs.Vhosts.Add(vh.VHost!);   
+                    Sender.Tell(new ApisResult(true, rs));
+                    return;
+                }
+
+                _srsManager.Srs.Vhosts[_srsManager.Srs.Vhosts.IndexOf(retVhost!)] = vh.VHost;
+                Sender.Tell(new ApisResult(true, rs));
+                return;
+
+            });
+            Receive<Vhost>(vhIf => vhIf.Method == "DeleteVhostByDomain", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsObjectNotInit,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+                if (_srsManager.Srs.Vhosts == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+
+                var retVhost = _srsManager.Srs.Vhosts.FindLast(x =>
+                    x.VhostDomain!.Trim().ToUpper().Equals(vh.VHostDomain.Trim().ToUpper()))!;
+                if (retVhost != null)
+                {
+                    Sender.Tell(new ApisResult(_srsManager.Srs.Vhosts.Remove(retVhost), rs));
+                    return;
+                }
+
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.SrsSubInstanceNotFound,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                };
+                Sender.Tell(new ApisResult(false, rs));
+                return;
+
+            });
+            Receive<Vhost>(vhIf => vhIf.Method == "ChangeVhostDomain", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsObjectNotInit,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+                if (_srsManager.Srs.Vhosts == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+
+                var retVhost = _srsManager.Srs.Vhosts.FindLast(x =>
+                    x.VhostDomain!.Trim().ToUpper().Equals(vh.VHostDomain.Trim().ToUpper()))!;
+
+                var retVhostNew = _srsManager.Srs.Vhosts.FindLast(x =>
+                    x.VhostDomain!.Trim().ToUpper().Equals(vh.NewVhostDomain.Trim().ToUpper()))!;
+
+                if (retVhost != null)
+                {
+                    if (retVhostNew != null)
+                    {
+                        rs = new ResponseStruct()
+                        {
+                            Code = ErrorNumber.SrsSubInstanceAlreadyExists,
+                            Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceAlreadyExists],
+                        };
+                        Sender.Tell(new ApisResult(false, rs)); 
+                        return;
+                    }
+
+                    retVhost.VhostDomain = vh.NewVhostDomain;
+                    Sender.Tell(new ApisResult(true, rs));
+                    return;
+                }
+                
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.SrsSubInstanceNotFound,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                };
+                Sender.Tell(new ApisResult(false, rs));
+                return;
+
+            });
+            
         }
         public static Props Prop(PulsarSystem pulsarSystem)
         {
