@@ -1,8 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Akka.Actor;
+using Akka.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using SrsApis.SrsManager.Apis;
 using SrsConfFile.SRSConfClass;
 using SrsManageCommon;
 using SRSManageCommon.ManageStructs;
+using SRSManager.Actors;
+using SRSManager.Messages;
 using SRSManager.Shared;
 using SRSWeb.Attributes;
 
@@ -13,8 +17,13 @@ namespace SRSWeb.Controllers
     /// </summary>
     [ApiController]
     [Route("")]
-    public class VhostClusterController
+    public class VhostClusterController : ControllerBase
     {
+        private readonly IActorRef _actor;
+        public VhostClusterController(IRequiredActor<SRSManagersActor> actor)
+        {
+            _actor = actor.ActorRef;
+        }
         /// <summary>
         /// Delete the Cluster configuration
         /// </summary>
@@ -25,7 +34,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/VhostCluster/DeleteVhostCluster")]
-        public JsonResult DeleteVhostCluster(string deviceId, string vhostDomain)
+        public async ValueTask<JsonResult> DeleteVhostCluster(string deviceId, string vhostDomain)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
@@ -33,8 +42,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostClusterApis.DeleteVhostCluster(deviceId, vhostDomain, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var rt = await _actor.Ask<ApisResult>(new VhostCluster(deviceId, vhostDomain, "DeleteVhostCluster"));
+            return Result.DelApisResult(rt.Rt, rt.Rs);
         }
 
         /// <summary>
@@ -47,7 +56,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/VhostCluster/GetVhostCluster")]
-        public JsonResult GetVhostCluster(string deviceId, string vhostDomain)
+        public async ValueTask<JsonResult> GetVhostCluster(string deviceId, string vhostDomain)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain});
             if (rss.Code != ErrorNumber.None)
@@ -55,8 +64,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostClusterApis.GetVhostCluster(deviceId, vhostDomain, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var rt = await _actor.Ask<ApisResult>(new VhostCluster(deviceId, vhostDomain, "GetVhostCluster"));
+            return Result.DelApisResult(rt.Rt, rt.Rs);
         }
 
         /// <summary>
@@ -70,7 +79,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/VhostCluster/SetVhostCluster")]
-        public JsonResult SetVhostCluster(string deviceId, string vhostDomain, Cluster cluster)
+        public async ValueTask<JsonResult> SetVhostCluster(string deviceId, string vhostDomain, Cluster cluster)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, cluster});
             if (rss.Code != ErrorNumber.None)
@@ -78,8 +87,9 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = VhostClusterApis.SetVhostCluster(deviceId, vhostDomain, cluster, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var rt = await _actor.Ask<ApisResult>(new VhostCluster(deviceId, vhostDomain, cluster, "SetVhostCluster"));
+            return Result.DelApisResult(rt.Rt, rt.Rs);
         }
     }
+    
 }

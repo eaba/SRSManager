@@ -100,8 +100,17 @@ namespace SRSManager.Actors
                 var srs = SRSManager(v.DeviceId);
                 srs.Forward(v);
             });
+            Receive<VhostCluster>(v =>
+            {
+                var srs = SRSManager(v.DeviceId);
+                srs.Forward(v);
+            });
+            Receive<VhostBandcheck>(v =>
+            {
+                var srs = SRSManager(v.DeviceId);
+                srs.Forward(v);
+            });
             
-
 
 
         }
