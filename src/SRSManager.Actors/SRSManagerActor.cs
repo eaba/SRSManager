@@ -12,6 +12,8 @@ using System.Text;
 using Org.BouncyCastle.Ocsp;
 using MySqlX.XDevAPI.Relational;
 using SrsApis.SrsManager.Apis;
+using SrsConfFile;
+using Akka.Event;
 
 namespace SRSManager.Actors
 {
@@ -23,12 +25,29 @@ namespace SRSManager.Actors
         private Producer<byte[]> _producer;
         private Consumer<byte[]> _consumer;
         private Reader<byte[]> _reader;
+        private readonly ILoggingAdapter _log;
         public SRSManagerActor(PulsarSystem pulsarSystem)
         {
+            _log = Context.GetLogger();
             _pulsarSystem = pulsarSystem;
             _srsManager = new SrsManager();
+            Receive<CheckNewSrsInstanceListenRight>(c =>
+            {
+                var list = CheckNewSrsInstanceListenRight(c.Sm, out ResponseStruct rs);
+                Sender.Tell(new ApisResult(list, rs));
+            });
+            Receive<CheckNewSrsInstancePathRight>(c =>
+            {
+                var path = CheckNewSrsInstancePathRight(c.Sm, out ResponseStruct rs);
+                Sender.Tell(new ApisResult(path, rs));
+            });
+            Receive<GetSrsManager>(_ =>
+            {
+                Sender.Tell(_srsManager);
+            });
             GlobalSrsApis();
             //Pulsar
+            SystemApis();
             VhostBandcheckApis();
             VhostClusterApis();
             VhostApis();
@@ -4134,6 +4153,268 @@ namespace SRSManager.Actors
                 Sender.Tell(new ApisResult(true, rs));
 
             });
+        }
+        private void SystemApis()
+        {
+            Receive<Messages.System>(vhIf => vhIf.Method == "RefreshSrsObject", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                SrsConfigBuild.Build(_srsManager.Srs, _srsManager.SrsConfigPath);
+                _log.Info($"Rewrite the Srs configuration file to refresh the Srs instance...{_srsManager.Srs.ConfFilePath!}");
+                var bl = _srsManager.Reload(out rs);
+                Sender.Tell(new ApisResult(bl, rs));
+
+            });
+            Receive<Messages.System>(vhIf => vhIf.Method == "DelSrsInstanceByDeviceId", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+
+                var ret = _srsManager;
+                if (ret != null)
+                {
+                    if (ret.Srs != null && (ret.IsRunning || ret.IsInit))
+                    {
+                        //Stop the srs process
+                        while (ret.IsRunning)
+                        {
+                            ret.Stop(out rs);
+                            Thread.Sleep(100);
+                        }
+                    }
+
+                    File.Delete(ret.SrsConfigPath);
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.None,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                    };
+                    Sender.Tell(new ApisResult(true, rs));
+                    Self.GracefulStop(TimeSpan.FromMilliseconds(1000));
+                }
+                else
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsObjectNotInit,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                }
+            });
+            Receive<Messages.System>(vhIf => vhIf.Method == "GetSrsInstanceByDeviceId", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+               
+                Sender.Tell(new ApisResult(_srsManager, rs));
+            });
+            Receive<Messages.System>(vhIf => vhIf.Method == "GetSrsManagerInstanceByDeviceId", vh =>
+            {
+               
+                Sender.Tell(_srsManager);
+
+            });
+        }
+        private bool CheckNewSrsInstancePathRight(SrsManager sm, out ResponseStruct rs)
+        {
+            if (sm == null)
+            {
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.FunctionInputParamsError,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.FunctionInputParamsError],
+                };
+                return false;
+            }
+
+            var devId = sm.SrsDeviceId;
+            var confPath = sm.SrsConfigPath;
+            if (string.IsNullOrEmpty(devId) || string.IsNullOrEmpty(confPath))
+            {
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.FunctionInputParamsError,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.FunctionInputParamsError],
+                };
+                return false;
+            }
+
+            var ret = _srsManager.SrsDeviceId.Trim().ToUpper().Equals(devId.Trim().ToUpper());
+            if (ret)
+            {
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.SrsInstanceExists,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.SrsInstanceExists],
+                };
+                return false;
+            }
+
+            ret = _srsManager.SrsConfigPath.Trim().ToUpper().Equals(confPath.Trim().ToUpper());
+            if (ret)
+            {
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.SrsInstanceConfigPathExists,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.SrsInstanceConfigPathExists],
+                };
+                return false;
+            }
+
+            rs = new ResponseStruct()
+            {
+                Code = ErrorNumber.None,
+                Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+            };
+            return true;
+        }
+        private bool CheckNewSrsInstanceListenRight(SrsManager sm, out ResponseStruct rs)
+        {
+            if (sm == null || sm.Srs == null)
+            {
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.FunctionInputParamsError,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.FunctionInputParamsError],
+                };
+                return false;
+            }
+
+            var port = sm.Srs.Listen;
+            if (port == null)
+            {
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.FunctionInputParamsError,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.FunctionInputParamsError],
+                };
+                return false;
+            }
+
+            if (_srsManager.Srs.Listen != port)
+            {
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.SrsInstanceListenExists,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.SrsInstanceListenExists],
+                };
+                return false;
+            }
+
+            if (sm.Srs.Http_api != null && sm.Srs.Http_api.Listen != null)
+            {
+                port = sm.Srs.Http_api.Listen;
+                if (_srsManager.Srs.Http_api!.Listen != port)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsInstanceHttpApiListenExists,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsInstanceHttpApiListenExists],
+                    };
+                    return false;
+                }
+            }
+
+            if (sm.Srs.Http_server != null && sm.Srs.Http_server.Listen != null)
+            {
+                port = sm.Srs.Http_server.Listen;
+                if (_srsManager.Srs.Http_server!.Listen != port)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsInstanceHttpServerListenExists,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsInstanceHttpServerListenExists],
+                    };
+                    return false;
+                }
+            }
+
+            if (sm.Srs.Rtc_server != null && sm.Srs.Rtc_server.Listen != null)
+            {
+                port = sm.Srs.Rtc_server.Listen;
+                if (_srsManager.Srs.Rtc_server!.Listen != port)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsInstanceRtcServerListenExists,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsInstanceRtcServerListenExists],
+                    };
+                    return false;
+                }
+            }
+
+            if (sm.Srs.Srt_server != null && sm.Srs.Srt_server.Listen != null)
+            {
+                port = sm.Srs.Srt_server.Listen;
+                if (_srsManager.Srs.Srt_server!.Listen != port)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsInstanceSrtServerListenExists,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsInstanceSrtServerListenExists],
+                    };
+                    return false;
+                }
+            }
+
+            if (sm.Srs.Stream_casters != null && sm.Srs.Stream_casters.Count > 0)
+            {
+                foreach (var caster in sm.Srs.Stream_casters)
+                {
+                    if (caster != null && caster.Listen != null)
+                    {
+                        foreach (var sc in _srsManager.Srs.Stream_casters!)
+                        {
+                            if (sc != null)
+                            {
+                                if (sc.Listen == caster.Listen)
+                                {
+                                    rs = new ResponseStruct()
+                                    {
+                                        Code = ErrorNumber.SrsInstanceStreamCasterListenExists,
+                                        Message = ErrorMessage.ErrorDic![
+                                            ErrorNumber.SrsInstanceStreamCasterListenExists],
+                                    };
+                                    return false;
+                                }
+
+                                if (caster.sip != null && sc.sip != null && caster.sip.Listen != null &&
+                                    sc.sip.Listen != null)
+                                {
+                                    if (caster.sip.Listen == sc.sip.Listen)
+                                    {
+                                        rs = new ResponseStruct()
+                                        {
+                                            Code = ErrorNumber.SrsInstanceStreamCasterSipListenExists,
+                                            Message = ErrorMessage.ErrorDic![
+                                                ErrorNumber.SrsInstanceStreamCasterSipListenExists],
+                                        };
+                                        return false;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            rs = new ResponseStruct()
+            {
+                Code = ErrorNumber.None,
+                Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+            };
+            return true;
         }
         public static Props Prop(PulsarSystem pulsarSystem)
         {

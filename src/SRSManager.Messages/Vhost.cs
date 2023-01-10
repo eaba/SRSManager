@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SrsApis.SrsManager;
 using SrsConfFile.SRSConfClass;
 using SRSManageCommon.ManageStructs;
 
@@ -43,4 +44,7 @@ namespace SRSManager.Messages
           = (deviceId, vhostDomain, newVhostDomain, null!, null!, method);
         }
     }
+
+    public readonly record struct CheckNewSrsInstanceListenRight(SrsManager Sm);
+    public readonly record struct CheckNewSrsInstancePathRight(SrsManager Sm);
 }
