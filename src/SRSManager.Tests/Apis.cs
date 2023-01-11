@@ -60,12 +60,12 @@ namespace SRSManager.Tests
                 hds.Hds_window = 50;
 
                 //VhostHdsApis.SetVhostHds(srsm.SrsDeviceId, d, hds, out rs);
-                SrtServerApis.DeleteSrtServer(srsm.SrsDeviceId, out rs);
+                //SrtServerApis.DeleteSrtServer(srsm.SrsDeviceId, out rs);
                 var srt = new SrsSrtServerConfClass();
-                srt = SrtServerApis.GetSrtServerTemplate(out rs);
+                //srt = SrtServerApis.GetSrtServerTemplate(out rs);
 
                 srt.Enabled = true;
-                SrtServerApis.SetSrtServer(srsm.SrsDeviceId, srt, out rs);
+                //SrtServerApis.SetSrtServer(srsm.SrsDeviceId, srt, out rs);
 
                 VhostApis.DeleteVhostByDomain(srsm.SrsDeviceId, "__defaultvhost__", out rs);
                 //VhostRtcApis.DeleteVhostRtc(srsm.SrsDeviceId, d, out rs);

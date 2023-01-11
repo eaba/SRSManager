@@ -9,6 +9,7 @@ using SharpPulsar;
 using SrsConfFile;
 using Akka.Event;
 using Org.BouncyCastle.Ocsp;
+using Org.BouncyCastle.Crypto.Agreement.Srp;
 
 namespace SRSManager.Actors
 {
@@ -42,6 +43,8 @@ namespace SRSManager.Actors
             });
             GlobalSrsApis();
             //Pulsar
+            SrtServerApis();
+            StatsApis();
             StreamCasterApis();
             SystemApis();
             VhostBandcheckApis();
@@ -4505,6 +4508,165 @@ namespace SRSManager.Actors
                 {
                     Code = ErrorNumber.SrsSubInstanceNotFound,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                };
+                Sender.Tell(new ApisResult(false, rs));
+            });
+        }
+        private void StatsApis()
+        {
+            Receive<Stats>(vhIf => vhIf.Method == "SetSrsStats", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager.Srs != null)
+                {
+                    _srsManager.Srs.Stats = vh.Stat;
+                    Sender.Tell(new ApisResult(true, rs));
+                    return;
+                }
+
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.SrsObjectNotInit,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                };
+                Sender.Tell(new ApisResult(false, rs));
+
+                return;
+                
+            });
+            Receive<Stats>(vhIf => vhIf.Method == "GetSrsStats", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager.Srs != null)
+                {
+                    Sender.Tell(new ApisResult(_srsManager.Srs.Stats!, rs));
+                    return;
+                }
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.SrsObjectNotInit,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                };
+                Sender.Tell(new ApisResult(null!, rs));
+            });
+            Receive<Stats>(vhIf => vhIf.Method == "DelStats", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager.Srs != null)
+                {
+                    _srsManager.Srs.Stats = null;
+                    Sender.Tell(new ApisResult(true, rs));
+                    return;
+                }
+
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.SrsObjectNotInit,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                };
+                Sender.Tell(new ApisResult(false, rs));
+
+                return;
+
+            });
+        }
+        private void SrtServerApis()
+        {
+            Receive<SrtServer>(vhIf => vhIf.Method == "SetSrtServer", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager.Srs != null)
+                {
+                    _srsManager.Srs.Srt_server = vh.Srt;
+                    Sender.Tell(new ApisResult(true, rs));
+                    return;
+                }
+
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.SrsObjectNotInit,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                };
+                Sender.Tell(new ApisResult(false, rs));
+
+                return;
+
+            });
+            Receive<SrtServer>(vhIf => vhIf.Method == "GetSrtServer", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager.Srs != null)
+                {
+                    Sender.Tell(new ApisResult(_srsManager.Srs.Srt_server!, rs));
+                    return;
+                }
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.SrsObjectNotInit,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                };
+                Sender.Tell(new ApisResult(null!, rs));
+            });
+            Receive<SrtServer>(vhIf => vhIf.Method == "DelSrtServer", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager.Srs != null)
+                {
+                    _srsManager.Srs.Srt_server = null;
+                    Sender.Tell(new ApisResult(true, rs));
+                    return;
+                }
+
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.SrsObjectNotInit,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                };
+                Sender.Tell(new ApisResult(false, rs));
+
+            });
+            Receive<SrtServer>(vhIf => vhIf.Method == "OnOrOffSrtServer", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager.Srs != null /*&& ret.Srs.Rtc_server != null*/)
+                {
+                    _srsManager.Srs.Srt_server!.Enabled = vh.Enable;
+                    Sender.Tell(new ApisResult(true, rs));
+                    return;
+                }
+
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.SrsObjectNotInit,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
                 };
                 Sender.Tell(new ApisResult(false, rs));
             });

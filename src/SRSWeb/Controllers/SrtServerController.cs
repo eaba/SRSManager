@@ -1,7 +1,11 @@
+using Akka.Actor;
+using Akka.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using SrsApis.SrsManager.Apis;
 using SrsConfFile.SRSConfClass;
 using SrsManageCommon;
+using SRSManager.Actors;
+using SRSManager.Messages;
 using SRSManager.Shared;
 using SRSWeb.Attributes;
 
@@ -14,6 +18,11 @@ namespace SRSWeb.Controllers
     [Route("")]
     public class SrtServerController : ControllerBase
     {
+        private readonly IActorRef _actor;
+        public SrtServerController(IRequiredActor<SRSManagersActor> actor)
+        {
+            _actor = actor.ActorRef;
+        }
         /// <summary>
         /// Get srtserver configuration
         /// </summary>
@@ -22,7 +31,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/SrtServer/GetSrtServer")]
-        public JsonResult GetSrtServer(string deviceId)
+        public async ValueTask<JsonResult> GetSrtServer(string deviceId)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId});
             if (rss.Code != ErrorNumber.None)
@@ -30,8 +39,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = SrtServerApis.GetSrtServer(deviceId, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var rt = await _actor.Ask<ApisResult>(new SrtServer(deviceId, "GetSrtServer"));
+            return Result.DelApisResult(rt.Rt, rt.Rs);
         }
 
         /// <summary>
@@ -42,7 +51,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/SrtServer/SetSrtServer")]
-        public JsonResult SetSrsSrtServer(string deviceId, SrsSrtServerConfClass srt)
+        public async ValueTask<JsonResult> SetSrsSrtServer(string deviceId, SrsSrtServerConfClass srt)
         {
             var rss = CommonFunctions.CheckParams(new object[] {srt, deviceId});
             if (rss.Code != ErrorNumber.None)
@@ -50,8 +59,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = SrtServerApis.SetSrtServer(deviceId, srt, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var rt = await _actor.Ask<ApisResult>(new SrtServer(deviceId, srt, "SetSrtServer"));
+            return Result.DelApisResult(rt.Rt, rt.Rs);
         }
 
         /// <summary>
@@ -62,7 +71,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/SrtServer/DelSrtServer")]
-        public JsonResult DelSrsSrtServer(string deviceId)
+        public async ValueTask<JsonResult> DelSrsSrtServer(string deviceId)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId});
             if (rss.Code != ErrorNumber.None)
@@ -70,8 +79,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = SrtServerApis.DeleteSrtServer(deviceId, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var rt = await _actor.Ask<ApisResult>(new SrtServer(deviceId, "DelSrtServer"));
+            return Result.DelApisResult(rt.Rt, rt.Rs);
         }
     }
 }

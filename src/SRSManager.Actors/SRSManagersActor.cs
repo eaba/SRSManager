@@ -126,6 +126,22 @@ namespace SRSManager.Actors
                 var srs = SRSManager(v.DeviceId);
                 srs.Forward(v);
             });
+            Receive<StreamCaster>(v =>
+            {
+                var srs = SRSManager(v.DeviceId);
+                srs.Forward(v);
+            });
+            Receive<Stats>(v =>
+            {
+                var srs = SRSManager(v.DeviceId);
+                srs.Forward(v);
+            });
+            Receive<SrtServer>(v =>
+            {
+                var srs = SRSManager(v.DeviceId);
+                srs.Forward(v);
+            });
+            
             ReceiveAsync<Messages.System > (async v =>
             {
                 if(v.Sm != null)
@@ -229,6 +245,32 @@ namespace SRSManager.Actors
             Receive<GetSrsInstanceTemplate>(_ =>
             {
                 Sender.Tell(new ApisResult(GetSrsInstanceTemplate(out ResponseStruct rs), rs));
+            });
+            Receive<GetSrtServerTemplate>(_ =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                var srs = new SrsSrtServerConfClass()
+                {
+                    SectionsName = "srt_server",
+                    Enabled = true,
+                    Listen = 10080,
+                    Maxbw = 1000000000,
+                    Connect_timeout = 4000,
+                    Peerlatency = 300,
+                    Recvlatency = 300,
+                    Sendbuf = 2000000,
+                    Recvbuf = 2000000,
+                    Latency = 100,
+                    Tsbpdmode = false,
+                    Tlpktdrop = false,
+                    Passphrase = "",
+                    Pbkeylen = 16
+                };
+                Sender.Tell(new ApisResult(srs, rs));
             });
             Receive<GetStreamCasterTemplate>(g =>
             {
