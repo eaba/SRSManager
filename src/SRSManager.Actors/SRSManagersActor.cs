@@ -354,6 +354,39 @@ namespace SRSManager.Actors
                 }
                
             });
+            Receive<GetRtcServerTemplate>(_ =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                var rtc = new SrsRtcServerConfClass()
+                {
+                    Enabled = true,
+                    Listen = 8000,
+                    Candidate = "*",
+                    SectionsName = "rtc_server",
+                    Protocol = "udp",
+                    Tcp = new Tcp
+                    {
+                        Enabled = false,
+                        Listen = 8000
+                    },
+                    UseAutoDetectNetworkIp = true,
+                    IpFamily = "ipv4",
+                    ApiAsCandidates = true,
+                    ResolveApiDomain = true,
+                    KeepApiDomain = false,
+                    Black_hole = new BlackHole()
+                    {
+                        Enabled = false,
+                        Addr = "127.0.0.1:10000",
+                        SectionsName = "black_hole",
+                    }
+                };
+                Sender.Tell(new ApisResult(rtc, rs));
+            });
         }
         private List<NetworkInterfaceModule> GetNetworkAdapterList()
         {

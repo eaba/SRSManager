@@ -35,30 +35,6 @@ namespace SRSWeb.Controllers
             return -1;
         }
 
-        /*
-        /// <summary>
-        /// When there is a client or the camera is turned off
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost]
-        [AuthVerify]
-        [LogSrsCallBack]
-        [Route("/SrsHooks/OnClose")]
-        public int OnClose(ReqSrsClientOnClose client)
-        {
-            OnlineClient tmpOnlineClient = new OnlineClient()
-            {
-                Device_Id = client.Device_Id,
-                Client_Id = ushort.Parse(client.Client_Id!),
-                ClientIp = client.Ip,
-                App = client.App,
-                Vhost = client.Vhost,
-            };
-            var rt = SrsHooksApis.OnClose(tmpOnlineClient);
-            if (rt) return 0;
-            return -1;
-        }
-        */
         /// <summary>
         /// When a camera stops streaming
         /// </summary>
@@ -228,37 +204,5 @@ namespace SRSWeb.Controllers
             if (rt) return 0;
             return -1;
         }
-/*
-        /// <summary>
-        /// When a client or camera is connected
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost]
-        [AuthVerify]
-        [LogSrsCallBack]
-        [Route("/SrsHooks/OnConnect")]
-        public int OnConnect(ReqSrsClientOnConnect client)
-        {
-            OnlineClient tmpOnlineClient = new OnlineClient()
-            {
-                MonitorType = MonitorType.Unknow,
-                Device_Id = client.Device_Id,
-                Client_Id = ushort.Parse(client.Client_Id!),
-                ClientIp = client.Ip,
-                ClientType = ClientType.User,
-                App = client.App,
-                HttpUrl = client.PageUrl,
-                IsOnline = true,
-                Param = "",
-                RtmpUrl = client.TcUrl,
-                Stream = "",
-                UpdateTime = DateTime.Now,
-                Vhost = client.Vhost,
-            };
-            var rt = SrsHooksApis.OnConnect(tmpOnlineClient);
-            if (rt) return 0;
-            return -1;
-        }
-   */
     }
 }

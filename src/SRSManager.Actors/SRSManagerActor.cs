@@ -10,6 +10,7 @@ using SrsConfFile;
 using Akka.Event;
 using Org.BouncyCastle.Ocsp;
 using Org.BouncyCastle.Crypto.Agreement.Srp;
+using SrsApis.SrsManager.Apis;
 
 namespace SRSManager.Actors
 {
@@ -43,6 +44,7 @@ namespace SRSManager.Actors
             });
             GlobalSrsApis();
             //Pulsar
+            RtcServerApis();
             SrtServerApis();
             StatsApis();
             StreamCasterApis();
@@ -4656,9 +4658,98 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager.Srs != null /*&& ret.Srs.Rtc_server != null*/)
+                if (_srsManager.Srs != null && _srsManager.Srs.Srt_server != null)
                 {
                     _srsManager.Srs.Srt_server!.Enabled = vh.Enable;
+                    Sender.Tell(new ApisResult(true, rs));
+                    return;
+                }
+
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.SrsObjectNotInit,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                };
+                Sender.Tell(new ApisResult(false, rs));
+            });
+        }
+        private void RtcServerApis()
+        {
+            Receive<RtcServer>(vhIf => vhIf.Method == "SetRtcServer", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager.Srs != null)
+                {
+                    _srsManager.Srs.Rtc_server = vh.Rtc;
+                    Sender.Tell(new ApisResult(true, rs));
+                    return;
+                }
+
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.SrsObjectNotInit,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                };
+                Sender.Tell(new ApisResult(false, rs));
+
+                return;
+
+            });
+            Receive<RtcServer>(vhIf => vhIf.Method == "GetSrsRtcServer", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager.Srs != null)
+                {
+                    Sender.Tell(new ApisResult(_srsManager.Srs.Rtc_server!, rs));
+                    return;
+                }
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.SrsObjectNotInit,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                };
+                Sender.Tell(new ApisResult(null!, rs));
+            });
+            Receive<RtcServer>(vhIf => vhIf.Method == "DelRtcServer", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager.Srs != null)
+                {
+                    _srsManager.Srs.Rtc_server = null;
+                    Sender.Tell(new ApisResult(true, rs));
+                    return;
+                }
+
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.SrsObjectNotInit,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                };
+                Sender.Tell(new ApisResult(false, rs));
+
+            });
+            Receive<RtcServer>(vhIf => vhIf.Method == "OnOrOffRtcServer", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager.Srs != null && _srsManager.Srs.Rtc_server != null)
+                {
+                    _srsManager.Srs.Rtc_server!.Enabled = vh.Enable;
                     Sender.Tell(new ApisResult(true, rs));
                     return;
                 }
