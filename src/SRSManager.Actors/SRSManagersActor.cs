@@ -121,6 +121,11 @@ namespace SRSManager.Actors
                 var srs = SRSManager(v.DeviceId);
                 srs.Forward(v);
             });
+            Receive<VhostBandcheck>(v =>
+            {
+                var srs = SRSManager(v.DeviceId);
+                srs.Forward(v);
+            });
             ReceiveAsync<Messages.System > (async v =>
             {
                 if(v.Sm != null)
@@ -224,6 +229,88 @@ namespace SRSManager.Actors
             Receive<GetSrsInstanceTemplate>(_ =>
             {
                 Sender.Tell(new ApisResult(GetSrsInstanceTemplate(out ResponseStruct rs), rs));
+            });
+            Receive<GetStreamCasterTemplate>(g =>
+            {
+                var casterType = g.CasterType;
+                var result = new SrsStreamCasterConfClass();
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None] + "\r\n" + JsonHelper.ToJson(casterType),
+                };
+                switch (casterType)
+                {
+                    case CasterEnum.flv:
+                        result.InstanceName = "streamcaster-flv-template";
+                        result.SectionsName = "stream_caster";
+                        result.sip = null;
+                        result.Enabled = true;
+                        result.Caster = CasterEnum.flv;
+                        result.Listen = 8936;
+                        result.Output = "rtmp://127.0.0.1/[vhost]/[app]/[stream]";
+                        Sender.Tell(new ApisResult(result, rs));
+                        break;
+                    case CasterEnum.gb28181:
+                        result.InstanceName = "streamcaster-gb28181-template";
+                        result.SectionsName = "stream_caster";
+                        result.sip = new Sip();
+                        result.sip.SectionsName = "sip";
+                        result.sip.Enabled = true;
+                        result.sip.Listen = 5060;
+                        result.sip.Serial = "34020000002000000001"; //server-id
+                        result.sip.Realm = "3402000000"; //server domain
+                        result.sip.Ack_timeout = 30;
+                        result.sip.Keepalive_timeout = 120;
+                        result.sip.Auto_play = true;
+                        result.sip.Invite_port_fixed = true;
+                        result.sip.Query_catalog_interval = 60;
+                        result.Enabled = true;
+                        result.Caster = CasterEnum.gb28181;
+                        result.Output = "rtmp://127.0.0.1/[vhost]/[app]/[stream]";
+                        result.Listen = 9000;
+                        result.Rtp_port_max = 58300;
+                        result.Rtp_port_min = 58200;
+                        result.Wait_keyframe = false;
+                        result.Rtp_idle_timeout = 30;
+                        result.Audio_enable = true; //Only supports acc format audio stream
+                        result.Host = "*";
+                        result.Auto_create_channel = false;
+                        Sender.Tell(new ApisResult(result, rs));
+                        break;
+                    case CasterEnum.mpegts_over_udp:
+                        result.InstanceName = "streamcaster-mpegts_over_udp-template";
+                        result.SectionsName = "stream_caster";
+                        result.sip = null;
+                        result.Enabled = true;
+                        result.Caster = CasterEnum.mpegts_over_udp;
+                        result.Listen = 1935;
+                        result.Output = "rtmp://127.0.0.1/[vhost]/[app]/[stream]";
+                        Sender.Tell(new ApisResult(result, rs));
+                        break;
+                    case CasterEnum.rtsp:
+                        result.InstanceName = "streamcaster-rtsp-template";
+                        result.SectionsName = "stream_caster";
+                        result.sip = null;
+                        result.Enabled = true;
+                        result.Caster = CasterEnum.rtsp;
+                        result.Listen = 554;
+                        result.Output = "rtmp://127.0.0.1/[vhost]/[app]/[stream]";
+                        result.Rtp_port_min = 57200;
+                        result.Rtp_port_max = 57300;
+                        Sender.Tell(new ApisResult(result, rs));
+                        break;
+                    default:
+                        rs = new ResponseStruct()
+                        {
+                            Code = ErrorNumber.FunctionInputParamsError,
+                            Message = ErrorMessage.ErrorDic![ErrorNumber.FunctionInputParamsError] + "\r\n" +
+                                      JsonHelper.ToJson(casterType),
+                        };
+                        Sender.Tell(new ApisResult(null!, rs));
+                        break;
+                }
+               
             });
         }
         private List<NetworkInterfaceModule> GetNetworkAdapterList()

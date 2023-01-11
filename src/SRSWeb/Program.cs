@@ -3,7 +3,6 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
 using Akka.Hosting;
-using SharpPulsar;
 using SRSManager.Shared;
 using SRSManager.Actors;
 

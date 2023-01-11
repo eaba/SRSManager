@@ -7,9 +7,7 @@ using System.Threading;
 using SrsApis.SrsManager.Apis;
 using SrsManageCommon;
 using SRSManageCommon.ControllerStructs.RequestModules;
-using SRSManageCommon.ControllerStructs.ResponseModules;
 using SRSManageCommon.DBMoudle;
-using SRSManageCommon.ManageStructs;
 
 namespace SRSApis.SystemAutonomy
 {

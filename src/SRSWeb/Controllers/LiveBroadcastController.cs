@@ -3,7 +3,6 @@ using SrsApis.SrsManager.Apis;
 using SrsManageCommon;
 using SrsManageCommon.ControllerStructs;
 using SRSManageCommon.DBMoudle;
-using SRSManageCommon.ManageStructs;
 using SRSManager.Shared;
 using SRSWeb.Attributes;
 

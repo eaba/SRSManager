@@ -9,32 +9,6 @@ using SRSManageCommon.ManageStructs;
 
 namespace SRSApis
 {
-    [Serializable]
-    public class OnvifConfig
-    {
-        private string _ipAddr = null!;
-        private string? _password;
-        private string? _username;
-
-        public string IpAddr
-        {
-            get => _ipAddr;
-            set => _ipAddr = value ?? throw new ArgumentNullException(nameof(value));
-        }
-
-        public string? Username
-        {
-            get => _username;
-            set => _username = value;
-        }
-
-        public string? Password
-        {
-            get => _password;
-            set => _password = value;
-        }
-    }
-
     public static class Common
     {
         public static readonly string WorkPath = Environment.CurrentDirectory + "/";

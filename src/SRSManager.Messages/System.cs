@@ -1,37 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SrsApis.SrsManager;
+﻿using SrsApis.SrsManager;
 
 namespace SRSManager.Messages
 {
     public readonly record struct System
     {
-        public string DeviceId { get; }
-        public string VHostDomain { get; }
+        public string? DeviceId { get; }
+        public string? VHostDomain { get; }
         public SrsManager? Sm { get; }   
-        public string Method { get; }
+        public string? Method { get; }
         public System(string method)
         {
-            (DeviceId, VHostDomain, Sm, Method)
-          = (string.Empty, string.Empty, null!, method);
+            Method = method;
         }
         public System(string deviceId, string method)
         {
-            (DeviceId, VHostDomain, Sm, Method)
-          = (deviceId, string.Empty, null!, method);
+            DeviceId = deviceId;
+            Method = method;
         }
         public System(string deviceId, string vhostDomain, string method)
         {
-            (DeviceId, VHostDomain, Sm, Method)
-          = (deviceId, vhostDomain, null!, method);
+            DeviceId = deviceId;
+            VHostDomain = vhostDomain;
+            Method = method;
         }
         public System(SrsManager sm, string method)
         {
-            (DeviceId, VHostDomain, Sm, Method)
-          = (string.Empty, string.Empty, sm, method);
+            Sm= sm;
+            Method = method;
         }
     }
 

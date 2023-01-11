@@ -5,19 +5,22 @@ namespace SRSManager.Messages
 {
     public readonly record struct VhostExec
     {
-        public string DeviceId { get; }
-        public string VHostDomain { get; }
+        public string? DeviceId { get; }
+        public string? VHostDomain { get; }
         public Exec? Exec { get; }
-        public string Method { get; }
+        public string? Method { get; }
         public VhostExec(string deviceId, string vhostDomain, string method)
         {
-            (DeviceId, VHostDomain, Exec, Method)
-          = (deviceId, vhostDomain, null!, method);
+            DeviceId = deviceId;
+            VHostDomain = vhostDomain;
+            Method = method;
         }
         public VhostExec(string deviceId, string vhostDomain, Exec exec, string method)
         {
-            (DeviceId, VHostDomain, Exec, Method)
-          = (deviceId, vhostDomain, exec, method);
+            DeviceId = deviceId;
+            VHostDomain = vhostDomain;
+            Method = method;
+            Exec= exec;
         }
     }
 }

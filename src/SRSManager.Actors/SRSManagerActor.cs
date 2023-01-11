@@ -6,14 +6,9 @@ using SRSManager.Messages;
 using SrsConfFile.SRSConfClass;
 using SharpPulsar.User;
 using SharpPulsar;
-using SharpPulsar.Interfaces;
-using System.Text.Json;
-using System.Text;
-using Org.BouncyCastle.Ocsp;
-using MySqlX.XDevAPI.Relational;
-using SrsApis.SrsManager.Apis;
 using SrsConfFile;
 using Akka.Event;
+using Org.BouncyCastle.Ocsp;
 
 namespace SRSManager.Actors
 {
@@ -47,6 +42,7 @@ namespace SRSManager.Actors
             });
             GlobalSrsApis();
             //Pulsar
+            StreamCasterApis();
             SystemApis();
             VhostBandcheckApis();
             VhostClusterApis();
@@ -78,7 +74,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -140,7 +136,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -198,7 +194,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -258,7 +254,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -317,7 +313,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -1124,7 +1120,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -1171,7 +1167,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -1218,7 +1214,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -1265,7 +1261,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -1312,7 +1308,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -1359,7 +1355,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -1405,7 +1401,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -1452,7 +1448,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -1499,7 +1495,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -1545,7 +1541,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -1592,7 +1588,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -1639,7 +1635,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -1685,7 +1681,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -1732,7 +1728,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -1779,7 +1775,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -1825,7 +1821,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -1888,7 +1884,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -1950,7 +1946,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -2008,7 +2004,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -2067,7 +2063,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -2126,7 +2122,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -2169,7 +2165,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -2244,7 +2240,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -2291,7 +2287,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -2338,7 +2334,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -2384,7 +2380,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -2431,7 +2427,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -2478,7 +2474,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -2524,7 +2520,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -2571,7 +2567,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -2618,7 +2614,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -2664,7 +2660,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -2711,7 +2707,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -2758,7 +2754,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -2804,7 +2800,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -2851,7 +2847,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -2898,7 +2894,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -2944,7 +2940,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -2991,7 +2987,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -3038,7 +3034,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -3084,7 +3080,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -3131,7 +3127,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -3174,7 +3170,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -3224,7 +3220,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -3271,7 +3267,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -3314,7 +3310,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -3364,7 +3360,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -3411,7 +3407,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -3454,7 +3450,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -3504,7 +3500,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -3536,7 +3532,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -3581,7 +3577,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -3732,7 +3728,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -3773,7 +3769,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -3818,7 +3814,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -3883,7 +3879,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -3930,7 +3926,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -3973,7 +3969,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -4023,7 +4019,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -4070,7 +4066,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -4113,7 +4109,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                if (_srsManager == null)
+                if (_srsManager.Srs == null)
                 {
                     rs = new ResponseStruct()
                     {
@@ -4224,6 +4220,293 @@ namespace SRSManager.Actors
                
                 Sender.Tell(_srsManager);
 
+            });
+        }
+
+        private void StreamCasterApis()
+        {
+            Receive<StreamCaster>(vhIf => vhIf.Method == "SetStreamCaster", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager.Srs != null && _srsManager.Srs.Stream_casters != null)
+                {
+                    var retStreamCaster = _srsManager.Srs.Stream_casters.FindLast(x =>
+                        x.InstanceName!.Trim().ToUpper().Equals(vh.Streamcaster!.InstanceName!.Trim().ToUpper()));
+                    if (retStreamCaster != null)
+                    {
+                        if (retStreamCaster != null) //Revise
+                        {
+                            _srsManager.Srs.Stream_casters[_srsManager.Srs.Stream_casters.IndexOf(retStreamCaster)] = vh.Streamcaster!;
+                            Sender.Tell(new ApisResult(true, rs));
+                            return;
+                        }
+
+                        _srsManager.Srs.Stream_casters.Add(vh.Streamcaster!);
+                        Sender.Tell(new ApisResult(true, rs));
+                        return;
+                    }
+                }
+
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.SrsSubInstanceNotFound,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                };
+                Sender.Tell(new ApisResult(false, rs));
+                
+            });
+            Receive<StreamCaster>(vhIf => vhIf.Method == "DeleteStreamCasterByInstanceName", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager.Srs == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsObjectNotInit,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+                if (_srsManager.Srs.Stream_casters == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+
+                var retStreamCaster = _srsManager.Srs.Stream_casters.FindLast(x =>
+                    x.InstanceName!.Trim().ToUpper().Equals(vh.InstanceName.Trim().ToUpper()));
+
+                if (retStreamCaster == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+
+
+                _srsManager.Srs.Stream_casters.Remove(retStreamCaster);
+                Sender.Tell(new ApisResult(true, rs));
+
+            });
+            Receive<StreamCaster>(vhIf => vhIf.Method == "GetStreamCasterInstanceNameList", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager.Srs == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsObjectNotInit,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                    };
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }
+                if (_srsManager.Srs.Stream_casters == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }
+
+                var slist = _srsManager.Srs.Stream_casters.Select(i => i.InstanceName).ToList()!;
+                Sender.Tell(new ApisResult(slist, rs));
+            });
+            Receive<StreamCaster>(vhIf => vhIf.Method == "GetStreamCasterInstanceList", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager.Srs == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsObjectNotInit,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                    };
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }
+                if (_srsManager.Srs.Stream_casters == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }
+
+                Sender.Tell(new ApisResult(_srsManager.Srs.Stream_casters!, rs));
+            });
+            Receive<StreamCaster>(vhIf => vhIf.Method == "CreateStreamCaster", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager.Srs == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsObjectNotInit,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+
+                if (_srsManager.Srs.Stream_casters == null)
+                {
+                    _srsManager.Srs.Stream_casters = new List<SrsStreamCasterConfClass>
+                    {
+                        vh.Streamcaster!
+                    };
+                    Sender.Tell(new ApisResult(true, rs));
+                    return;
+                }
+
+                var retStreamCaster = _srsManager.Srs.Stream_casters.FindLast(x =>
+                    x.InstanceName!.Trim().ToUpper().Equals(vh.Streamcaster!.InstanceName!.Trim().ToUpper()));
+
+                if (retStreamCaster == null)
+                {
+                    _srsManager.Srs.Stream_casters.Add(vh.Streamcaster!);
+                    Sender.Tell(new ApisResult(true, rs));
+                    return;
+                }
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.SrsSubInstanceAlreadyExists,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceAlreadyExists],
+                };
+                Sender.Tell(new ApisResult(false, rs));
+            });
+            Receive<StreamCaster>(vhIf => vhIf.Method == "ChangeStreamCasterInstanceName", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager.Srs == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsObjectNotInit,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+                if (_srsManager.Srs.Stream_casters == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+
+                var retStreamCaster = _srsManager.Srs.Stream_casters.FindLast(x =>
+                    x.InstanceName!.Trim().ToUpper().Equals(vh.InstanceName!.Trim().ToUpper()));
+                if (retStreamCaster == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+                var retStreamCasterNew = _srsManager.Srs.Stream_casters.FindLast(x =>
+                    x.InstanceName!.Trim().ToUpper().Equals(vh.NewInstanceName!.Trim().ToUpper()));
+                if (retStreamCasterNew != null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceAlreadyExists,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceAlreadyExists],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+
+                retStreamCaster.InstanceName = vh.NewInstanceName;
+                
+                Sender.Tell(new ApisResult(true, rs));
+
+            });
+            Receive<StreamCaster>(vhIf => vhIf.Method == "OnOrOffStreamCaster", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager.Srs != null && _srsManager.Srs.Stream_casters != null)
+                {
+                    var retStreamCaster = _srsManager.Srs.Stream_casters.FindLast(x =>
+                        x.InstanceName!.Trim().ToUpper().Equals(vh.InstanceName!.Trim().ToUpper()));
+                    if (retStreamCaster != null)
+                    {
+                        retStreamCaster.Enabled = vh.Enable;
+                        if (retStreamCaster.sip != null)
+                        {
+                            retStreamCaster.sip.Enabled = vh.Enable;
+                        }
+
+                        Sender.Tell(new ApisResult(true, rs));
+                        return;
+                    }
+
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.SrsSubInstanceNotFound,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                };
+                Sender.Tell(new ApisResult(false, rs));
             });
         }
         private bool CheckNewSrsInstancePathRight(SrsManager sm, out ResponseStruct rs)
