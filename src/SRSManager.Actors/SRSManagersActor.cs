@@ -15,12 +15,17 @@ namespace SRSManager.Actors
 {
     public class SRSManagersActor : ReceiveActor
     {
+        private IActorRef _cutMergeService;
         private PulsarSystem _pulsarSystem = PulsarSystem.GetInstance(Context.System, actorSystemName: "Pulsar");
         private Dictionary<string, IActorRef> _srs = new Dictionary<string, IActorRef>();
+        private IActorRef _dvrPlan;
         private readonly ILoggingAdapter _log;
         public SRSManagersActor()
         {
+            _cutMergeService = Context.ActorOf(CutMergeServiceActor.Prop());
+            _dvrPlan = Context.ActorOf(DvrPlanActor.Prop(_pulsarSystem, _cutMergeService));
             _log = Context.GetLogger();
+            Receive<DvrPlan>(d => _dvrPlan.Forward(d));
             Receive<GlobalSrs>(g =>
             {
                 var srs = SRSManager(g.DeviceId);
@@ -140,6 +145,10 @@ namespace SRSManager.Actors
             {
                 var srs = SRSManager(v.DeviceId);
                 srs.Forward(v);
+            });
+            Receive<DvrPlan>(v =>
+            {                
+               _dvrPlan.Forward(v);
             });
             
             ReceiveAsync<Messages.System > (async v =>
