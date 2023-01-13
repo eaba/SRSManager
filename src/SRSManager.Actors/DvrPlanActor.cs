@@ -12,23 +12,58 @@ using SRSManageCommon.ControllerStructs.RequestModules;
 using TaskStatus = SRSManageCommon.ManageStructs.TaskStatus;
 using SharpPulsar.Trino;
 using SharpPulsar.Utils;
-using SRSManageCommon.DBMoudle;
-using MySqlX.XDevAPI.Relational;
+using SharpPulsar.Schemas;
+using Newtonsoft.Json.Schema;
+using SharpPulsar.Builder;
+using SharpPulsar.User;
+using SharpPulsar.Interfaces;
+using SrsConfFile.SRSConfClass;
+using System.Security.Policy;
+using Ubiety.Dns.Core.Records;
+using System;
 
 namespace SRSManager.Actors
 {
     internal class DvrPlanActor : ReceiveActor
     {
         private PulsarSystem _pulsarSystem;
+        private AvroSchema<DvrVideo> _dvrVideo;
+        private AvroSchema<StreamDvrPlan> _streamDvr;
         private IActorRef _cutMergeService;
         private readonly ILoggingAdapter _log;
+        private Producer<DvrVideo> _producerDvr;
+        private Producer<StreamDvrPlan> _producerStream;
+        private ProducerConfigBuilder<DvrVideo> _producerConfigDvr;
+        private ProducerConfigBuilder<StreamDvrPlan> _producerConfigStream;
+        private PulsarClient _client;
         private string _workPath = Environment.CurrentDirectory + "/";
+        private PulsarClientConfigBuilder _pulsarConfig;
         private SystemConfig _systemConfig = null!;
         public DvrPlanActor(PulsarSystem pulsarSystem, IActorRef cutMergeService)
         {
+            _dvrVideo = AvroSchema<DvrVideo>.Of(typeof(DvrVideo));
+            _streamDvr = AvroSchema<StreamDvrPlan>.Of(typeof(StreamDvrPlan));
+
             _pulsarSystem = pulsarSystem;
             _log = Context.GetLogger();
             _cutMergeService = cutMergeService;
+            ReceiveAsync<DvrPlan>(vhIf => vhIf.Method == "PulsarSrsConfig", async vh =>
+            {
+                var f = vh.Client!.Value;
+                _pulsarConfig = new PulsarClientConfigBuilder()
+                .ServiceUrl(f.BrokerUrl);
+                _client = await pulsarSystem.NewClient(_pulsarConfig);
+
+                _producerConfigDvr = new ProducerConfigBuilder<DvrVideo>()
+                .ProducerName("dvr_video")
+                .Schema(_dvrVideo)
+                .Topic($"{f.Topic}");
+
+                _producerConfigStream = new ProducerConfigBuilder<StreamDvrPlan>()
+                .ProducerName("stream_dvr_plan")
+                .Schema(_streamDvr)
+                .Topic($"{f.Topic}_stream");
+            });
             ReceiveAsync<DvrPlan>(vhIf => vhIf.Method == "GetBacklogTaskList", async vh => 
             {
                 await GetBacklogTaskList(Sender);
@@ -40,6 +75,10 @@ namespace SRSManager.Actors
             ReceiveAsync<DvrPlan>(vhIf => vhIf.Method == "CutOrMergeVideoFile", async vh =>
             {
                 await CutOrMergeVideoFile(vh.Rcmv!, Sender);
+            });
+            ReceiveAsync<DvrPlan>(vhIf => vhIf.Method == "UndoSoftDelete", async vh =>
+            {
+                await UndoSoftDelete(vh.DvrVideoId!.Value, Sender);
             });
             //Sender.Tell(new ApisResult(false, rs));
         }
@@ -177,12 +216,16 @@ namespace SRSManager.Actors
                         TaskStatus = TaskStatus.Create,
                         ProcessPercentage = 0,
                     };
-                    var taskReturn = Task.Factory.StartNew(() => CutMergeService.CutMerge(task)); //thread throwing
-                    taskReturn.Wait();
-                    taskReturn.Result.Request = rcmv;
-                    taskReturn.Result.Uri = ":" + Common.SystemConfig.HttpPort +
-                                            taskReturn.Result.FilePath!.Replace(Common.WorkPath + "CutMergeFile", "");
-                    sender.Tell(new ApisResult(taskReturn.Result, rs));
+                    var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+                    Akka.Dispatch.ActorTaskScheduler.RunTask(async () =>
+                    {
+                        var r =  await _cutMergeService.Ask<CutMergeTaskResponse>(new CutMerge(task));
+                        r.Request = rcmv;
+                        r.Uri = ":" + Common.SystemConfig.HttpPort + r.FilePath!.Replace(Common.WorkPath + "CutMergeFile", "");
+                      
+                        sender.Tell(new ApisResult(r, rs));
+                    });
+                    await tcs.Task;
                     return;
                 }
 
@@ -237,12 +280,12 @@ namespace SRSManager.Actors
                 return;
             }
         }
-        private async ValueTask<List<DvrVideo>> QuerySql(ReqCutOrMergeVideoFile rcmv, string tenant = "public", string nameSpace = "default" )
+        private async ValueTask<List<DvrVideo>> DvrVideosSql(ReqCutOrMergeVideoFile rcmv, string tenant = "public", string nameSpace = "default" )
         {
             var _start = DateTime.Parse(rcmv.StartTime.ToString("yyyy-MM-dd HH:mm:ss")).AddSeconds(-20); //push forward 20 seconds
             var _end = DateTime.Parse(rcmv.EndTime.ToString("yyyy-MM-dd HH:mm:ss")).AddSeconds(20); //20 seconds backward delay
-                       
-            var topic = $"{rcmv.Stream}";
+
+            var topic = _producerConfigDvr.Topic;
             var option = new ClientOptions { Server = "http://127.0.0.1:8081", Execute = 
                 @$"select * from ""{topic}"" 
                 WHERE Device_Id = '{rcmv.DeviceId}' 
@@ -277,6 +320,40 @@ namespace SRSManager.Actors
             }
             return dvr;
         }
+        private async ValueTask<DvrVideo> DvrVideoSql(long id, string tenant = "public", string nameSpace = "default")
+        {
+            var topic = _producerConfigDvr.Topic;
+            var option = new ClientOptions
+            {
+                Server = "http://127.0.0.1:8081",
+                Execute =
+                @$"select * from ""{topic}"" 
+                WHERE Id = '{id}'                  
+                ORDER BY __publish_time__ ASC LIMIT 1",
+                Catalog = "pulsar",
+                Schema = $"{tenant}/{nameSpace}"
+            };
+            var sql = new SqlInstance(_pulsarSystem.System, option);
+            var data = await sql.ExecuteAsync();
+            var dvr = new DvrVideo();
+            switch (data.Response)
+            {
+                case StatsResponse stats:
+                    _log.Info(JsonSerializer.Serialize(stats, new JsonSerializerOptions { WriteIndented = true }));
+                    break;
+                case DataResponse dt:
+                    var d = dt.Data.FirstOrDefault();
+                    var json = JsonSerializer.Serialize(d, new JsonSerializerOptions { WriteIndented = true });
+                    dvr = JsonSerializer.Deserialize<DvrVideo>(json)!;
+                    _log.Info(JsonSerializer.Serialize(dt.StatementStats, new JsonSerializerOptions { WriteIndented = true }));
+                    break;
+                case ErrorResponse er:
+                    _log.Info(JsonSerializer.Serialize(er, new JsonSerializerOptions { WriteIndented = true }));
+                    break;
+            }
+            return dvr;
+        }
+
         /// <summary>
         /// Get the list of files that need to be cropped and merged 
         /// </summary>
@@ -294,7 +371,7 @@ namespace SRSManager.Actors
             var endPos = -1;
             var _start = DateTime.Parse(rcmv.StartTime.ToString("yyyy-MM-dd HH:mm:ss")).AddSeconds(-20); //push forward 20 seconds
             var _end = DateTime.Parse(rcmv.EndTime.ToString("yyyy-MM-dd HH:mm:ss")).AddSeconds(20); //20 seconds backward delay
-            var videoList = await QuerySql(rcmv);
+            var videoList = await DvrVideosSql(rcmv);
 
             List<DvrVideo> cutMegerList = null!;
             if (videoList != null && videoList.Count > 0)
@@ -346,16 +423,15 @@ namespace SRSManager.Actors
                             return -1;
                     });
 
-                    cutMegerList =
-                        videoList.GetRange(tmpStartList[0].Key, endPos - tmpStartList[0].Key + 1); //Take the video closest to the requested time as the start video
+                    cutMegerList = videoList.GetRange(tmpStartList[0].Key, endPos - tmpStartList[0].Key + 1); //Take the video closest to the requested time as the start video
                     for (var i = cutMegerList.Count - 1; i >= 0; i--)
                     {
                         if (cutMegerList[i].StartTime > _end && cutMegerList[i].EndTime > _end
                         ) //If the start time of the video is greater than the required end time and it is not the last video, filter out the video
                         {
                             if (i > 0)
-                            {
-                                cutMegerList[i] = null!;
+                            {                               
+                                cutMegerList.Remove(cutMegerList[i]);
                             }
                         }
                     }
@@ -390,7 +466,7 @@ namespace SRSManager.Actors
                         {
                             if (i > 0)
                             {
-                                cutMegerList[i] = null!;
+                                cutMegerList.Remove(cutMegerList[i]);
                             }
                         }
                     }
@@ -538,7 +614,110 @@ namespace SRSManager.Actors
             return null!;
         }
 
+        /// <summary>
+        /// Recover soft-deleted recordings
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="rs"></param>
+        /// <returns></returns>
+        private async ValueTask UndoSoftDelete(long dvrVideoId, IActorRef sender)
+        {
+            var rs = new ResponseStruct()
+            {
+                Code = ErrorNumber.None,
+                Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+            };
+            DvrVideo retSelect =  await DvrVideoSql(dvrVideoId);
+            if (retSelect == null)
+            {
+                rs.Code = ErrorNumber.SystemDataBaseRecordNotExists;
+                rs.Message = ErrorMessage.ErrorDic![ErrorNumber.SystemDataBaseRecordNotExists];
+                sender.Tell(new ApisResult(false, rs));
+                return;
+            }
 
+            if (!File.Exists(retSelect.VideoPath))
+            {
+                rs.Code = ErrorNumber.DvrVideoFileNotExists;
+                rs.Message = ErrorMessage.ErrorDic![ErrorNumber.DvrVideoFileNotExists];
+                sender.Tell(new ApisResult(false, rs));
+                return;
+            }
+            var dvr = new DvrVideo 
+            {
+                Id = dvrVideoId,    
+                Deleted = false,
+                UpdateTime = DateTime.Now,  
+                Undo = false,
+                Device_Id = retSelect.Device_Id,
+                Client_Id = retSelect.Client_Id,    
+                ClientIp = retSelect.ClientIp,  
+                ClientType = retSelect.ClientType,  
+                MonitorType = retSelect.MonitorType,    
+                VideoPath = retSelect.VideoPath,    
+                FileSize = retSelect.FileSize,  
+                Vhost = retSelect.Vhost,    
+                Dir = retSelect.Dir,    
+                Stream = retSelect.Stream,
+                App = retSelect.App,
+                Duration = retSelect.Duration,  
+                StartTime = retSelect.StartTime,    
+                EndTime = retSelect.EndTime,
+                Param = retSelect.Param,    
+                RecordDate = retSelect.RecordDate,  
+                Url = retSelect.Url    
+
+            };
+            if(_producerDvr == null)
+            {
+                _producerDvr = await _client.NewProducerAsync(_dvrVideo, _producerConfigDvr);
+            }
+            await _producerDvr.NewMessage().Value(dvr).SendAsync();
+            sender.Tell(new ApisResult(true, rs));
+        }
+
+        /// <summary>
+        /// Delete a video file (hard delete, delete the file immediately, set the database to Delete)
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="rs"></param>
+        /// <returns></returns>
+        private async ValueTask HardDeleteDvrVideoById(long id)
+        {
+            var rs = new ResponseStruct()
+            {
+                Code = ErrorNumber.None,
+                Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+            };
+            List<DvrVideo> retSelect = null!;
+            var retUpdate = -1;
+            lock (Common.LockDbObjForDvrVideo)
+            {
+                retSelect = OrmService.Db.Select<DvrVideo>().Where(x => x.Id == id).ToList();
+                retUpdate = OrmService.Db.Update<DvrVideo>().Set(x => x.Deleted, true)
+                    .Set(x => x.Undo, false)
+                    .Set(x => x.UpdateTime, DateTime.Now).Where(x => x.Id == (long)id).ExecuteAffrows();
+            }
+
+            if (retUpdate > 0)
+            {
+                foreach (var select in retSelect)
+                {
+                    try
+                    {
+                        File.Delete(select.VideoPath);
+                    }
+                    catch
+                    {
+                        // ignored
+                    }
+                }
+
+                return true;
+            }
+
+            return false;
+        }
         public static Props Prop(PulsarSystem pulsarSystem, IActorRef cutMergeService)
         {
             return Props.Create(() => new DvrPlanActor(pulsarSystem, cutMergeService));

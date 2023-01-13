@@ -23,7 +23,11 @@ namespace SRSManager.Actors
             _log = Context.GetLogger();
             Receive<CutMergeTaskStatusListAdd>(c => _cutMergeTaskStatusList.Add(c.Task));
             Receive<CutMergeTaskListAdd>(c => _cutMergeTaskList.Add(c.Task));
-            ReceiveAsync<CutMerge>(async c => await CutMerge(c.Task));
+            ReceiveAsync<CutMerge>(async c =>
+            {
+                var cut = await CutMerge(c.Task);
+                Sender.Tell(cut);
+            });//CutMergeTaskResponse
             Receive<CutMergeTaskStatusList>(c => Sender.Tell(_cutMergeTaskStatusList));
             Receive<CutMergeTaskList>(c => Sender.Tell(_cutMergeTaskList.GetConsumingEnumerable()));
             Akka.Dispatch.ActorTaskScheduler.RunTask(async() =>

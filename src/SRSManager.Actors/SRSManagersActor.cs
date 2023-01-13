@@ -10,6 +10,7 @@ using System.Net.Sockets;
 using SrsApis.SrsManager;
 using SrsConfFile.SRSConfClass;
 using Akka.Event;
+using SharpPulsar.Builder;
 
 namespace SRSManager.Actors
 {
@@ -20,6 +21,7 @@ namespace SRSManager.Actors
         private Dictionary<string, IActorRef> _srs = new Dictionary<string, IActorRef>();
         private IActorRef _dvrPlan;
         private readonly ILoggingAdapter _log;
+        private PulsarClientConfigBuilder _client;
         public SRSManagersActor()
         {
             _cutMergeService = Context.ActorOf(CutMergeServiceActor.Prop());

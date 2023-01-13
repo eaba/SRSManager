@@ -438,6 +438,25 @@ namespace SRSWeb.Controllers
             return Result.DelApisResult(a.Rt, a.Rs);
         }
         /// <summary>
+        /// Set Pulsar Producer
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [AuthVerify]
+        [Log]
+        [Route("/GlobalSrs/SetPulsarProducer")]
+        public async ValueTask<JsonResult> SetPulsarProducer<T>(string deviceId, ProducerConfigBuilder<T> producer)
+        {
+            var rss = CommonFunctions.CheckParams(new object[] { deviceId, producer });
+            if (rss.Code != ErrorNumber.None)
+            {
+                return Result.DelApisResult(null!, rss);
+            }
+            //var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var a = await _actor.Ask<ApisResult>(new GlobalSrs(deviceId, producer, "SetPulsarProducer"));
+            return Result.DelApisResult(a.Rt, a.Rs);
+        }
+        /// <summary>
         /// Get Pulsar Producer
         /// </summary>
         /// <returns></returns>

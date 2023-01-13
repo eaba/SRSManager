@@ -163,7 +163,7 @@ namespace SRSManager.Actors
                 }
 
                 var retVhost = _srsManager.Srs.Vhosts.FindLast(x =>
-                    x.VhostDomain!.Trim().ToUpper().Equals(vh.VHostDomain.Trim().ToUpper()));
+                    x.VhostDomain!.Trim().ToUpper().Equals(vh.VHostDomain!.Trim().ToUpper()));
 
                 if (retVhost == null)
                 {
@@ -3559,7 +3559,7 @@ namespace SRSManager.Actors
                 }
 
                 var retVhost = _srsManager.Srs.Vhosts.FindLast(x =>
-                    x.VhostDomain!.Trim().ToUpper().Equals(vh.VHostDomain.Trim().ToUpper()))!;
+                    x.VhostDomain!.Trim().ToUpper().Equals(vh.VHostDomain!.Trim().ToUpper()))!;
                 if (retVhost != null)
                 {
                     Sender.Tell(new ApisResult(retVhost, rs));

@@ -1,7 +1,12 @@
+using Akka.Actor;
+using Akka.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using SharpPulsar.Builder;
 using SrsApis.SrsManager.Apis;
 using SrsManageCommon;
 using SRSManageCommon.ControllerStructs.RequestModules;
+using SRSManager.Actors;
+using SRSManager.Messages;
 using SRSManager.Shared;
 using SRSWeb.Attributes;
 // Pulsar and Trino
@@ -14,6 +19,31 @@ namespace SRSWeb.Controllers
     [Route("")]
     public class DvrPlanController : ControllerBase
     {
+        private readonly IActorRef _actor;
+        public DvrPlanController(IRequiredActor<SRSManagersActor> actor)
+        {
+            _actor = actor.ActorRef;
+        }
+        /// <summary>
+        /// Set Pulsar Client
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [AuthVerify]
+        [Log]
+        [Route("/DvrPlan/PulsarSrsConfig")]
+        public async ValueTask<JsonResult> PulsarSrsConfig(PulsarSrsConfig client)
+        {
+            var rss = CommonFunctions.CheckParams(new object[] { client });
+            if (rss.Code != ErrorNumber.None)
+            {
+                return Result.DelApisResult(null!, rss);
+            }
+            //var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var a = await _actor.Ask<ApisResult>(new DvrPlan(client, "PulsarSrsConfig"));
+            return Result.DelApisResult(a.Rt, a.Rs);
+        }
+        
 
         /// <summary>
         /// Get Merge Crop Task Backlog List
