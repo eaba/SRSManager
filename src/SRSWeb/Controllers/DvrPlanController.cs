@@ -32,8 +32,9 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/DvrPlan/PulsarSrsConfig")]
-        public async ValueTask<JsonResult> PulsarSrsConfig(PulsarSrsConfig client)
+        public async ValueTask<JsonResult> PulsarSrsConfig(string topic, string tenant, string nameSpace, string brokerUrl, string adminUrl, string trinoUrl)
         {
+            var client = new PulsarSrsConfig(topic, tenant, nameSpace, brokerUrl, adminUrl, trinoUrl);
             var rss = CommonFunctions.CheckParams(new object[] { client });
             if (rss.Code != ErrorNumber.None)
             {

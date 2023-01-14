@@ -255,7 +255,7 @@ namespace SRSManager.Actors
             });
             Receive<GetSrsInstanceTemplate>(_ =>
             {
-                Sender.Tell(new ApisResult(GetSrsInstanceTemplate(out ResponseStruct rs), rs));
+                Sender.Tell(new ApisResult(GetSrsInstanceTemplate(out var rs), rs));
             });
             Receive<GetSrtServerTemplate>(_ =>
             {

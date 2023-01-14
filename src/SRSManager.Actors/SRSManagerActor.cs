@@ -30,12 +30,12 @@ namespace SRSManager.Actors
             _srsManager = new SrsManager();
             Receive<CheckNewSrsInstanceListenRight>(c =>
             {
-                var list = CheckNewSrsInstanceListenRight(c.Sm, out ResponseStruct rs);
+                var list = CheckNewSrsInstanceListenRight(c.Sm, out var rs);
                 Sender.Tell(new ApisResult(list, rs));
             });
             Receive<CheckNewSrsInstancePathRight>(c =>
             {
-                var path = CheckNewSrsInstancePathRight(c.Sm, out ResponseStruct rs);
+                var path = CheckNewSrsInstancePathRight(c.Sm, out var rs);
                 Sender.Tell(new ApisResult(path, rs));
             });
             Receive<GetSrsManager>(_ =>
