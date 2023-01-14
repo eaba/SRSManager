@@ -17,6 +17,9 @@ using Newtonsoft.Json.Schema;
 using SharpPulsar.Builder;
 using SharpPulsar.User;
 using DvrVideoResponseList = SRSManager.Messages.DvrVideoResponseList;
+using SrsConfFile.SRSConfClass;
+using SrsApis.SrsManager.Apis;
+using MySqlX.XDevAPI.Relational;
 
 namespace SRSManager.Actors
 {
@@ -76,19 +79,27 @@ namespace SRSManager.Actors
             });
             ReceiveAsync<DvrPlan>(vhIf => vhIf.Method == "UndoSoftDelete", async vh =>
             {
-                await UndoSoftDelete(vh.DvrVideoId!.Value, Sender);
+                await UndoSoftDelete(vh.DvrVideoId, Sender);
             });
             ReceiveAsync<DvrPlan>(vhIf => vhIf.Method == "HardDeleteDvrVideoById", async vh =>
             {
-                await HardDeleteDvrVideoById(vh.DvrVideoId!.Value, Sender);
+                await HardDeleteDvrVideoById(vh.DvrVideoId, Sender);
             });
             ReceiveAsync<DvrPlan>(vhIf => vhIf.Method == "SoftDeleteDvrVideoById", async vh =>
             {
-                await SoftDeleteDvrVideoById(vh.DvrVideoId!.Value, Sender);
+                await SoftDeleteDvrVideoById(vh.DvrVideoId, Sender);
             });
             ReceiveAsync<DvrPlan>(vhIf => vhIf.Method == "GetDvrVideoList", async vh =>
             {
                 await GetDvrVideoList(vh.Rgdv!, Sender);
+            });
+            ReceiveAsync<DvrPlan>(vhIf => vhIf.Method == "DeleteDvrPlanById", async vh =>
+            {
+                await DeleteDvrPlanById(vh.DvrVideoId, Sender);
+            });
+            ReceiveAsync<DvrPlan>(vhIf => vhIf.Method == "OnOrOffDvrPlanById", async vh =>
+            {
+                await OnOrOffDvrPlanById(vh.DvrVideoId, vh.Enable!.Value, Sender);
             });
             
             //Sender.Tell(new ApisResult(false, rs));
@@ -699,32 +710,8 @@ namespace SRSManager.Actors
             
             foreach (var dvrVideo in rets)
             {
-                var dvr = new DvrVideo
-                {
-                    DvrVideoId = dvrVideo.DvrVideoId,
-                    Deleted = false,
-                    UpdateTime = DateTime.Now,
-                    Undo = false,
-                    Device_Id = dvrVideo.Device_Id,
-                    Client_Id = dvrVideo.Client_Id,
-                    ClientIp = dvrVideo.ClientIp,
-                    ClientType = dvrVideo.ClientType,
-                    MonitorType = dvrVideo.MonitorType,
-                    VideoPath = dvrVideo.VideoPath,
-                    FileSize = dvrVideo.FileSize,
-                    Vhost = dvrVideo.Vhost,
-                    Dir = dvrVideo.Dir,
-                    Stream = dvrVideo.Stream,
-                    App = dvrVideo.App,
-                    Duration = dvrVideo.Duration,
-                    StartTime = dvrVideo.StartTime,
-                    EndTime = dvrVideo.EndTime,
-                    Param = dvrVideo.Param,
-                    RecordDate = dvrVideo.RecordDate,
-                    Url = dvrVideo.Url,
-                    FileDelete = dvrVideo.FileDelete,
-
-                };
+                var dvr = dvrVideo with 
+                { DvrVideoId = dvrVideo.DvrVideoId, Deleted = false, UpdateTime = DateTime.Now, Undo = false };
                 if (_producerDvr == null)
                 {
                     _producerDvr = await _client.NewProducerAsync(_dvrVideo, _producerConfigDvr);
@@ -758,32 +745,9 @@ namespace SRSManager.Actors
 
             foreach (var dvrVideo in rets)
             {
-                var dvr = new DvrVideo
-                {
-                    DvrVideoId = dvrVideo.DvrVideoId,
-                    Deleted = true,
-                    UpdateTime = DateTime.Now,
-                    Undo = true,
-                    Device_Id = dvrVideo.Device_Id,
-                    Client_Id = dvrVideo.Client_Id,
-                    ClientIp = dvrVideo.ClientIp,
-                    ClientType = dvrVideo.ClientType,
-                    MonitorType = dvrVideo.MonitorType,
-                    VideoPath = dvrVideo.VideoPath,
-                    FileSize = dvrVideo.FileSize,
-                    Vhost = dvrVideo.Vhost,
-                    Dir = dvrVideo.Dir,
-                    Stream = dvrVideo.Stream,
-                    App = dvrVideo.App,
-                    Duration = dvrVideo.Duration,
-                    StartTime = dvrVideo.StartTime,
-                    EndTime = dvrVideo.EndTime,
-                    Param = dvrVideo.Param,
-                    RecordDate = dvrVideo.RecordDate,
-                    Url = dvrVideo.Url,
-                    FileDelete = dvrVideo.FileDelete,
-
-                };
+                var dvr = dvrVideo with
+                { DvrVideoId = dvrVideo.DvrVideoId, Deleted = true, UpdateTime = DateTime.Now, Undo = true };
+                
                 if (_producerDvr == null)
                 {
                     _producerDvr = await _client.NewProducerAsync(_dvrVideo, _producerConfigDvr);
@@ -816,32 +780,9 @@ namespace SRSManager.Actors
             var retUpdate = -1;
             foreach (var dvrVideo in retSelect)
             {
-                var dvr = new DvrVideo
-                {
-                    DvrVideoId = dvrVideo.DvrVideoId,
-                    Deleted = true,
-                    UpdateTime = DateTime.Now,
-                    Undo = false,
-                    Device_Id = dvrVideo.Device_Id,
-                    Client_Id = dvrVideo.Client_Id,
-                    ClientIp = dvrVideo.ClientIp,
-                    ClientType = dvrVideo.ClientType,
-                    MonitorType = dvrVideo.MonitorType,
-                    VideoPath = dvrVideo.VideoPath,
-                    FileSize = dvrVideo.FileSize,
-                    Vhost = dvrVideo.Vhost,
-                    Dir = dvrVideo.Dir,
-                    Stream = dvrVideo.Stream,
-                    App = dvrVideo.App,
-                    Duration = dvrVideo.Duration,
-                    StartTime = dvrVideo.StartTime,
-                    EndTime = dvrVideo.EndTime,
-                    Param = dvrVideo.Param,
-                    RecordDate = dvrVideo.RecordDate,
-                    Url = dvrVideo.Url,
-                    FileDelete = false   
-
-                };
+                var dvr = dvrVideo with
+                { DvrVideoId = dvrVideo.DvrVideoId, Deleted = true, UpdateTime = DateTime.Now, Undo = false, FileDelete = false };
+                
                 if (_producerDvr == null)
                 {
                     _producerDvr = await _client.NewProducerAsync(_dvrVideo, _producerConfigDvr);
@@ -1006,6 +947,375 @@ namespace SRSManager.Actors
                     break;
             }
             return dvr;
+        }
+        /// <summary>
+        /// Delete a recording plan by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="rs"></param>
+        /// <returns></returns>
+        private async ValueTask DeleteDvrPlanById(long id, IActorRef sender)
+        {
+            var rs = new ResponseStruct()
+            {
+                Code = ErrorNumber.None,
+                Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+            };
+
+
+            if (id <= 0)
+            {
+                rs.Code = ErrorNumber.FunctionInputParamsError;
+                rs.Message = ErrorMessage.ErrorDic![ErrorNumber.FunctionInputParamsError];
+                sender.Tell(new ApisResult(false, rs));
+                return;
+            }
+
+            var retSelect = await DvrStreamSql(id);
+            var retDelete = -1;
+            foreach( var s in retSelect ) 
+            {
+                var sel = s with { StreamDvrPlanId = id, delete = true };
+                await _producerStream.NewMessage().Value(sel).SendAsync();
+            }
+            
+            if (retDelete > 0)
+            {
+                sender.Tell(new ApisResult(true, rs));
+                return;
+            }
+
+
+            rs.Code = ErrorNumber.SrsDvrPlanNotExists;
+            rs.Message = ErrorMessage.ErrorDic![ErrorNumber.SrsDvrPlanNotExists];
+            sender.Tell(new ApisResult(false, rs));
+            return;
+        }
+        /// <summary>
+        /// Enable or stop a recording schedule
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="enable"></param>
+        /// <param name="rs"></param>
+        /// <returns></returns>
+        private async ValueTask OnOrOffDvrPlanById(long id, bool enable, IActorRef sender)
+        {
+            var rs = new ResponseStruct()
+            {
+                Code = ErrorNumber.None,
+                Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+            };
+
+
+            if (id <= 0)
+            {
+                rs.Code = ErrorNumber.FunctionInputParamsError;
+                rs.Message = ErrorMessage.ErrorDic![ErrorNumber.FunctionInputParamsError];
+                sender.Tell(new ApisResult(false, rs));
+                return;
+            }
+            var retSelect = await DvrStreamSql(id);
+            var retDelete = -1;
+            foreach (var s in retSelect)
+            {
+                var sel = s with { StreamDvrPlanId = id, Enable = enable };
+                if (_producerStream == null)
+                {
+                    _producerStream = await _client.NewProducerAsync(_streamDvr, _producerConfigStream);
+                }
+                await _producerStream.NewMessage().Value(sel).SendAsync();
+            }
+
+            if (retDelete > 0)
+            {
+                sender.Tell(new ApisResult(true, rs));
+                return;
+            }
+           
+            rs.Code = ErrorNumber.SrsDvrPlanNotExists;
+            rs.Message = ErrorMessage.ErrorDic![ErrorNumber.SrsDvrPlanNotExists];
+            sender.Tell(new ApisResult(false, rs));
+        }
+        private async ValueTask<List<StreamDvrPlan>> DvrStreamSql(long id)
+        {
+           
+            var topic =  _producerConfigStream.Topic;
+            var select = @$"select * from ""{topic}"" WHERE StreamDvrPlanId = {id} ";
+            
+            var option = new ClientOptions
+            {
+                Server = _pulsarSrsConfig.TrinoUrl,
+                Execute = select,
+                Catalog = "pulsar",
+                Schema = $"{_pulsarSrsConfig.Tenant}/{_pulsarSrsConfig.NameSpace}"
+            };
+            var sql = new SqlInstance(_pulsarSystem.System, option);
+            var data = await sql.ExecuteAsync();
+            var stream = new List<StreamDvrPlan>();
+            switch (data.Response)
+            {
+                case StatsResponse stats:
+                    _log.Info(JsonSerializer.Serialize(stats, new JsonSerializerOptions { WriteIndented = true }));
+                    break;
+                case DataResponse dt:
+                    for (var i = 0; i < dt.Data.Count; i++)
+                    {
+                        var ob = dt.Data.ElementAt(i);
+                        var json = JsonSerializer.Serialize(ob, new JsonSerializerOptions { WriteIndented = true });
+                        stream.Add(JsonSerializer.Deserialize<StreamDvrPlan>(json)!);
+                    }
+                    _log.Info(JsonSerializer.Serialize(dt.StatementStats, new JsonSerializerOptions { WriteIndented = true }));
+                    break;
+                case ErrorResponse er:
+                    _log.Info(JsonSerializer.Serialize(er, new JsonSerializerOptions { WriteIndented = true }));
+                    break;
+            }
+            return stream;
+        }
+
+        private async ValueTask<StreamDvrPlan> DvrStream1Sql(long id)
+        {
+           
+            var topic =  _producerConfigStream.Topic;
+            var select = @$"select * from ""{topic}"" WHERE StreamDvrPlanId = {id} LIMIT 1";
+            
+            var option = new ClientOptions
+            {
+                Server = _pulsarSrsConfig.TrinoUrl,
+                Execute = select,
+                Catalog = "pulsar",
+                Schema = $"{_pulsarSrsConfig.Tenant}/{_pulsarSrsConfig.NameSpace}"
+            };
+            var sql = new SqlInstance(_pulsarSystem.System, option);
+            var data = await sql.ExecuteAsync();
+            var stream = new StreamDvrPlan();
+            switch (data.Response)
+            {
+                case StatsResponse stats:
+                    _log.Info(JsonSerializer.Serialize(stats, new JsonSerializerOptions { WriteIndented = true }));
+                    break;
+                case DataResponse dt:
+                    var d = dt.Data.FirstOrDefault();
+                    var json = JsonSerializer.Serialize(d, new JsonSerializerOptions { WriteIndented = true });
+                    stream = JsonSerializer.Deserialize<StreamDvrPlan>(json)!;
+                    _log.Info(JsonSerializer.Serialize(dt.StatementStats, new JsonSerializerOptions { WriteIndented = true }));
+                    break;
+                case ErrorResponse er:
+                    _log.Info(JsonSerializer.Serialize(er, new JsonSerializerOptions { WriteIndented = true }));
+                    break;
+            }
+            return stream;
+        }
+        /// <summary>
+        /// modify dvrplan
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="sdp"></param>
+        /// <param name="rs"></param>
+        /// <returns></returns>
+        private async ValueTask SetDvrPlanById(int id, ReqStreamDvrPlan sdp, IActorRef sender)
+        {
+            var rs = new ResponseStruct()
+            {
+                Code = ErrorNumber.None,
+                Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+            };
+           
+            var retSrs = await Context.Parent.Ask<SrsManager>(new Messages.System(sdp.DeviceId, method: "GetSrsManagerInstanceByDeviceId")); 
+            if (retSrs == null)
+            {
+                rs.Code = ErrorNumber.SrsObjectNotInit;
+                rs.Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit];
+                sender.Tell(new ApisResult(false, rs));
+                return;
+            }
+            var retVhost = await Context.Parent.Ask<SrsvHostConfClass>(new Vhost(sdp.DeviceId, sdp.VhostDomain, method: "GetVhostByDomain"));
+            if (retVhost == null)
+            {
+                rs.Code = ErrorNumber.SrsSubInstanceNotFound;
+                rs.Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound];
+                sender.Tell(new ApisResult(false, rs));
+                return;
+            }
+
+            if (sdp.TimeRangeList != null && sdp.TimeRangeList.Count > 0)
+            {
+                foreach (var timeRange in sdp.TimeRangeList)
+                {
+                    if (timeRange.StartTime >= timeRange.EndTime)
+                    {
+                        rs.Code = ErrorNumber.FunctionInputParamsError;
+                        rs.Message = ErrorMessage.ErrorDic![ErrorNumber.FunctionInputParamsError];
+                        sender.Tell(new ApisResult(false, rs));
+                        return;
+                    }
+
+                    if ((timeRange.EndTime - timeRange.StartTime).TotalSeconds <= 120)
+                    {
+                        rs.Code = ErrorNumber.SrsDvrPlanTimeLimitExcept;
+                        rs.Message = ErrorMessage.ErrorDic![ErrorNumber.SrsDvrPlanTimeLimitExcept];
+
+                        sender.Tell(new ApisResult(false, rs));
+                        return;
+                    }
+                }
+            }
+
+            try
+            {
+                var retSelect = await DvrStream1Sql(id);
+                if (retSelect == null)
+                {
+                    rs.Code = ErrorNumber.SrsDvrPlanNotExists;
+                    rs.Message = ErrorMessage.ErrorDic![ErrorNumber.SrsDvrPlanNotExists];
+                    sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+                if (_producerStream == null)
+                {
+                    _producerStream = await _client.NewProducerAsync(_streamDvr, _producerConfigStream);
+                }
+                var sel = retSelect with { StreamDvrPlanId = id, delete = true };
+                await _producerStream.NewMessage().Value(sel).SendAsync();
+                var retDelete = -1;
+                var retCreate = CreateDvrPlan(sdp, out rs); //create new dvr
+                if (retCreate)
+                {
+                    return true;
+                }
+
+                return false;
+            }
+            catch (Exception ex)
+            {
+                rs.Code = ErrorNumber.SystemDataBaseExcept;
+                rs.Message = ErrorMessage.ErrorDic![ErrorNumber.SystemDataBaseExcept] + "\r\n" + ex.Message;
+
+                return false;
+            }
+        }
+        /// <summary>
+        /// Create a recording schedule
+        /// </summary>
+        /// <param name="sdp"></param>
+        /// <param name="rs"></param>
+        /// <returns></returns>
+        public static bool CreateDvrPlan(ReqStreamDvrPlan sdp, out ResponseStruct rs)
+        {
+            rs = new ResponseStruct()
+            {
+                Code = ErrorNumber.None,
+                Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+            };
+            if (SRSApis.Common.SrsManagers == null || SRSApis.Common.SrsManagers.Count == 0)
+            {
+                rs.Code = ErrorNumber.SrsObjectNotInit;
+                rs.Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit];
+                return false;
+            }
+
+            var retSrs = SystemApis.GetSrsManagerInstanceByDeviceId(sdp.DeviceId!);
+            if (retSrs == null)
+            {
+                rs.Code = ErrorNumber.SrsObjectNotInit;
+                rs.Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit];
+                return false;
+            }
+
+            var retVhost = VhostApis.GetVhostByDomain(sdp.DeviceId!, sdp.VhostDomain!, out rs);
+            if (retVhost == null)
+            {
+                rs.Code = ErrorNumber.SrsSubInstanceNotFound;
+                rs.Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound];
+                return false;
+            }
+
+            if (sdp.TimeRangeList != null && sdp.TimeRangeList.Count > 0)
+            {
+                foreach (var timeRange in sdp.TimeRangeList)
+                {
+                    if (timeRange.StartTime >= timeRange.EndTime)
+                    {
+                        rs.Code = ErrorNumber.FunctionInputParamsError;
+                        rs.Message = ErrorMessage.ErrorDic![ErrorNumber.FunctionInputParamsError];
+                        return false;
+                    }
+
+                    if ((timeRange.EndTime - timeRange.StartTime).TotalSeconds <= 120)
+                    {
+                        rs.Code = ErrorNumber.SrsDvrPlanTimeLimitExcept;
+                        rs.Message = ErrorMessage.ErrorDic![ErrorNumber.SrsDvrPlanTimeLimitExcept];
+
+                        return false;
+                    }
+                }
+            }
+
+            StreamDvrPlan retSelect = null!;
+            lock (Common.LockDbObjForStreamDvrPlan)
+            {
+                retSelect = OrmService.Db.Select<StreamDvrPlan>().Where(x =>
+                    x.DeviceId!.Trim().ToLower().Equals(sdp.DeviceId!.Trim().ToLower())
+                    && x.VhostDomain!.Trim().ToLower().Equals(sdp.VhostDomain!.Trim().ToLower())
+                    && x.App!.Trim().ToLower().Equals(sdp.App!.Trim().ToLower())
+                    && x.Stream!.Trim().ToLower().Equals(sdp.Stream!.Trim().ToLower())).First();
+            }
+
+            if (retSelect != null)
+            {
+                rs.Code = ErrorNumber.SrsDvrPlanAlreadyExists;
+                rs.Message = ErrorMessage.ErrorDic![ErrorNumber.SrsDvrPlanAlreadyExists];
+
+                return false;
+            }
+
+            try
+            {
+                lock (Common.LockDbObjForStreamDvrPlan)
+                {
+                    var tmpStream = new StreamDvrPlan();
+                    tmpStream.App = sdp.App;
+                    tmpStream.Enable = sdp.Enable;
+                    tmpStream.Stream = sdp.Stream;
+                    tmpStream.DeviceId = sdp.DeviceId;
+                    tmpStream.LimitDays = sdp.LimitDays;
+                    tmpStream.LimitSpace = sdp.LimitSpace;
+                    tmpStream.VhostDomain = sdp.VhostDomain;
+                    tmpStream.OverStepPlan = sdp.OverStepPlan;
+                    tmpStream.TimeRangeList = new List<DvrDayTimeRange>();
+                    if (sdp.TimeRangeList != null && sdp.TimeRangeList.Count > 0)
+                    {
+                        foreach (var tmp in sdp.TimeRangeList)
+                        {
+                            tmpStream.TimeRangeList.Add(new DvrDayTimeRange()
+                            {
+                                EndTime = tmp.EndTime,
+                                StartTime = tmp.StartTime,
+                                WeekDay = tmp.WeekDay,
+                            });
+                        }
+                    }
+
+                    /*Insert with subclasses*/
+                    var repo = OrmService.Db.GetRepository<StreamDvrPlan>();
+                    repo.DbContextOptions.EnableAddOrUpdateNavigateList = true; //Need to open manually
+                    var ret = repo.Insert(tmpStream);
+                    /*Insert with subclasses*/
+                    if (ret != null)
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+            catch (Exception ex)
+            {
+                rs.Code = ErrorNumber.SystemDataBaseExcept;
+                rs.Message = ErrorMessage.ErrorDic![ErrorNumber.SystemDataBaseExcept] + "\r\n" + ex.Message;
+
+                return false;
+            }
         }
         public static Props Prop(PulsarSystem pulsarSystem, IActorRef cutMergeService)
         {

@@ -17,7 +17,7 @@ namespace SRSManager.Messages
         public string? Method { get; }
         public string? TaskId { get; }
         public ReqCutOrMergeVideoFile? Rcmv { get; } 
-        public long? DvrVideoId { get; }
+        public long DvrVideoId { get; }
         public ReqGetDvrVideo? Rgdv { get; }
        
         public bool? Enable { get; } 
