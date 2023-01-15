@@ -7,10 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Akka.Hosting" Version="1.0.0" />
-    <PackageReference Include="SharpPulsar" Version="2.10.0-rc1191" />
-    <PackageReference Include="SharpPulsar.Admin" Version="2.10.0-rc1191" />
-    <PackageReference Include="SharpPulsar.Trino" Version="2.10.0-rc1191" />
+    <PackageReference Include="Akka.Hosting" Version="1.0.1" />
+    <PackageReference Include="SharpPulsar" Version="2.11.0-rc0097" />
+    <PackageReference Include="SharpPulsar.Admin" Version="2.11.0-rc0097" />
+    <PackageReference Include="SharpPulsar.Trino" Version="2.11.0-rc0097" />
   </ItemGroup>
 
   <ItemGroup>
