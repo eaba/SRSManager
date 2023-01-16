@@ -27,6 +27,8 @@ namespace SRSManager.Actors
             _cutMergeService = Context.ActorOf(CutMergeServiceActor.Prop());
             _dvrPlan = Context.ActorOf(DvrPlanActor.Prop(_pulsarSystem, _cutMergeService));
             _log = Context.GetLogger();
+            
+            Receive<GetManagerSrs>(_ => Sender.Tell(new ManagerSrs(_srs)));
             Receive<DvrPlan>(d => _dvrPlan.Forward(d));
             Receive<GlobalSrs>(g =>
             {

@@ -15,11 +15,13 @@ using SharpPulsar.Utils;
 using SharpPulsar.Schemas;
 using Newtonsoft.Json.Schema;
 using SharpPulsar.Builder;
-using SharpPulsar.User;
 using DvrVideoResponseList = SRSManager.Messages.DvrVideoResponseList;
 using SrsConfFile.SRSConfClass;
 using SrsApis.SrsManager.Apis;
 using MySqlX.XDevAPI.Relational;
+using Akka.Util.Internal;
+using SharpPulsar.Extension;
+using Akka.Dispatch.SysMsg;
 
 namespace SRSManager.Actors
 {
@@ -100,6 +102,15 @@ namespace SRSManager.Actors
             ReceiveAsync<DvrPlan>(vhIf => vhIf.Method == "OnOrOffDvrPlanById", async vh =>
             {
                 await OnOrOffDvrPlanById(vh.DvrVideoId, vh.Enable!.Value, Sender);
+            });
+            ReceiveAsync<DvrPlan>(vhIf => vhIf.Method == "SetDvrPlanById", async vh =>
+            {
+                await SetDvrPlanById(vh.DvrVideoId, vh.Sdp!, Sender);
+            });
+            ReceiveAsync<DvrPlan>(vhIf => vhIf.Method == "CreateDvrPlan", async vh =>
+            {
+                var c = await CreateDvrPlan(vh.Sdp!);
+                Sender.Tell(new ApisResult(c.b, c.rs));
             });
             
             //Sender.Tell(new ApisResult(false, rs));
@@ -1073,39 +1084,7 @@ namespace SRSManager.Actors
             return stream;
         }
 
-        private async ValueTask<StreamDvrPlan> DvrStream1Sql(long id)
-        {
-           
-            var topic =  _producerConfigStream.Topic;
-            var select = @$"select * from ""{topic}"" WHERE StreamDvrPlanId = {id} LIMIT 1";
-            
-            var option = new ClientOptions
-            {
-                Server = _pulsarSrsConfig.TrinoUrl,
-                Execute = select,
-                Catalog = "pulsar",
-                Schema = $"{_pulsarSrsConfig.Tenant}/{_pulsarSrsConfig.NameSpace}"
-            };
-            var sql = new SqlInstance(_pulsarSystem.System, option);
-            var data = await sql.ExecuteAsync();
-            var stream = new StreamDvrPlan();
-            switch (data.Response)
-            {
-                case StatsResponse stats:
-                    _log.Info(JsonSerializer.Serialize(stats, new JsonSerializerOptions { WriteIndented = true }));
-                    break;
-                case DataResponse dt:
-                    var d = dt.Data.FirstOrDefault();
-                    var json = JsonSerializer.Serialize(d, new JsonSerializerOptions { WriteIndented = true });
-                    stream = JsonSerializer.Deserialize<StreamDvrPlan>(json)!;
-                    _log.Info(JsonSerializer.Serialize(dt.StatementStats, new JsonSerializerOptions { WriteIndented = true }));
-                    break;
-                case ErrorResponse er:
-                    _log.Info(JsonSerializer.Serialize(er, new JsonSerializerOptions { WriteIndented = true }));
-                    break;
-            }
-            return stream;
-        }
+       
         /// <summary>
         /// modify dvrplan
         /// </summary>
@@ -1113,7 +1092,7 @@ namespace SRSManager.Actors
         /// <param name="sdp"></param>
         /// <param name="rs"></param>
         /// <returns></returns>
-        private async ValueTask SetDvrPlanById(int id, ReqStreamDvrPlan sdp, IActorRef sender)
+        private async ValueTask SetDvrPlanById(long id, ReqStreamDvrPlan sdp, IActorRef sender)
         {
             var rs = new ResponseStruct()
             {
@@ -1163,7 +1142,7 @@ namespace SRSManager.Actors
 
             try
             {
-                var retSelect = await DvrStream1Sql(id);
+                StreamDvrPlan retSelect = await DvrStream1Sql(id);
                 if (retSelect == null)
                 {
                     rs.Code = ErrorNumber.SrsDvrPlanNotExists;
@@ -1178,20 +1157,20 @@ namespace SRSManager.Actors
                 var sel = retSelect with { StreamDvrPlanId = id, delete = true };
                 await _producerStream.NewMessage().Value(sel).SendAsync();
                 var retDelete = -1;
-                var retCreate = CreateDvrPlan(sdp, out rs); //create new dvr
-                if (retCreate)
+                var retCreate = await CreateDvrPlan(sdp); //create new dvr
+                if (retCreate.b)
                 {
-                    return true;
+                    sender.Tell(new ApisResult(true, retCreate.rs));
                 }
 
-                return false;
+                sender.Tell(new ApisResult(false, retCreate.rs));
             }
             catch (Exception ex)
             {
                 rs.Code = ErrorNumber.SystemDataBaseExcept;
                 rs.Message = ErrorMessage.ErrorDic![ErrorNumber.SystemDataBaseExcept] + "\r\n" + ex.Message;
 
-                return false;
+                sender.Tell(new ApisResult(false, rs));
             }
         }
         /// <summary>
@@ -1200,34 +1179,35 @@ namespace SRSManager.Actors
         /// <param name="sdp"></param>
         /// <param name="rs"></param>
         /// <returns></returns>
-        public static bool CreateDvrPlan(ReqStreamDvrPlan sdp, out ResponseStruct rs)
+        private async ValueTask<(bool b, ResponseStruct rs)> CreateDvrPlan(ReqStreamDvrPlan sdp)
         {
-            rs = new ResponseStruct()
+            var rs = new ResponseStruct()
             {
                 Code = ErrorNumber.None,
                 Message = ErrorMessage.ErrorDic![ErrorNumber.None],
             };
-            if (SRSApis.Common.SrsManagers == null || SRSApis.Common.SrsManagers.Count == 0)
+            var srs = await Context.Parent.Ask<ManagerSrs>(GetManagerSrs.Instance);
+            if (srs.SRSs.Count == 0)
             {
                 rs.Code = ErrorNumber.SrsObjectNotInit;
                 rs.Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit];
-                return false;
+                return (false, rs);
             }
-
-            var retSrs = SystemApis.GetSrsManagerInstanceByDeviceId(sdp.DeviceId!);
+            var retSrs = await Context.Parent.Ask<SrsManager>(new Messages.System(sdp.DeviceId, method: "GetSrsManagerInstanceByDeviceId"));
+            
             if (retSrs == null)
             {
                 rs.Code = ErrorNumber.SrsObjectNotInit;
                 rs.Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit];
-                return false;
+                return (false, rs);
             }
 
-            var retVhost = VhostApis.GetVhostByDomain(sdp.DeviceId!, sdp.VhostDomain!, out rs);
+            var retVhost = await Context.Parent.Ask<SrsvHostConfClass>(new Vhost(sdp.DeviceId, sdp.VhostDomain, method: "GetVhostByDomain"));
             if (retVhost == null)
             {
                 rs.Code = ErrorNumber.SrsSubInstanceNotFound;
                 rs.Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound];
-                return false;
+                return (false, rs);
             }
 
             if (sdp.TimeRangeList != null && sdp.TimeRangeList.Count > 0)
@@ -1238,7 +1218,7 @@ namespace SRSManager.Actors
                     {
                         rs.Code = ErrorNumber.FunctionInputParamsError;
                         rs.Message = ErrorMessage.ErrorDic![ErrorNumber.FunctionInputParamsError];
-                        return false;
+                        return (false, rs);
                     }
 
                     if ((timeRange.EndTime - timeRange.StartTime).TotalSeconds <= 120)
@@ -1246,76 +1226,134 @@ namespace SRSManager.Actors
                         rs.Code = ErrorNumber.SrsDvrPlanTimeLimitExcept;
                         rs.Message = ErrorMessage.ErrorDic![ErrorNumber.SrsDvrPlanTimeLimitExcept];
 
-                        return false;
+                        return (false, rs);
                     }
                 }
             }
 
-            StreamDvrPlan retSelect = null!;
-            lock (Common.LockDbObjForStreamDvrPlan)
-            {
-                retSelect = OrmService.Db.Select<StreamDvrPlan>().Where(x =>
-                    x.DeviceId!.Trim().ToLower().Equals(sdp.DeviceId!.Trim().ToLower())
-                    && x.VhostDomain!.Trim().ToLower().Equals(sdp.VhostDomain!.Trim().ToLower())
-                    && x.App!.Trim().ToLower().Equals(sdp.App!.Trim().ToLower())
-                    && x.Stream!.Trim().ToLower().Equals(sdp.Stream!.Trim().ToLower())).First();
-            }
-
+            StreamDvrPlan? retSelect = await DvrStream1Sql(sdp);
+            
             if (retSelect != null)
             {
                 rs.Code = ErrorNumber.SrsDvrPlanAlreadyExists;
                 rs.Message = ErrorMessage.ErrorDic![ErrorNumber.SrsDvrPlanAlreadyExists];
 
-                return false;
+                return (false, rs);
             }
 
             try
             {
-                lock (Common.LockDbObjForStreamDvrPlan)
+                var tmpStream = new StreamDvrPlan
                 {
-                    var tmpStream = new StreamDvrPlan();
-                    tmpStream.App = sdp.App;
-                    tmpStream.Enable = sdp.Enable;
-                    tmpStream.Stream = sdp.Stream;
-                    tmpStream.DeviceId = sdp.DeviceId;
-                    tmpStream.LimitDays = sdp.LimitDays;
-                    tmpStream.LimitSpace = sdp.LimitSpace;
-                    tmpStream.VhostDomain = sdp.VhostDomain;
-                    tmpStream.OverStepPlan = sdp.OverStepPlan;
-                    tmpStream.TimeRangeList = new List<DvrDayTimeRange>();
-                    if (sdp.TimeRangeList != null && sdp.TimeRangeList.Count > 0)
+                    App = sdp.App,
+                    Enable = sdp.Enable,
+                    Stream = sdp.Stream,
+                    DeviceId = sdp.DeviceId,
+                    LimitDays = sdp.LimitDays,
+                    LimitSpace = sdp.LimitSpace,
+                    VhostDomain = sdp.VhostDomain,
+                    OverStepPlan = sdp.OverStepPlan,
+                    TimeRangeList = new List<DvrDayTimeRange>()
+                };
+                if (sdp.TimeRangeList != null && sdp.TimeRangeList.Count > 0)
+                {
+                    foreach (var tmp in sdp.TimeRangeList)
                     {
-                        foreach (var tmp in sdp.TimeRangeList)
+                        tmpStream.TimeRangeList.Add(new DvrDayTimeRange()
                         {
-                            tmpStream.TimeRangeList.Add(new DvrDayTimeRange()
-                            {
-                                EndTime = tmp.EndTime,
-                                StartTime = tmp.StartTime,
-                                WeekDay = tmp.WeekDay,
-                            });
-                        }
-                    }
-
-                    /*Insert with subclasses*/
-                    var repo = OrmService.Db.GetRepository<StreamDvrPlan>();
-                    repo.DbContextOptions.EnableAddOrUpdateNavigateList = true; //Need to open manually
-                    var ret = repo.Insert(tmpStream);
-                    /*Insert with subclasses*/
-                    if (ret != null)
-                    {
-                        return true;
+                            EndTime = tmp.EndTime,
+                            StartTime = tmp.StartTime,
+                            WeekDay = tmp.WeekDay,
+                        });
                     }
                 }
 
-                return false;
+                if (_producerStream == null)
+                {
+                    _producerStream = await _client.NewProducerAsync(_streamDvr, _producerConfigStream);
+                }
+                
+                await _producerStream.NewMessage().Value(tmpStream).SendAsync();
+                return (true, rs);
             }
             catch (Exception ex)
             {
                 rs.Code = ErrorNumber.SystemDataBaseExcept;
                 rs.Message = ErrorMessage.ErrorDic![ErrorNumber.SystemDataBaseExcept] + "\r\n" + ex.Message;
 
-                return false;
+                return (false, rs);
             }
+        }
+        private async ValueTask<StreamDvrPlan> DvrStream1Sql(ReqStreamDvrPlan sdp)
+        {
+
+            var topic = _producerConfigStream.Topic;
+            var select = @$"select * from ""{topic}"" 
+            WHERE DeviceId = '{sdp.DeviceId}' 
+            AND Vhost = '{sdp.VhostDomain}'
+            AND Stream = '{sdp.Stream}' 
+            AND App = '{sdp.App}' Order By __publish_time__ ASC  LIMIT 1";
+            var option = new ClientOptions
+            {
+                Server = _pulsarSrsConfig.TrinoUrl,
+                Execute = select,
+                Catalog = "pulsar",
+                Schema = $"{_pulsarSrsConfig.Tenant}/{_pulsarSrsConfig.NameSpace}"
+            };
+            var sql = new SqlInstance(_pulsarSystem.System, option);
+            var data = await sql.ExecuteAsync();
+            var stream = new StreamDvrPlan();
+            switch (data.Response)
+            {
+                case StatsResponse stats:
+                    _log.Info(JsonSerializer.Serialize(stats, new JsonSerializerOptions { WriteIndented = true }));
+                    break;
+                case DataResponse dt:
+                    var d = dt.Data.FirstOrDefault();
+                    var json = JsonSerializer.Serialize(d, new JsonSerializerOptions { WriteIndented = true });
+                    stream = JsonSerializer.Deserialize<StreamDvrPlan>(json)!;
+                    _log.Info(JsonSerializer.Serialize(dt.StatementStats, new JsonSerializerOptions { WriteIndented = true }));
+                    break;
+                case ErrorResponse er:
+                    _log.Info(JsonSerializer.Serialize(er, new JsonSerializerOptions { WriteIndented = true }));
+                    break;
+            }
+            return stream;
+        }
+
+        private async ValueTask<StreamDvrPlan> DvrStream1Sql(long id)
+        {
+
+            var topic = _producerConfigStream.Topic;
+            var select = @$"select * from ""{topic}"" 
+            WHERE StreamDvrPlanId = '{id}'
+            Order By __publish_time__ ASC  LIMIT 1";
+            var option = new ClientOptions
+            {
+                Server = _pulsarSrsConfig.TrinoUrl,
+                Execute = select,
+                Catalog = "pulsar",
+                Schema = $"{_pulsarSrsConfig.Tenant}/{_pulsarSrsConfig.NameSpace}"
+            };
+            var sql = new SqlInstance(_pulsarSystem.System, option);
+            var data = await sql.ExecuteAsync();
+            var stream = new StreamDvrPlan();
+            switch (data.Response)
+            {
+                case StatsResponse stats:
+                    _log.Info(JsonSerializer.Serialize(stats, new JsonSerializerOptions { WriteIndented = true }));
+                    break;
+                case DataResponse dt:
+                    var d = dt.Data.FirstOrDefault();
+                    var json = JsonSerializer.Serialize(d, new JsonSerializerOptions { WriteIndented = true });
+                    stream = JsonSerializer.Deserialize<StreamDvrPlan>(json)!;
+                    _log.Info(JsonSerializer.Serialize(dt.StatementStats, new JsonSerializerOptions { WriteIndented = true }));
+                    break;
+                case ErrorResponse er:
+                    _log.Info(JsonSerializer.Serialize(er, new JsonSerializerOptions { WriteIndented = true }));
+                    break;
+            }
+            return stream;
         }
         public static Props Prop(PulsarSystem pulsarSystem, IActorRef cutMergeService)
         {
