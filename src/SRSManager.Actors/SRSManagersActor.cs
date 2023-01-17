@@ -14,6 +14,15 @@ using SharpPulsar.Builder;
 
 namespace SRSManager.Actors
 {
+    //t
+    //dynamic_highlatency.m3u8?type=live
+    //             time         number                pulsar chunk
+    //chunk_1673984110307885148_1508_a.ts?type=live
+    // fast
+    // prod-fastly-us-east-1.video.....
+
+
+
     public class SRSManagersActor : ReceiveActor
     {
         private IActorRef _cutMergeService;
