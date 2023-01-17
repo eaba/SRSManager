@@ -1,10 +1,12 @@
 using Akka.Actor;
 using Akka.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using MySqlX.XDevAPI.Relational;
 using SharpPulsar.Builder;
 using SrsApis.SrsManager.Apis;
 using SrsManageCommon;
 using SRSManageCommon.ControllerStructs.RequestModules;
+using SRSManageCommon.DBMoudle;
 using SRSManager.Actors;
 using SRSManager.Messages;
 using SRSManager.Shared;
@@ -54,10 +56,10 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/DvrPlan/GetBacklogTaskList")]
-        public JsonResult GetBacklogTaskList()
+        public async ValueTask<JsonResult> GetBacklogTaskList()
         {
-            var rt = DvrPlanApis.GetBacklogTaskList( out var rs);
-            return Result.DelApisResult(rt, rs);
+            var a = await _actor.Ask<ApisResult>(new DvrPlan("GetBacklogTaskList"));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
 
@@ -69,7 +71,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/DvrPlan/GetMergeTaskStatus")]
-        public JsonResult GetMergeTaskStatus(string taskId)
+        public async ValueTask<JsonResult> GetMergeTaskStatus(string taskId)
         {
             var rss = CommonFunctions.CheckParams(new object[] {taskId});
             if (rss.Code != ErrorNumber.None)
@@ -77,8 +79,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = DvrPlanApis.GetMergeTaskStatus(taskId, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var a = await _actor.Ask<ApisResult>(new DvrPlan(taskId, "GetMergeTaskStatus"));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
 
@@ -90,7 +92,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/DvrPlan/CutOrMergeVideoFile")]
-        public JsonResult CutOrMergeVideoFile(ReqCutOrMergeVideoFile rcmv)
+        public async ValueTask<JsonResult> CutOrMergeVideoFile(ReqCutOrMergeVideoFile rcmv)
         {
             var rss = CommonFunctions.CheckParams(new object[] {rcmv});
             if (rss.Code != ErrorNumber.None)
@@ -98,8 +100,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = DvrPlanApis.CutOrMergeVideoFile(rcmv, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var a = await _actor.Ask<ApisResult>(new DvrPlan(rcmv, "CutOrMergeVideoFile"));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
         /// <summary>
@@ -110,7 +112,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/DvrPlan/UndoSoftDelete")]
-        public JsonResult UndoSoftDelete(long dvrVideoId)
+        public async ValueTask<JsonResult> UndoSoftDelete(long dvrVideoId)
         {
             var rss = CommonFunctions.CheckParams(new object[] {dvrVideoId});
             if (rss.Code != ErrorNumber.None)
@@ -118,8 +120,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = DvrPlanApis.UndoSoftDelete(dvrVideoId, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var a = await _actor.Ask<ApisResult>(new DvrPlan(dvrVideoId, "UndoSoftDelete"));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
         /// <summary>
@@ -130,7 +132,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/DvrPlan/HardDeleteDvrVideoById")]
-        public JsonResult HardDeleteDvrVideoById(long dvrVideoId)
+        public async ValueTask<JsonResult> HardDeleteDvrVideoById(long dvrVideoId)
         {
             var rss = CommonFunctions.CheckParams(new object[] {dvrVideoId});
             if (rss.Code != ErrorNumber.None)
@@ -138,8 +140,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = DvrPlanApis.HardDeleteDvrVideoById(dvrVideoId, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var a = await _actor.Ask<ApisResult>(new DvrPlan(dvrVideoId, "HardDeleteDvrVideoById"));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
         /// <summary>
@@ -150,7 +152,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/DvrPlan/SoftDeleteDvrVideoById")]
-        public JsonResult SoftDeleteDvrVideoById(long dvrVideoId)
+        public async ValueTask<JsonResult> SoftDeleteDvrVideoById(long dvrVideoId)
         {
             var rss = CommonFunctions.CheckParams(new object[] {dvrVideoId});
             if (rss.Code != ErrorNumber.None)
@@ -158,8 +160,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = DvrPlanApis.SoftDeleteDvrVideoById(dvrVideoId, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var a = await _actor.Ask<ApisResult>(new DvrPlan(dvrVideoId, "SoftDeleteDvrVideoById"));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
         /// <summary>
@@ -170,7 +172,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/DvrPlan/GetDvrVideoList")]
-        public JsonResult GetDvrVideoList(ReqGetDvrVideo rgdv)
+        public async ValueTask<JsonResult> GetDvrVideoList(ReqGetDvrVideo rgdv)
         {
             var rss = CommonFunctions.CheckParams(new object[] {rgdv});
             if (rss.Code != ErrorNumber.None)
@@ -178,8 +180,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = DvrPlanApis.GetDvrVideoList(rgdv, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var a = await _actor.Ask<ApisResult>(new DvrPlan(rgdv, "GetDvrVideoList"));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
         /// <summary>
@@ -190,7 +192,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/DvrPlan/DeleteDvrPlanById")]
-        public JsonResult DeleteDvrPlanById(long id)
+        public async ValueTask<JsonResult> DeleteDvrPlanById(long id)
         {
             var rss = CommonFunctions.CheckParams(new object[] {id});
             if (rss.Code != ErrorNumber.None)
@@ -198,8 +200,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = DvrPlanApis.DeleteDvrPlanById(id, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var a = await _actor.Ask<ApisResult>(new DvrPlan(id, "DeleteDvrPlanById"));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
         /// <summary>
@@ -210,7 +212,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/DvrPlan/OnOrOffDvrPlanById")]
-        public JsonResult OnOrOffDvrPlanById(long id, bool enable)
+        public async ValueTask<JsonResult> OnOrOffDvrPlanById(long id, bool enable)
         {
             var rss = CommonFunctions.CheckParams(new object[] {id, enable});
             if (rss.Code != ErrorNumber.None)
@@ -218,8 +220,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = DvrPlanApis.OnOrOffDvrPlanById(id, enable, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var a = await _actor.Ask<ApisResult>(new DvrPlan(id, enable, "OnOrOffDvrPlanById"));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
 
@@ -235,7 +237,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/DvrPlan/SetDvrPlanById")]
-        public JsonResult SetDvrPlanById(int id,ReqStreamDvrPlan sdp)
+        public async ValueTask<JsonResult> SetDvrPlanById(int id,ReqStreamDvrPlan sdp)
         {
             var rss = CommonFunctions.CheckParams(new object[] {id,sdp});
             if (rss.Code != ErrorNumber.None)
@@ -243,8 +245,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = DvrPlanApis.SetDvrPlanById(id,sdp, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var a = await _actor.Ask<ApisResult>(new DvrPlan(id, sdp, "SetDvrPlanById"));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
         /// <summary>
@@ -255,7 +257,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/DvrPlan/CreateDvrPlan")]
-        public JsonResult CreateDvrPlan(ReqStreamDvrPlan sdp)
+        public async ValueTask<JsonResult> CreateDvrPlan(ReqStreamDvrPlan sdp)
         {
             var rss = CommonFunctions.CheckParams(new object[] {sdp});
             if (rss.Code != ErrorNumber.None)
@@ -263,8 +265,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = DvrPlanApis.CreateDvrPlan(sdp, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var a = await _actor.Ask<ApisResult>(new DvrPlan(sdp, "CreateDvrPlan"));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
         /*
@@ -296,7 +298,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/DvrPlan/GetDvrPlan")]
-        public JsonResult GetDvrPlanList(ReqGetDvrPlan rdp)
+        public async ValueTask<JsonResult> GetDvrPlanList(ReqGetDvrPlan rdp)
         {
             var rss = CommonFunctions.CheckParams(new object[] {rdp});
             if (rss.Code != ErrorNumber.None)
@@ -304,8 +306,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = DvrPlanApis.GetDvrPlanList(rdp, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var a = await _actor.Ask<ApisResult>(new DvrPlan(rdp, "GetDvrPlanList"));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
     }
 }

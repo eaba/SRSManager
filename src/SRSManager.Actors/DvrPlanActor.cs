@@ -107,6 +107,11 @@ namespace SRSManager.Actors
             {
                 await SetDvrPlanById(vh.DvrVideoId, vh.Sdp!, Sender);
             });
+            ReceiveAsync<DvrPlan>(vhIf => vhIf.Method == "GetDvrPlanList", async vh =>
+            {
+                await GetDvrPlanList(vh.Rdp!, Sender);
+            });
+            
             ReceiveAsync<DvrPlan>(vhIf => vhIf.Method == "CreateDvrPlan", async vh =>
             {
                 var c = await CreateDvrPlan(vh.Sdp!);
@@ -958,6 +963,55 @@ namespace SRSManager.Actors
                     break;
             }
             return dvr;
+        }
+        private async ValueTask GetDvrPlanList(ReqGetDvrPlan rgdp, IActorRef sender)
+        {
+            var idFound = !string.IsNullOrEmpty(rgdp.DeviceId);
+            var vhostFound = !string.IsNullOrEmpty(rgdp.VhostDomain);
+            var streamFound = !string.IsNullOrEmpty(rgdp.Stream);
+            var appFound = !string.IsNullOrEmpty(rgdp.App);
+            var topic = _producerConfigStream.Topic;
+            var select = @$"select * from ""{topic}"" 
+            WHERE Device_Id = {rgdp.DeviceId} 
+            AND Vhost = {rgdp.VhostDomain} 
+            AND Stream = {rgdp.Stream} 
+            AND App = {rgdp.App} 
+            Order By __publish_time__ ASC ";
+            var rs = new ResponseStruct()
+            {
+                Code = ErrorNumber.None,
+                Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+            };
+
+            var option = new ClientOptions
+            {
+                Server = _pulsarSrsConfig.TrinoUrl,
+                Execute = select,
+                Catalog = "pulsar",
+                Schema = $"{_pulsarSrsConfig.Tenant}/{_pulsarSrsConfig.NameSpace}"
+            };
+            var sql = new SqlInstance(_pulsarSystem.System, option);
+            var data = await sql.ExecuteAsync();
+            var stream = new List<StreamDvrPlan>();
+            switch (data.Response)
+            {
+                case StatsResponse stats:
+                    _log.Info(JsonSerializer.Serialize(stats, new JsonSerializerOptions { WriteIndented = true }));
+                    break;
+                case DataResponse dt:
+                    for (var i = 0; i < dt.Data.Count; i++)
+                    {
+                        var ob = dt.Data.ElementAt(i);
+                        var json = JsonSerializer.Serialize(ob, new JsonSerializerOptions { WriteIndented = true });
+                        stream.Add(JsonSerializer.Deserialize<StreamDvrPlan>(json)!);
+                    }
+                    _log.Info(JsonSerializer.Serialize(dt.StatementStats, new JsonSerializerOptions { WriteIndented = true }));
+                    break;
+                case ErrorResponse er:
+                    _log.Info(JsonSerializer.Serialize(er, new JsonSerializerOptions { WriteIndented = true }));
+                    break;
+            }
+            sender.Tell(new ApisResult(stream, rs));
         }
         /// <summary>
         /// Delete a recording plan by id
