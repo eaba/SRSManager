@@ -1,6 +1,5 @@
 ﻿using SharpPulsar;
 using SharpPulsar.Builder;
-using SharpPulsar.User;
 
 namespace SRSManager.Actors.PulsarActor
 {
