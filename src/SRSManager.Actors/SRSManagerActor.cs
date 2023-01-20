@@ -7,6 +7,10 @@ using SrsConfFile.SRSConfClass;
 using SharpPulsar;
 using SrsConfFile;
 using Akka.Event;
+using MySqlX.XDevAPI.Relational;
+using Org.BouncyCastle.Ocsp;
+using SrsManageCommon.SrsManageCommon;
+using System.Runtime.ConstrainedExecution;
 
 namespace SRSManager.Actors
 {
@@ -38,6 +42,7 @@ namespace SRSManager.Actors
             {
                 Sender.Tell(_srsManager);
             });
+            FastUsefulApis();
             GlobalSrsApis();
             //Pulsar
             RtcServerApis();
@@ -65,7 +70,480 @@ namespace SRSManager.Actors
             VhostSecurityApis();    
             VhostTranscodeApis();
         }
+        private void FastUsefulApis()
+        {
+            ReceiveAsync<FastUseful>(vhIf => vhIf.Method == "GetStreamInfoByVhostIngestName", async vh =>
+            {
+               var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager.Srs == null)
+                {
+                    rs.Code = ErrorNumber.SrsObjectNotInit;
+                    rs.Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit];
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return; 
+                }
 
+                var apisResult = await Self.Ask<ApisResult>(new VhostIngest(vh.DeviceId!, vh.VHostDomain!, vh.IngestName!)); 
+                if (apisResult.Rt as Ingest == null)
+                {
+                    rs.Code = ErrorNumber.SrsObjectNotInit;
+                    rs.Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit];
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }
+                var retIngest = apisResult.Rt as Ingest;
+                try
+                {
+                    var uri = new Uri(retIngest!.Engines![0].Output!);
+                    var uriInput = new Uri(retIngest.Input!.Url!);
+                    var userInfo = uriInput.UserInfo;
+                    var username = "";
+                    var password = "";
+                    if (userInfo.Contains(":"))
+                    {
+                        var strArr = userInfo.Split(":", StringSplitOptions.RemoveEmptyEntries);
+                        if (strArr.Length == 2)
+                        {
+                            username = strArr[0].Trim();
+                            password = strArr[1].Trim();
+                        }
+                    }
+                    else if (!string.IsNullOrEmpty(userInfo))
+                    {
+                        username = userInfo;
+                    }
+
+                   var live = new SrsLiveStream()
+                    {
+                        DeviceId = vh.DeviceId,
+                        IngestName = vh.IngestName,
+                        LiveStream = uri.LocalPath,
+                        MonitorType = MonitorType.Onvif,
+                        VhostDomain = vh.VHostDomain,
+                        IpAddress = uriInput.Host,
+                        Username = username,
+                        Password = password,
+                    };
+                    Sender.Tell(new ApisResult(live, rs));
+                    return;
+                }
+                catch
+                {
+                    rs.Code = ErrorNumber.Other;
+                    rs.Message = ErrorMessage.ErrorDic![ErrorNumber.Other];
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }               
+
+            });
+            Receive<FastUseful>(vhIf => vhIf.Method == "GetAllIngestByDeviceId", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                
+                if (_srsManager.Srs == null)
+                {
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsObjectNotInit,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                    };
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }
+                var ingestList = new List<Ingest>();
+                if (_srsManager.Srs.Vhosts == null || _srsManager.Srs.Vhosts.Count == 0)
+                {
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }
+                foreach (var vhost in _srsManager.Srs.Vhosts)
+                {
+                    if (vhost != null && vhost.Vingests != null)
+                    {
+                        foreach (var ingest in vhost.Vingests)
+                        {
+                            if (ingest != null)
+                            {
+                                ingestList.Add(ingest);
+                            }
+                        }
+                    }
+                }
+                Sender.Tell(new ApisResult(ingestList, rs));
+
+            });
+            Receive<FastUseful>(vhIf => vhIf.Method == "OnOrOffVhostMinDelay", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+               
+                if (_srsManager == null)
+                {
+                    rs.Code = ErrorNumber.SrsObjectNotInit;
+                    rs.Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit];
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+
+                if (_srsManager.Srs.Vhosts == null || _srsManager.Srs.Vhosts.Count == 0)
+                {
+                    rs.Code = ErrorNumber.SrsSubInstanceNotFound;
+                    rs.Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound];
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+
+                var retVhost =
+                    _srsManager.Srs.Vhosts.FindLast(x => x.VhostDomain!.Trim().ToLower().Equals(vh.VHostDomain.Trim().ToLower()));
+                if (retVhost == null)
+                {
+                    rs.Code = ErrorNumber.SrsSubInstanceNotFound;
+                    rs.Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound];
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+
+                retVhost.Tcp_nodelay = vh.Enable;
+                retVhost.Min_latency = vh.Enable;
+                if (vh.Enable.Value)
+                {
+                    if (retVhost.Vplay == null)
+                    {
+                        retVhost.Vplay = new Play();
+                    }
+
+                    retVhost.Vplay.Gop_cache = !vh.Enable;
+                    retVhost.Vplay.GopCacheMaxFrames = 2500;
+                    retVhost.Vplay.Queue_length = 10;
+                    retVhost.Vplay.Mw_latency = 100;
+                    if (retVhost.Vpublish == null)
+                    {
+                        retVhost.Vpublish = new SrsConfFile.SRSConfClass.Publish();
+                    }
+
+                    retVhost.Vpublish.Mr = !vh.Enable;
+                }
+                else
+                {
+                    if (retVhost.Vplay != null)
+                        retVhost.Vplay = null;
+                    if (retVhost.Vpublish != null)
+                        retVhost.Vpublish = null;
+                }
+
+                Sender.Tell(new ApisResult(true, rs));
+            });
+            Receive<FastUseful>(vhIf => vhIf.Method == "KickoffClient", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager != null && _srsManager.Srs != null)
+                {
+                    if (_srsManager.Srs.Http_api != null && _srsManager.Srs.Http_api.Enabled == true)
+                    {
+                        var reqUrl = "http://127.0.0.1:" + _srsManager.Srs.Http_api!.Listen + "/api/v1/clients/" + vh.ClientId;
+                        try
+                        {
+                            var tmpStr = NetHelperNew.HttpDeleteRequest(reqUrl, null!);
+                            var retReq = JsonHelper.FromJson<SrsSimpleResponseModule>(tmpStr);
+                            if (retReq.Code == 0)
+                            {
+                                Sender.Tell(new ApisResult(true!, rs));
+                                return;
+                            }
+
+
+                            Sender.Tell(new ApisResult(false, rs));
+                            return;
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                            Sender.Tell(new ApisResult(false, rs));
+                            return;
+                        }
+                    }
+
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(false, rs));
+                    return;
+                }
+
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.SrsObjectNotInit,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                };
+                
+                Sender.Tell(new ApisResult(false, rs));
+
+            });
+            Receive<FastUseful>(vhIf => vhIf.Method == "GetStreamStatusByDeviceIdAndStreamId", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager != null && _srsManager.Srs != null)
+                {
+                    if (_srsManager.Srs.Http_api != null && _srsManager.Srs.Http_api.Enabled == true)
+                    {
+                        var reqUrl = "http://127.0.0.1:" + _srsManager.Srs.Http_api!.Listen + "/api/v1/streams/" + vh.StreamId;
+                        try
+                        {
+                            var tmpStr = NetHelperNew.HttpGetRequest(reqUrl, null!);
+                            var retReq = JsonHelper.FromJson<SrsStreamSingleStatusModule>(tmpStr);
+                            if (retReq.Code == 0 && retReq.Stream != null)
+                            {
+                                Sender.Tell(new ApisResult(retReq!, rs));
+                                return;
+                            }
+                            Sender.Tell(new ApisResult(null!, rs));
+                            return;
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                            Sender.Tell(new ApisResult(null!, rs));
+                            return;
+                        }
+                    }
+
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }
+
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.SrsObjectNotInit,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                };
+                Sender.Tell(new ApisResult(null!, rs));
+
+            });
+            Receive<FastUseful>(vhIf => vhIf.Method == "GetStreamListStatusByDeviceId", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager != null && _srsManager.Srs != null)
+                {
+                    if (_srsManager.Srs.Http_api != null && _srsManager.Srs.Http_api.Enabled == true)
+                    {
+                        var reqUrl = "http://127.0.0.1:" + _srsManager.Srs.Http_api!.Listen + "/api/v1/streams/";
+                        try
+                        {
+                            var tmpStr = NetHelperNew.HttpGetRequest(reqUrl, null!);
+                            var retReq = JsonHelper.FromJson<SrsStreamsStatusModule>(tmpStr);
+                            if (retReq.Code == 0 && retReq.Streams != null)
+                            {
+                                Sender.Tell(new ApisResult(retReq!, rs));
+                                return;
+                            }
+
+                            Sender.Tell(new ApisResult(null!, rs));
+                            return;
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                            Sender.Tell(new ApisResult(null!, rs));
+                            return;
+                        }
+                    }
+
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }
+
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.SrsObjectNotInit,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                };
+                Sender.Tell(new ApisResult(null!, rs));
+                return;
+                
+            });
+            Receive<FastUseful>(vhIf => vhIf.Method == "GetVhostStatusById", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager != null && _srsManager.Srs != null)
+                {
+                    if (_srsManager.Srs.Http_api != null && _srsManager.Srs.Http_api.Enabled == true)
+                    {
+                        var reqUrl = "http://127.0.0.1:" + _srsManager.Srs.Http_api!.Listen + "/api/v1/vhosts/" + vh.VHostId;
+                        try
+                        {
+                            var tmpStr = NetHelperNew.HttpGetRequest(reqUrl, null!);
+                            var retReq = JsonHelper.FromJson<SrsVhostSingleStatusModule>(tmpStr);
+                            if (retReq.Code == 0 && retReq.Vhost != null)
+                            {
+                                Sender.Tell(new ApisResult(retReq!, rs));
+                                return;
+                            }
+
+                            Sender.Tell(new ApisResult(null!, rs));
+                            return;
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                            Sender.Tell(new ApisResult(null!, rs));
+                            return;
+                        }
+                    }
+
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }
+
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.SrsObjectNotInit,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                };
+                Sender.Tell(new ApisResult(null!, rs));
+            });
+            Receive<FastUseful>(vhIf => vhIf.Method == "GetVhostListStatusByDeviceId", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager != null && _srsManager.Srs != null)
+                {
+                    if (_srsManager.Srs.Http_api != null && _srsManager.Srs.Http_api.Enabled == true)
+                    {
+                        var reqUrl = "http://127.0.0.1:" + _srsManager.Srs.Http_api!.Listen + "/api/v1/vhosts/";
+                        try
+                        {
+                            var tmpStr = NetHelperNew.HttpGetRequest(reqUrl, null!);
+                            var retReq = JsonHelper.FromJson<SrsVhostsStatusModule>(tmpStr);
+                            if (retReq.Code == 0 && retReq.Vhosts != null)
+                            {
+                                Sender.Tell(new ApisResult(retReq!, rs));
+                                return;
+                            }
+
+                            Sender.Tell(new ApisResult(null!, rs));
+                            return;
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                            Sender.Tell(new ApisResult(null!, rs));
+                            return;
+                        }
+                    }
+
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }
+
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.SrsObjectNotInit,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                };
+                Sender.Tell(new ApisResult(null!, rs));
+            });
+            Receive<FastUseful>(vhIf => vhIf.Method == "GetOnOnlinePlayerByDeviceId", vh =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                if (_srsManager != null && _srsManager.Srs != null)
+                {
+                    if (_srsManager.Srs.Http_api != null && _srsManager.Srs.Http_api.Enabled == true)
+                    {
+                        var reqUrl = "http://127.0.0.1:" + _srsManager.Srs.Http_api!.Listen + "/api/v1/vhosts/";
+                        try
+                        {
+                            var tmpStr = NetHelperNew.HttpGetRequest(reqUrl, null!);
+                            var retReq = JsonHelper.FromJson<SrsVhostsStatusModule>(tmpStr);
+                            if (retReq.Code == 0 && retReq.Vhosts != null)
+                            {
+                                Sender.Tell(new ApisResult(retReq!, rs));
+                                return;
+                            }
+
+                            Sender.Tell(new ApisResult(null!, rs));
+                            return;
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                            Sender.Tell(new ApisResult(null!, rs));
+                            return;
+                        }
+                    }
+
+                    rs = new ResponseStruct()
+                    {
+                        Code = ErrorNumber.SrsSubInstanceNotFound,
+                        Message = ErrorMessage.ErrorDic![ErrorNumber.SrsSubInstanceNotFound],
+                    };
+                    Sender.Tell(new ApisResult(null!, rs));
+                    return;
+                }
+
+                rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.SrsObjectNotInit,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit],
+                };
+                Sender.Tell(new ApisResult(null!, rs));
+            });
+        }
         private void VhostTranscodeApis()
         {
             Receive<VhostTranscode>(vhIf => vhIf.Method == "CreateVhostTranscode", vh =>
@@ -2086,7 +2564,7 @@ namespace SRSManager.Actors
                 }
 
                 var retVhost = _srsManager.Srs.Vhosts.FindLast(x =>
-                    x.VhostDomain!.Trim().ToUpper().Equals(vh.VHostDomain.Trim().ToUpper()));
+                    x.VhostDomain!.Trim().ToUpper().Equals(vh.VHostDomain!.Trim().ToUpper()));
 
                 if (retVhost == null || retVhost.Vingests == null)
                 {
@@ -2100,7 +2578,7 @@ namespace SRSManager.Actors
                 }
 
                 var retVhostIngest = retVhost.Vingests.FindLast(x =>
-                    x.IngestName!.Trim().ToUpper().Equals(vh.IngestName.Trim().ToUpper()));
+                    x.IngestName!.Trim().ToUpper().Equals(vh.IngestName!.Trim().ToUpper()));
 
                 if (retVhostIngest == null)
                 {
@@ -2145,7 +2623,7 @@ namespace SRSManager.Actors
                 }
 
                 var retVhost = _srsManager.Srs.Vhosts.FindLast(x =>
-                    x.VhostDomain!.Trim().ToUpper().Equals(vh.VHostDomain.Trim().ToUpper()));
+                    x.VhostDomain!.Trim().ToUpper().Equals(vh.VHostDomain!.Trim().ToUpper()));
 
                 if (retVhost == null)
                 {

@@ -68,7 +68,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/FastUseful/GetAllIngestByDeviceId")]
-        public JsonResult GetAllIngestByDeviceId(string deviceId)
+        public async ValueTask<JsonResult> GetAllIngestByDeviceId(string deviceId)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId});
             if (rss.Code != ErrorNumber.None)
@@ -89,7 +89,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/FastUseful/OnOrOffVhostMinDelay")]
-        public JsonResult OnOrOffVhostMinDelay(string deviceId, string vhostDomain, bool enable)
+        public async ValueTask<JsonResult> OnOrOffVhostMinDelay(string deviceId, string vhostDomain, bool enable)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId, vhostDomain, enable});
             if (rss.Code != ErrorNumber.None)
@@ -109,15 +109,15 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/FastUseful/GetClientInfoByStreamValue")]
-        public JsonResult GetClientInfoByStreamValue(string stream)
+        public JsonResult GetClientInfoByStreamValue(string streamId)
         {
-            var rss = CommonFunctions.CheckParams(new object[] {stream});
+            var rss = CommonFunctions.CheckParams(new object[] {streamId});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = FastUsefulApis.GetClientInfoByStreamValue(stream, out var rs);
+            var rt = FastUsefulApis.GetClientInfoByStreamValue(streamId, out var rs);
             return Result.DelApisResult(rt, rs);
         }
 

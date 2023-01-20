@@ -607,12 +607,13 @@ namespace SRSManager.Actors
         }
         private IActorRef SRSManager(string deviceId)
         {
-            if (_srs.ContainsKey(deviceId))
-                return _srs[deviceId];
+            var d = $"deviceId_{deviceId}";
+            if (_srs.ContainsKey(d))
+                return _srs[d];
             else
             {
-                var s = Context.ActorOf(SRSManagerActor.Prop(_pulsarSystem));
-                _srs[deviceId] = s;
+                var s = Context.ActorOf(SRSManagerActor.Prop(_pulsarSystem), d);
+                _srs[d] = s;
                 return s;
             }
 
