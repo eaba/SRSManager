@@ -1,7 +1,6 @@
 using Akka.Actor;
 using Akka.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using SrsApis.SrsManager.Apis;
 using SrsManageCommon;
 using SRSManageCommon.ManageStructs;
 using SRSManager.Actors;
@@ -36,8 +35,7 @@ namespace SRSWeb.Controllers
             Console.WriteLine("Here is the test output:" + JsonHelper.ToJson(obj));
             return 0;
         }
-
-
+        
         /// <summary>
         /// Get Flow Information ByIngestName
         /// </summary>
@@ -54,9 +52,7 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = FastUsefulApis.GetStreamInfoByVhostIngestName(deviceId, vhostDomain, ingestName,
-                out var rs);
-            var a = await _actor.Ask<ApisResult>(new GlobalSrs(deviceId, "IsRunning"));
+            var a = await _actor.Ask<ApisResult>(new FastUseful(deviceId, vhostDomain, ingestName, "GetStreamInfoByVhostIngestName"));
             return Result.DelApisResult(a.Rt, a.Rs);
         }
 
@@ -76,8 +72,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = FastUsefulApis.GetAllIngestByDeviceId(deviceId, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var a = await _actor.Ask<ApisResult>(new FastUseful(deviceId, "GetAllIngestByDeviceId"));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
 
@@ -97,8 +93,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = FastUsefulApis.OnOrOffVhostMinDelay(deviceId, vhostDomain, enable, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var a = await _actor.Ask<ApisResult>(new FastUseful(deviceId, vhostDomain, enable, "OnOrOffVhostMinDelay"));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
                 
         /// <summary>
@@ -109,16 +105,16 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/FastUseful/GetClientInfoByStreamValue")]
-        public JsonResult GetClientInfoByStreamValue(string streamId)
+        public async ValueTask<JsonResult> GetClientInfoByStreamValue(string streamId, string tenant, string nameSpace, string trinoUrl)
         {
-            var rss = CommonFunctions.CheckParams(new object[] {streamId});
+            var rss = CommonFunctions.CheckParams(new object[] {streamId, tenant, nameSpace, trinoUrl});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = FastUsefulApis.GetClientInfoByStreamValue(streamId, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var a = await _actor.Ask<ApisResult>(new GetClientInfoByStreamValue(streamId, tenant, nameSpace, trinoUrl));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
         /// <summary>
@@ -129,10 +125,11 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/FastUseful/GetRunningSrsInfoList")]
-        public JsonResult GetRunningSrsInfoList()
+        public async ValueTask<JsonResult> GetRunningSrsInfoList()
         {
-            var rt = FastUsefulApis.GetRunningSrsInfoList(out var rs);
-            return Result.DelApisResult(rt, rs);
+           
+            var a = await _actor.Ask<ApisResult>(SRSManager.Messages.GetRunningSrsInfoList.Instance);
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
         /// <summary>
@@ -143,10 +140,10 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/FastUseful/StopAllSrs")]
-        public JsonResult StopAllSrs()
+        public async ValueTask<JsonResult> StopAllSrs()
         {
-            var rt = FastUsefulApis.StopAllSrs(out var rs);
-            return Result.DelApisResult(rt, rs);
+            var a = await _actor.Ask<ApisResult>(SRSManager.Messages.StopAllSrs.Instance);
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
         /// <summary>
@@ -157,10 +154,10 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/FastUseful/InitAndStartAllSrs")]
-        public JsonResult InitAndStartAllSrs()
+        public async ValueTask<JsonResult> InitAndStartAllSrs()
         {
-            var rt = FastUsefulApis.InitAndStartAllSrs(out var rs);
-            return Result.DelApisResult(rt, rs);
+            var a = await _actor.Ask<ApisResult>(SRSManager.Messages.InitAndStartAllSrs.Instance);
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
 
@@ -174,7 +171,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/FastUseful/KickoffClient")]
-        public JsonResult KickoffClient(string deviceId, string clientId)
+        public async ValueTask<JsonResult> KickoffClient(string deviceId, string clientId)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId, clientId});
             if (rss.Code != ErrorNumber.None)
@@ -182,8 +179,9 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = FastUsefulApis.KickoffClient(deviceId, clientId, out var rs);
-            return Result.DelApisResult(rt, rs);
+           
+            var a = await _actor.Ask<ApisResult>(new FastUseful(id:"", deviceId: deviceId, streamId:"", clientId: clientId, "KickoffClient"));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
 
@@ -195,16 +193,16 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/FastUseful/GetStreamStatusById")]
-        public JsonResult GetStreamStatusById(string deviceId, string streamId)
+        public async ValueTask<JsonResult> GetStreamStatusById(string deviceId, string streamId)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId, streamId});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
-
-            var rt = FastUsefulApis.GetStreamStatusByDeviceIdAndStreamId(deviceId, streamId, out var rs);
-            return Result.DelApisResult(rt, rs);
+            
+            var a = await _actor.Ask<ApisResult>(new FastUseful(id: "", deviceId: deviceId, streamId: streamId, clientId: "", "GetStreamStatusByDeviceIdAndStreamId"));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
 
@@ -216,7 +214,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/FastUseful/GetStreamListStatusByDeviceId")]
-        public JsonResult GetStreamListStatusByDeviceId(string deviceId)
+        public async ValueTask<JsonResult> GetStreamListStatusByDeviceId(string deviceId)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId});
             if (rss.Code != ErrorNumber.None)
@@ -224,8 +222,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = FastUsefulApis.GetStreamListStatusByDeviceId(deviceId, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var a = await _actor.Ask<ApisResult>(new FastUseful(deviceId, "GetStreamListStatusByDeviceId"));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
         /// <summary>
@@ -236,7 +234,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/FastUseful/GetVhostStatusById")]
-        public JsonResult GetVhostStatusById(string deviceId, string vhostId)
+        public async ValueTask<JsonResult> GetVhostStatusById(string deviceId, string vhostId)
         {
             var rss = CommonFunctions.CheckParams(new object[] {vhostId, deviceId});
             if (rss.Code != ErrorNumber.None)
@@ -244,8 +242,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = FastUsefulApis.GetVhostStatusByDeviceIdAndVhostId(deviceId, vhostId, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var a = await _actor.Ask<ApisResult>(new FastUseful(deviceId, vhostId, "GetVhostStatusById"));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
 
@@ -257,7 +255,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/FastUseful/GetVhostListStatusByDeviceId")]
-        public JsonResult GetVhostListStatusByDeviceId(string deviceId)
+        public async ValueTask<JsonResult> GetVhostListStatusByDeviceId(string deviceId)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId});
             if (rss.Code != ErrorNumber.None)
@@ -265,8 +263,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = FastUsefulApis.GetVhostListStatusByDeviceId(deviceId, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var a = await _actor.Ask<ApisResult>(new FastUseful(deviceId, "GetVhostListStatusByDeviceId"));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
 
@@ -278,16 +276,15 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/FastUseful/GetOnOnlinePlayerByDeviceId")]
-        public JsonResult GetOnOnlinePlayerByDeviceId(string deviceId)
+        public async ValueTask<JsonResult> GetOnOnlinePlayerByDeviceId(string deviceId, string tenant, string nameSpace, string trinoUrl)
         {
-            var rss = CommonFunctions.CheckParams(new object[] {deviceId});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, tenant, nameSpace, trinoUrl});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
-
-            var rt = FastUsefulApis.GetOnlinePlayerByDeviceId(deviceId, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var a = await _actor.Ask<ApisResult>(new GetOnlinePlayerByDeviceId(deviceId, tenant, nameSpace, trinoUrl));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
 
@@ -298,11 +295,17 @@ namespace SRSWeb.Controllers
         [HttpGet]
         [AuthVerify]
         [Log]
-        [Route("/FastUseful/GetOnOnlinePlayer")]
-        public JsonResult GetOnOnlinePlayer()
+        [Route("/FastUseful/GetOnlinePlayer")]
+        public async ValueTask<JsonResult> GetOnlinePlayer(string tenant, string nameSpace, string trinoUrl)
         {
-            var rt = FastUsefulApis.GetOnlinePlayer(out var rs);
-            return Result.DelApisResult(rt, rs);
+            var rss = CommonFunctions.CheckParams(new object[] { tenant, nameSpace, trinoUrl });
+            if (rss.Code != ErrorNumber.None)
+            {
+                return Result.DelApisResult(null!, rss);
+            }
+            
+            var a = await _actor.Ask<ApisResult>(new GetOnlinePlayer(tenant, nameSpace, trinoUrl));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
         /// <summary>
@@ -313,16 +316,16 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/FastUseful/GetOnPublishMonitorListById")]
-        public JsonResult GetOnPublishMonitorListById(string deviceId)
+        public async ValueTask<JsonResult> GetOnPublishMonitorListById(string deviceId, string tenant, string nameSpace, string trinoUrl)
         {
-            var rss = CommonFunctions.CheckParams(new object[] {deviceId});
+            var rss = CommonFunctions.CheckParams(new object[] {deviceId, tenant, nameSpace, trinoUrl});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = FastUsefulApis.GetOnPublishMonitorListByDeviceId(deviceId, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var a = await _actor.Ask<ApisResult>(new GetOnPublishMonitorListById(deviceId, tenant, nameSpace, trinoUrl));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
         /// <summary>
@@ -333,10 +336,16 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/FastUseful/GetOnPublishMonitorList")]
-        public JsonResult GetOnPublishMonitorList()
+        public async ValueTask<JsonResult> GetOnPublishMonitorList(string tenant, string nameSpace, string trinoUrl)
         {
-            var rt = FastUsefulApis.GetOnPublishMonitorList(out var rs);
-            return Result.DelApisResult(rt, rs);
+            var rss = CommonFunctions.CheckParams(new object[] { tenant, nameSpace, trinoUrl });
+            if (rss.Code != ErrorNumber.None)
+            {
+                return Result.DelApisResult(null!, rss);
+            }
+            
+            var a = await _actor.Ask<ApisResult>(new GetOnPublishMonitorList(tenant, nameSpace, trinoUrl));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
         /// <summary>
@@ -347,16 +356,16 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/FastUseful/GetOnPublishMonitorById")]
-        public JsonResult GetOnPublishMonitorById(string id)
+        public async ValueTask<JsonResult> GetOnPublishMonitorById(string id, string tenant, string nameSpace, string trinoUrl)
         {
-            var rss = CommonFunctions.CheckParams(new object[] {id});
+            var rss = CommonFunctions.CheckParams(new object[] {id, tenant, nameSpace, trinoUrl});
             if (rss.Code != ErrorNumber.None)
             {
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = FastUsefulApis.GetOnPublishMonitorById(id, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var a = await _actor.Ask<ApisResult>(new GetOnPublishMonitorById(id, tenant, nameSpace, trinoUrl));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
 
@@ -368,7 +377,7 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [Log]
         [Route("/FastUseful/GetOnvifMonitorIngestTemplate")]
-        public JsonResult GetOnvifMonitorIngestTemplate(string? username, string? password, string rtspUrl)
+        public async ValueTask<JsonResult> GetOnvifMonitorIngestTemplate(string? username, string? password, string rtspUrl)
         {
             var rss = CommonFunctions.CheckParams(new object[] { rtspUrl});
             if (rss.Code != ErrorNumber.None)
@@ -376,8 +385,8 @@ namespace SRSWeb.Controllers
                 return Result.DelApisResult(null!, rss);
             }
 
-            var rt = FastUsefulApis.GetOnvifMonitorIngestTemplate(username!, password!, rtspUrl, out var rs);
-            return Result.DelApisResult(rt, rs);
+            var a = await _actor.Ask<ApisResult>(new GetOnvifMonitorIngestTemplate(username!, password!, rtspUrl));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
     }
 }

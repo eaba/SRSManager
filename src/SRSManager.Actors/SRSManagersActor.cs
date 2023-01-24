@@ -11,6 +11,9 @@ using SrsApis.SrsManager;
 using SrsConfFile.SRSConfClass;
 using Akka.Event;
 using SharpPulsar.Builder;
+using SharpPulsar.Trino.Message;
+using SharpPulsar.Trino;
+using System.Text.Json;
 
 namespace SRSManager.Actors
 {
@@ -481,6 +484,149 @@ namespace SRSManager.Actors
                 };
                 Sender.Tell(new ApisResult(rtc, rs));
             });
+
+            ReceiveAsync<GetClientInfoByStreamValue>( async g =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                var query = @$"select * from 'OnlineClient' WHERE ClientType = '{ClientType.Monitor}' AND Stream = '{g.StreamId}' Order By __publish_time__ ASC LIMIT 1";
+                var sql = await Sql(query, g.Tenant, g.NameSpace, g.TrinoUrl);
+                Sender.Tell(new ApisResult(sql.FirstOrDefault()!, rs));
+            });
+            ReceiveAsync<GetOnlinePlayerByDeviceId>(async g =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                var query = @$"select * from 'OnlineClient' 
+                WHERE IsOnline = 'true' AND ClientType = '{ClientType.User}' 
+                AND IsPlay = 'true' AND Device_Id = '{g.DeviceId}'  Order By __publish_time__ ASC";
+                var sql = await Sql(query, g.Tenant, g.NameSpace, g.TrinoUrl);
+                Sender.Tell(new ApisResult(sql.ToList()!, rs));
+            });
+            ReceiveAsync<GetOnlinePlayer>(async g =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                var query = @$"select * from 'OnlineClient' 
+                WHERE IsOnline = 'true' AND ClientType = '{ClientType.User}' 
+                AND IsPlay = 'true' Order By __publish_time__ ASC";
+                var sql = await Sql(query, g.Tenant, g.NameSpace, g.TrinoUrl);
+                Sender.Tell(new ApisResult(sql.ToList()!, rs));
+            });
+            ReceiveAsync<GetOnPublishMonitorListById>(async g =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                var query = @$"select * from 'OnlineClient' 
+                WHERE IsOnline = 'true' AND ClientType = '{ClientType.Monitor}' 
+                AND Device_Id = '{g.DeviceId}'  Order By __publish_time__ ASC";
+                var sql = await Sql(query, g.Tenant, g.NameSpace, g.TrinoUrl);
+                Sender.Tell(new ApisResult(sql.ToList()!, rs));
+            });
+            ReceiveAsync<GetOnPublishMonitorList>(async g =>
+            {
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                var query = @$"select * from 'OnlineClient' 
+                WHERE IsOnline = 'true' AND ClientType = '{ClientType.Monitor}'  
+                Order By __publish_time__ ASC";
+                var sql = await Sql(query, g.Tenant, g.NameSpace, g.TrinoUrl);
+                Sender.Tell(new ApisResult(sql.ToList()!, rs));
+            });
+            ReceiveAsync<GetOnPublishMonitorById>(async g =>
+            {
+                var strArr = g.Id.Split(" ", StringSplitOptions.RemoveEmptyEntries);
+                var lIds = Array.ConvertAll(strArr, long.Parse);
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                var query = @$"select * from 'OnlineClient' 
+                WHERE any_match({strArr}, e -> e like '%{g.Id}%')  
+                Order By __publish_time__ ASC";
+                var sql = await Sql(query, g.Tenant, g.NameSpace, g.TrinoUrl);
+                Sender.Tell(new ApisResult(sql.ToList()!, rs));
+            });
+            Receive<GetOnvifMonitorIngestTemplate>(g =>
+            {                
+                Sender.Tell(new ApisResult(GetOnvifMonitorIngestTemplate(g.Username, g.Password, g.RtspUrl, out ResponseStruct rs), rs));
+            });
+        }
+        private Ingest GetOnvifMonitorIngestTemplate(string? username, string? password, string rtspUrl,
+           out ResponseStruct rs)
+        {
+            rs = new ResponseStruct()
+            {
+                Code = ErrorNumber.None,
+                Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+            };
+            if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
+            {
+                if (!rtspUrl.Contains("@"))
+                {
+                    rtspUrl = rtspUrl.Insert(rtspUrl.IndexOf("://", StringComparison.Ordinal) + 3,
+                        username + ":" + password + "@");
+                }
+            }
+            else if (!string.IsNullOrEmpty(username) && string.IsNullOrEmpty(username))
+            {
+                if (!rtspUrl.Contains("@"))
+                {
+                    rtspUrl = rtspUrl.Insert(rtspUrl.IndexOf("://", StringComparison.Ordinal) + 3,
+                        username + "@");
+                }
+            }
+
+            var url = new Uri(rtspUrl);
+            var ip = url.Host;
+            var port = (ushort)url.Port;
+            var protocol = url.Scheme;
+            var pathInfo = url.PathAndQuery;
+            if (pathInfo.Contains('='))
+            {
+                var eqflagidx = pathInfo.LastIndexOf('=');
+                pathInfo = pathInfo.Substring(eqflagidx + 1);
+            }
+            else
+            {
+                var flagidx = pathInfo.LastIndexOf('/');
+                pathInfo = pathInfo.Substring(flagidx + 1);
+            }
+
+            var result = new Ingest();
+            result.IngestName = ip.Trim() + "_" + pathInfo.Trim().ToLower();
+            result.Enabled = true;
+            result.Input = new IngestInput();
+            result.Input.Type = IngestInputType.stream;
+            result.Input.Url = rtspUrl;
+            result.Ffmpeg = SrsManageCommon.Common.FFmpegBinPath;
+            result.Engines = new List<IngestTranscodeEngine>();
+            var eng = new IngestTranscodeEngine();
+            eng.Enabled = true;
+            eng.Perfile = new IngestEnginePerfile();
+            eng.Perfile.Re = "re;";
+            eng.Perfile.Rtsp_transport = "tcp";
+            eng.Vcodec = "copy";
+            eng.Acodec = "copy";
+            eng.Output = "rtmp://127.0.0.1/live/" + result.IngestName;
+            result.Engines.Add(eng);
+            return result;
         }
         private List<NetworkInterfaceModule> GetNetworkAdapterList()
         {
@@ -690,7 +836,38 @@ namespace SRSManager.Actors
             }
 
         }
-        
+        private async ValueTask<List<OnlineClient>> Sql(string query, string tenant, string namespac, string trinoUrl)
+        {
+            var option = new ClientOptions
+            {
+                Server = trinoUrl,
+                Execute = query,
+                Catalog = "pulsar",
+                Schema = $"{tenant}/{namespac}"
+            };
+            var sql = new SqlInstance(_pulsarSystem.System, option);
+            var data = await sql.ExecuteAsync();
+            var dvr = new List<OnlineClient>();
+            switch (data.Response)
+            {
+                case StatsResponse stats:
+                    _log.Info(JsonSerializer.Serialize(stats, new JsonSerializerOptions { WriteIndented = true }));
+                    break;
+                case DataResponse dt:
+                    for (var i = 0; i < dt.Data.Count; i++)
+                    {
+                        var ob = dt.Data.ElementAt(i);
+                        var json = JsonSerializer.Serialize(ob, new JsonSerializerOptions { WriteIndented = true });
+                        dvr.Add(JsonSerializer.Deserialize<OnlineClient>(json)!);
+                    }
+                    _log.Info(JsonSerializer.Serialize(dt.StatementStats, new JsonSerializerOptions { WriteIndented = true }));
+                    break;
+                case ErrorResponse er:
+                    _log.Info(JsonSerializer.Serialize(er, new JsonSerializerOptions { WriteIndented = true }));
+                    break;
+            }
+            return dvr;
+        }
         public static Props Prop()
         {
             return Props.Create(() => new SRSManagersActor());

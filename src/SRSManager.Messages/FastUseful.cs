@@ -11,9 +11,6 @@ namespace SRSManager.Messages
         public string? StreamId { get; }
         public string? ClientId { get; } 
         public string? VHostId { get; }
-        public string? UserName { get; }
-        public string? Password { get; }
-        public string? RtspUrl { get; }  
         public string? Method { get; }
         public FastUseful(string method)
         {
@@ -22,6 +19,12 @@ namespace SRSManager.Messages
         public FastUseful(string deviceId, string method)
         {
             DeviceId= deviceId;
+            Method = method;
+        }
+        public FastUseful(string deviceId, string vHostId, string method)
+        {
+            DeviceId = deviceId;
+            VHostId= vHostId;
             Method = method;
         }
         public FastUseful(string deviceId, string vhostDomain, string ingestName, string method)
@@ -39,14 +42,11 @@ namespace SRSManager.Messages
             Method = method;
         }
         
-        public FastUseful(string id, string deviceId, string streamId, string clientId, string? username, string? password, string rtspUrl, string method)
+        public FastUseful(string? id, string? deviceId, string? streamId, string? clientId, string method)
         {
             DeviceId = deviceId;    
             Id= id;
             ClientId= clientId;
-            UserName= username; 
-            Password= password; 
-            RtspUrl= rtspUrl;   
             StreamId = streamId;
             Method = method;
         }
