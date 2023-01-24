@@ -42,6 +42,18 @@ namespace SRSManager.Actors
             {
                 Sender.Tell(_srsManager);
             });
+            Receive<GetRunningSrsInfo>(_ =>
+            {
+                GetRunningSrsInfo(Sender);
+            });
+            Receive<StopSrs>(_ =>
+            {
+                StopSrs(Sender);
+            });
+            Receive<InitAndStart>(_ =>
+            {
+                InitAndStart(Sender);
+            });
             FastUsefulApis();
             GlobalSrsApis();
             //Pulsar
@@ -69,6 +81,79 @@ namespace SRSManager.Actors
             VhostRtcApis();        
             VhostSecurityApis();    
             VhostTranscodeApis();
+        }
+        private void InitAndStart(IActorRef sender)
+        {
+            var rs = new ResponseStruct()
+            {
+                Code = ErrorNumber.None,
+                Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+            };
+            var sm = _srsManager;
+            if (sm.IsInit == false || sm.IsRunning == false)
+            {
+                var ret = sm.SRS_Init(sm.SrsConfigPath, out rs);
+                if (ret)
+                {
+                    ret = sm.Start(out rs);
+                }
+
+                var sts = new SrsStartStatus();
+                sts.DeviceId = sm.SrsDeviceId;
+                sts.IsStarted = ret;
+                sts.Message = JsonHelper.ToJson(rs); 
+                sender.Tell(sts);
+            }
+            sender.Tell(null!);
+        }
+        private void StopSrs(IActorRef sender)
+        {
+            var rs = new ResponseStruct()
+            {
+                Code = ErrorNumber.None,
+                Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+            };
+            var sm = _srsManager;
+            if (sm.IsRunning == true)
+            {
+                var ret = sm.Stop(out rs);
+                var sts = new SrsStartStatus();
+                sts.DeviceId = sm.SrsDeviceId;
+                sts.IsStarted = !ret;
+                sts.Message = JsonHelper.ToJson(rs);
+                sender.Tell(sts);
+            }
+            sender.Tell(null!);
+        }
+        private void GetRunningSrsInfo(IActorRef sender)
+        {
+            var rs = new ResponseStruct()
+            {
+                Code = ErrorNumber.None,
+                Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+            };
+            var sm = _srsManager;
+            if (sm.IsRunning && sm.Srs.Http_api != null && sm.Srs.Http_api.Enabled == true)
+            {
+                var reqUrl = "http://127.0.0.1:" + sm!.Srs.Http_api!.Listen + "/api/v1/summaries";
+                try
+                {
+                    var tmpStr = NetHelperNew.HttpGetRequest(reqUrl, null!);
+                    var retReq = JsonHelper.FromJson<SrsSystemInfo>(tmpStr);
+                    if (retReq != null && retReq.Data != null && retReq.Data.Self != null)
+                    {
+                        var filename = Path.GetFileName(retReq.Data.Self.Argv)!;
+                        var ext = Path.GetExtension(filename);
+                        retReq.Data.Self.Srs_DeviceId = filename.Replace(ext, "");
+                        sender.Tell(retReq.Data.Self);
+                    }
+                }
+                catch
+                {
+                }
+            }
+
+            sender.Tell(null!);
         }
         private void FastUsefulApis()
         {
@@ -1621,7 +1706,7 @@ namespace SRSManager.Actors
                 }
 
                 var retVhost = _srsManager.Srs.Vhosts.FindLast(x =>
-                    x.VhostDomain!.Trim().ToUpper().Equals(vh.VHostDomain.Trim().ToUpper()));
+                    x.VhostDomain!.Trim().ToUpper().Equals(vh.VHostDomain!.Trim().ToUpper()));
 
                 if (retVhost == null)
                 {

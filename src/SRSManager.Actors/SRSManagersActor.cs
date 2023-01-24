@@ -36,7 +36,79 @@ namespace SRSManager.Actors
             _cutMergeService = Context.ActorOf(CutMergeServiceActor.Prop());
             _dvrPlan = Context.ActorOf(DvrPlanActor.Prop(_pulsarSystem, _cutMergeService));
             _log = Context.GetLogger();
-            
+
+            ReceiveAsync<GetRunningSrsInfoList>(async g =>
+            {
+
+                var result = new List<Self_Srs>();
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                foreach(var srs in _srs.Values)
+                {
+                    var s = await srs.Ask<Self_Srs>(GetRunningSrsInfo.Instance);
+                    if(s != null)
+                    { result.Add(s); }
+                }
+                if(result.Count == 0)
+                {
+                    rs.Code = ErrorNumber.SrsObjectNotInit;
+                    rs.Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit];
+                    Sender.Tell(new ApisResult(null!, rs));
+                }
+                else
+                    Sender.Tell(new ApisResult(result, rs));
+            });
+            ReceiveAsync<StopAllSrs>(async _ =>
+            {
+                var result = new List<SrsStartStatus>();
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                foreach (var srs in _srs.Values)
+                {
+                    var s = await srs.Ask<SrsStartStatus>(StopSrs.Instance);
+                    if (s != null)
+                    { result.Add(s); }
+                }
+                if (result.Count == 0)
+                {
+                    rs.Code = ErrorNumber.SrsObjectNotInit;
+                    rs.Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit];
+                    Sender.Tell(new ApisResult(null!, rs));
+                }
+                else
+                    Sender.Tell(new ApisResult(result, rs));
+            });
+            ReceiveAsync<InitAndStartAllSrs>(async _ =>
+            {
+                var result = new List<SrsStartStatus>();
+                var rs = new ResponseStruct()
+                {
+                    Code = ErrorNumber.None,
+                    Message = ErrorMessage.ErrorDic![ErrorNumber.None],
+                };
+                foreach (var srs in _srs.Values)
+                {
+                    var s = await srs.Ask<SrsStartStatus>(InitAndStart.Instance);
+                    if (s != null)
+                    { result.Add(s); }
+                }
+                if (result.Count == 0)
+                {
+                    rs.Code = ErrorNumber.SrsObjectNotInit;
+                    rs.Message = ErrorMessage.ErrorDic![ErrorNumber.SrsObjectNotInit];
+                    Sender.Tell(new ApisResult(null!, rs));
+                }
+                else
+                    Sender.Tell(new ApisResult(result, rs));
+
+            });
+
             Receive<GetManagerSrs>(_ => Sender.Tell(new ManagerSrs(_srs)));
             Receive<DvrPlan>(d => _dvrPlan.Forward(d));
             Receive<GlobalSrs>(g =>
