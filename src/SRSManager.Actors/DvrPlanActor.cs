@@ -44,6 +44,10 @@ namespace SRSManager.Actors
             _cutMergeService = cutMergeService;
             ReceiveAsync<DvrPlan>(vhIf => vhIf.Method == "PulsarSrsConfig", async vh =>
             {
+                if(_pulsarConfig != null)
+                {
+                    return;
+                }
                 var f = vh.Client!.Value;
                 _pulsarSrsConfig= f;
                 _pulsarConfig = new PulsarClientConfigBuilder()
@@ -898,10 +902,10 @@ namespace SRSManager.Actors
                 select += $"AND Deleted = false ";
 
             if (rgdv.StartTime != null)
-                select += $"AND StartTime >= {rgdv.StartTime} ";
+                select += $"AND StartTime >= CAST({rgdv.StartTime.Value.ToString("yyyy-MM-dd HH:mm:ss")} AS timestamp) ";
 
             if (rgdv.EndTime != null)
-                select += $"AND EndTime <= {rgdv.EndTime} ";
+                select += $"AND EndTime <= CAST({rgdv.EndTime.Value.ToString("yyyy-MM-dd HH:mm:ss")} AS timestamp) ";
 
             var orderBy = "";
             if (haveOrderBy)

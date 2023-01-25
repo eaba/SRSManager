@@ -32,12 +32,14 @@ namespace SRSManager.Actors
         private PulsarSystem _pulsarSystem = PulsarSystem.GetInstance(Context.System, actorSystemName: "Pulsar");
         private Dictionary<string, IActorRef> _srs = new Dictionary<string, IActorRef>();
         private IActorRef _dvrPlan;
+        private IActorRef _liveBroadCast;
         private readonly ILoggingAdapter _log;
         private PulsarClientConfigBuilder _client;
         public SRSManagersActor()
         {
             _cutMergeService = Context.ActorOf(CutMergeServiceActor.Prop());
             _dvrPlan = Context.ActorOf(DvrPlanActor.Prop(_pulsarSystem, _cutMergeService));
+            _liveBroadCast = Context.ActorOf(LiveBroadCastActor.Prop(_pulsarSystem));
             _log = Context.GetLogger();
 
             ReceiveAsync<GetRunningSrsInfoList>(async g =>
@@ -114,6 +116,7 @@ namespace SRSManager.Actors
 
             Receive<GetManagerSrs>(_ => Sender.Tell(new ManagerSrs(_srs)));
             Receive<DvrPlan>(d => _dvrPlan.Forward(d));
+            Receive<LiveBroadcast>(d => _liveBroadCast.Forward(d));
             Receive<GlobalSrs>(g =>
             {
                 var srs = SRSManager(g.DeviceId);
@@ -492,7 +495,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                var query = @$"select * from 'OnlineClient' WHERE ClientType = '{ClientType.Monitor}' AND Stream = '{g.StreamId}' Order By __publish_time__ ASC LIMIT 1";
+                var query = @$"select * from OnlineClient WHERE ClientType = '{ClientType.Monitor}' AND Stream = '{g.StreamId}' Order By __publish_time__ ASC LIMIT 1";
                 var sql = await Sql(query, g.Tenant, g.NameSpace, g.TrinoUrl);
                 Sender.Tell(new ApisResult(sql.FirstOrDefault()!, rs));
             });
@@ -503,7 +506,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                var query = @$"select * from 'OnlineClient' 
+                var query = @$"select * from OnlineClient 
                 WHERE IsOnline = 'true' AND ClientType = '{ClientType.User}' 
                 AND IsPlay = 'true' AND Device_Id = '{g.DeviceId}'  Order By __publish_time__ ASC";
                 var sql = await Sql(query, g.Tenant, g.NameSpace, g.TrinoUrl);
@@ -516,7 +519,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                var query = @$"select * from 'OnlineClient' 
+                var query = @$"select * from OnlineClient 
                 WHERE IsOnline = 'true' AND ClientType = '{ClientType.User}' 
                 AND IsPlay = 'true' Order By __publish_time__ ASC";
                 var sql = await Sql(query, g.Tenant, g.NameSpace, g.TrinoUrl);
@@ -529,7 +532,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                var query = @$"select * from 'OnlineClient' 
+                var query = @$"select * from OnlineClient 
                 WHERE IsOnline = 'true' AND ClientType = '{ClientType.Monitor}' 
                 AND Device_Id = '{g.DeviceId}'  Order By __publish_time__ ASC";
                 var sql = await Sql(query, g.Tenant, g.NameSpace, g.TrinoUrl);
@@ -542,7 +545,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                var query = @$"select * from 'OnlineClient' 
+                var query = @$"select * from OnlineClient 
                 WHERE IsOnline = 'true' AND ClientType = '{ClientType.Monitor}'  
                 Order By __publish_time__ ASC";
                 var sql = await Sql(query, g.Tenant, g.NameSpace, g.TrinoUrl);
@@ -557,7 +560,7 @@ namespace SRSManager.Actors
                     Code = ErrorNumber.None,
                     Message = ErrorMessage.ErrorDic![ErrorNumber.None],
                 };
-                var query = @$"select * from 'OnlineClient' 
+                var query = @$"select * from OnlineClient 
                 WHERE any_match({strArr}, e -> e like '%{g.Id}%')  
                 Order By __publish_time__ ASC";
                 var sql = await Sql(query, g.Tenant, g.NameSpace, g.TrinoUrl);

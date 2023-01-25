@@ -123,7 +123,7 @@ namespace SrsApis.SrsManager.Apis
             {
                 lock (Common.LockDbObjForLivePlan)
                 {
-                    return OrmService.Db.Select<LiveBroadcastPlan>()
+                   return OrmService.Db.Select<LiveBroadcastPlan>()
                         .WhereIf(!string.IsNullOrEmpty(req.App), x => x.App!.Equals(req.App))
                         .WhereIf(!string.IsNullOrEmpty(req.Stream), x => x.Stream!.Equals(req.Stream))
                         .WhereIf(!string.IsNullOrEmpty(req.Vhost), x => x.Vhost!.Equals(req.Vhost))
