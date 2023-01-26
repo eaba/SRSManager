@@ -171,14 +171,14 @@ namespace SrsApis.SrsManager
             try
             {
                 Directory.CreateDirectory(SrsWorkPath + SrsDeviceId);
-                Directory.CreateDirectory(Srs.Ff_log_dir);
-                Directory.CreateDirectory(Srs.Http_server!.Dir);
+                Directory.CreateDirectory(Srs.Ff_log_dir!);
+                Directory.CreateDirectory(Srs.Http_server!.Dir!);
                 SrsConfigBuild.Build(Srs, this.SrsWorkPath + this.SrsDeviceId + ".conf");
                 this.SrsConfigPath = this.SrsWorkPath + this.SrsDeviceId + ".conf";
                 rs = new ResponseStruct();
                 rs.Code = ErrorNumber.None;
                 rs.Message = ErrorMessage.ErrorDic![ErrorNumber.None];
-                Common.SrsManagers.Add(this);
+                //Common.SrsManagers.Add(this);
                 return true;
             }
             catch (Exception ex)
@@ -272,6 +272,7 @@ namespace SrsApis.SrsManager
                 vhost.VhostDomain = "__defaultVhost__";
                 vhost.Vhttp_hooks = new HttpHooks();
                 vhost.Vhttp_hooks!.Enabled = true;
+                
                 //vhost.Vhttp_hooks!.On_connect = "http://127.0.0.1:5800/SrsHooks/OnConnect";
                 vhost.Vhttp_hooks!.On_publish = "http://127.0.0.1:5800/SrsHooks/OnPublish";
                 //vhost.Vhttp_hooks!.On_close = "http://127.0.0.1:5800/SrsHooks/OnClose";

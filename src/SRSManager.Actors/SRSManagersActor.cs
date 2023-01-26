@@ -109,6 +109,7 @@ namespace SRSManager.Actors
         private Dictionary<string, IActorRef> _srs = new Dictionary<string, IActorRef>();
         private IActorRef _dvrPlan;
         private IActorRef _liveBroadCast;
+        private IActorRef _srsHooks;
         private readonly ILoggingAdapter _log;
         private PulsarClientConfigBuilder _client;
         public SRSManagersActor()
@@ -116,6 +117,7 @@ namespace SRSManager.Actors
             _cutMergeService = Context.ActorOf(CutMergeServiceActor.Prop());
             _dvrPlan = Context.ActorOf(DvrPlanActor.Prop(_pulsarSystem, _cutMergeService));
             _liveBroadCast = Context.ActorOf(LiveBroadCastActor.Prop(_pulsarSystem));
+            _srsHooks = Context.ActorOf(SrsHooksActor.Prop(_pulsarSystem));
             _log = Context.GetLogger();
 
             ReceiveAsync<GetRunningSrsInfoList>(async g =>
@@ -193,6 +195,7 @@ namespace SRSManager.Actors
             Receive<GetManagerSrs>(_ => Sender.Tell(new ManagerSrs(_srs)));
             Receive<DvrPlan>(d => _dvrPlan.Forward(d));
             Receive<LiveBroadcast>(d => _liveBroadCast.Forward(d));
+            Receive<SrsHooks>(d => _srsHooks.Forward(d));
             Receive<GlobalSrs>(g =>
             {
                 var srs = SRSManager(g.DeviceId);
@@ -318,7 +321,7 @@ namespace SRSManager.Actors
                _dvrPlan.Forward(v);
             });
             
-            ReceiveAsync<Messages.System > (async v =>
+            ReceiveAsync<Messages.System> (async v =>
             {
                 if(v.Sm != null)
                 {

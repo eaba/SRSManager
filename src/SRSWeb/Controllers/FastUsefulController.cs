@@ -275,8 +275,8 @@ namespace SRSWeb.Controllers
         [HttpGet]
         [AuthVerify]
         [Log]
-        [Route("/FastUseful/GetOnOnlinePlayerByDeviceId")]
-        public async ValueTask<JsonResult> GetOnOnlinePlayerByDeviceId(string deviceId, string tenant, string nameSpace, string trinoUrl)
+        [Route("/FastUseful/GetOnlinePlayerByDeviceId")]
+        public async ValueTask<JsonResult> GetOnlinePlayerByDeviceId(string deviceId, string tenant, string nameSpace, string trinoUrl)
         {
             var rss = CommonFunctions.CheckParams(new object[] {deviceId, tenant, nameSpace, trinoUrl});
             if (rss.Code != ErrorNumber.None)

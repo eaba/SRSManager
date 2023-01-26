@@ -1,9 +1,11 @@
+using Akka.Actor;
+using Akka.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using SrsApis.SrsManager.Apis;
 using SrsManageCommon;
 using SRSManageCommon.ControllerStructs.RequestModules;
-using SRSManageCommon.DBMoudle;
 using SRSManageCommon.ManageStructs;
+using SRSManager.Actors;
+using SRSManager.Messages;
 using SRSWeb.Attributes;
 
 namespace SRSWeb.Controllers
@@ -15,6 +17,11 @@ namespace SRSWeb.Controllers
     [Route("")]
     public class SrsHooksController : ControllerBase
     {
+        private readonly IActorRef _actor;
+        public SrsHooksController(IRequiredActor<SRSManagersActor> actor)
+        {
+            _actor = actor.ActorRef;
+        }
 
         /// <summary>
         /// Handle heartbeat information
@@ -24,15 +31,12 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [LogSrsCallBack]
         [Route("/SrsHooks/OnHeartbeat")]
-        public int OnHeartbeat(ReqSrsHeartbeat heartbeat)
+        public async ValueTask<JsonResult> OnHeartbeat(ReqSrsHeartbeat heartbeat, string brokerUrl, string tenant, string nameSpace, string trinoUrl)
         {
-            var rt = SrsHooksApis.OnHeartbeat(heartbeat, out var rs);
-            if (rt)
-            {
-                return 0;
-            }
-
-            return -1;
+            var client = new PulsarSrsConfig(string.Empty, tenant, nameSpace, brokerUrl, string.Empty, trinoUrl);
+            
+            var a = await _actor.Ask<ApisResult>(new SrsHooks(heartbeat, client, "OnHeartbeat"));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
         /// <summary>
@@ -43,8 +47,9 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [LogSrsCallBack]
         [Route("/SrsHooks/OnUnPublish")]
-        public int OnUnPublish(ReqSrsClientOnOrUnPublish client)
+        public async ValueTask<JsonResult> OnUnPublish(ReqSrsClientOnOrUnPublish client, string brokerUrl, string tenant, string nameSpace, string trinoUrl)
         {
+            var ct = new PulsarSrsConfig(string.Empty, tenant, nameSpace, brokerUrl, string.Empty, trinoUrl);
             var tmpOnlineClient = new OnlineClient()
             {
                 Device_Id = client.Device_Id,
@@ -60,9 +65,9 @@ namespace SRSWeb.Controllers
                 UpdateTime = DateTime.Now,
                 Vhost = client.Vhost,
             };
-            var rt = SrsHooksApis.OnUnPublish(tmpOnlineClient);
-            if (rt) return 0;
-            return -1;
+
+            var a = await _actor.Ask<ApisResult>(new SrsHooks(tmpOnlineClient, ct, "OnUnPublish"));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
 
@@ -74,8 +79,9 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [LogSrsCallBack]
         [Route("/SrsHooks/OnDvr")]
-        public int OnDvr(ReqSrsDvr dvr)
+        public async ValueTask<JsonResult> OnDvr(ReqSrsDvr dvr, string brokerUrl, string tenant, string nameSpace, string trinoUrl)
         {
+            var client = new PulsarSrsConfig(string.Empty, tenant, nameSpace, brokerUrl, string.Empty, trinoUrl);
             var currentTime = DateTime.Now;
 
             var tmpDvrVideo = new DvrVideo()
@@ -92,7 +98,7 @@ namespace SRSWeb.Controllers
                 Dir = Path.GetDirectoryName(dvr.File),
             };
 
-            var dvrFile = new FileInfo(dvr.File);
+            var dvrFile = new FileInfo(dvr.File!);
             tmpDvrVideo.FileSize = dvrFile.Length;
             if (FFmpegGetDuration.GetDuration(Common.FFmpegBinPath, dvr.File!, out var duration,out var newPath))
             {
@@ -108,8 +114,9 @@ namespace SRSWeb.Controllers
                 tmpDvrVideo.EndTime = currentTime;
             }
 
-            SrsHooksApis.OnDvr(tmpDvrVideo);
-            return 0;
+           
+            var a = await _actor.Ask<ApisResult>(new SrsHooks(tmpDvrVideo, client, "OnDvr"));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
 
@@ -121,8 +128,9 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [LogSrsCallBack]
         [Route("/SrsHooks/OnPlay")]
-        public int OnPlay(ReqSrsClientOnPlayOnStop client)
+        public async ValueTask<JsonResult> OnPlay(ReqSrsClientOnPlayOnStop client, string brokerUrl, string tenant, string nameSpace, string trinoUrl)
         {
+            var ct = new PulsarSrsConfig(string.Empty, tenant, nameSpace, brokerUrl, string.Empty, trinoUrl);
             var tmpOnlineClient = new OnlineClient()
             {
                 Device_Id = client.Device_Id,
@@ -138,9 +146,9 @@ namespace SRSWeb.Controllers
                 Vhost = client.Vhost,
                 PageUrl = client.PageUrl,
             };
-            var rt = SrsHooksApis.OnPlay(tmpOnlineClient);
-            if (rt) return 0;
-            return -1;
+            
+            var a = await _actor.Ask<ApisResult>(new SrsHooks(tmpOnlineClient, ct, "OnPlay"));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
         /// <summary>
@@ -151,8 +159,9 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [LogSrsCallBack]
         [Route("/SrsHooks/OnStop")]
-        public int OnStop(ReqSrsClientOnPlayOnStop client)
+        public async ValueTask<JsonResult> OnStop(ReqSrsClientOnPlayOnStop client, string brokerUrl, string tenant, string nameSpace, string trinoUrl)
         {
+            var ct = new PulsarSrsConfig(string.Empty, tenant, nameSpace, brokerUrl, string.Empty, trinoUrl);
             var tmpOnlineClient = new OnlineClient()
             {
                 Device_Id = client.Device_Id,
@@ -168,9 +177,9 @@ namespace SRSWeb.Controllers
                 Vhost = client.Vhost,
                 PageUrl = client.PageUrl,
             };
-            var rt = SrsHooksApis.OnStop(tmpOnlineClient);
-            if (rt) return 0;
-            return -1;
+            
+            var a = await _actor.Ask<ApisResult>(new SrsHooks(tmpOnlineClient, ct, "OnStop"));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
 
 
@@ -182,8 +191,9 @@ namespace SRSWeb.Controllers
         [AuthVerify]
         [LogSrsCallBack]
         [Route("/SrsHooks/OnPublish")]
-        public int OnPublish(ReqSrsClientOnOrUnPublish client)
+        public async ValueTask<JsonResult> OnPublish(ReqSrsClientOnOrUnPublish client, string brokerUrl, string tenant, string nameSpace, string trinoUrl)
         {
+            var ct = new PulsarSrsConfig(string.Empty, tenant, nameSpace, brokerUrl, string.Empty, trinoUrl);
             var tmpOnlineClient = new OnlineClient()
             {
                 Device_Id = client.Device_Id,
@@ -200,9 +210,8 @@ namespace SRSWeb.Controllers
                 UpdateTime = DateTime.Now,
                 Vhost = client.Vhost,
             };
-            var rt = SrsHooksApis.OnPublish(tmpOnlineClient);
-            if (rt) return 0;
-            return -1;
+            var a = await _actor.Ask<ApisResult>(new SrsHooks(tmpOnlineClient, ct, "OnPublish"));
+            return Result.DelApisResult(a.Rt, a.Rs);
         }
     }
 }
