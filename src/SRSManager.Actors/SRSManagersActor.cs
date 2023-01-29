@@ -787,7 +787,8 @@ namespace SRSManager.Actors
                 srsManager.Srs.Max_connections = 512;
             }
 
-            srsManager.SrsDeviceId = SrsManageCommon.Common.CreateUuid()?.Trim()!;
+            srsManager.SrsDeviceId = Common.CreateUuid()?.Trim()!;
+            srsManager.Srs.Server_Id = $"srs-{Guid.NewGuid():D}";
             srsManager.SrsWorkPath = Common.WorkPath;
             srsManager.Srs.Srs_log_file = srsManager.SrsWorkPath + srsManager.SrsDeviceId + "/srs.log";
             srsManager.Srs.Srs_log_level = "verbose"; //Observer initially
@@ -810,14 +811,14 @@ namespace SRSManager.Actors
             srsManager.Srs.Http_api.Listen = 8000;
             srsManager.Srs.Http_api.InstanceName = "";
             srsManager.Srs.Http_api.SectionsName = "http_api";
-            /*srsManager.Srs.Http_api.Raw_Api = new RawApi();
-            srsManager.Srs.Http_api.Raw_Api.Allow_query = true;
+            srsManager.Srs.Http_api.Raw_Api = new RawApi();
+            //srsManager.Srs.Http_api.Raw_Api.Allow_query = true;
             srsManager.Srs.Http_api.Raw_Api.Allow_reload = true;
-            srsManager.Srs.Http_api.Raw_Api.Allow_update = true;
+            //srsManager.Srs.Http_api.Raw_Api.Allow_update = true;
             srsManager.Srs.Http_api.Raw_Api.SectionsName = "raw_api";
-            srsManager.Srs.Http_api.Raw_Api.Enabled = true;*/
+            srsManager.Srs.Http_api.Raw_Api.Enabled = true;
             srsManager.Srs.Heartbeat = new SrsHeartbeatConfClass();
-            srsManager.Srs.Heartbeat.Device_id = SrsManageCommon.Common.AddDoubleQuotation(srsManager.SrsDeviceId!);
+            srsManager.Srs.Heartbeat.Device_id = Common.AddDoubleQuotation(srsManager.SrsDeviceId!);
             srsManager.Srs.Heartbeat.Enabled = true;
             srsManager.Srs.Heartbeat.SectionsName = "heartbeat";
             srsManager.Srs.Heartbeat.Interval = 5; //in seconds

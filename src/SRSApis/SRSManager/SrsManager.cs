@@ -226,6 +226,7 @@ namespace SrsApis.SrsManager
                 }
 
                 _srsDeviceId = SrsManageCommon.Common.CreateUuid()?.Trim()!;
+                Srs.Server_Id = $"srs-{Guid.NewGuid():D}";
                 Srs.Srs_log_file = SrsWorkPath + SrsDeviceId + "/srs.log";
                 Srs.Srs_log_level = "verbose"; //Observer initially
                 Srs.Pid = _srsWorkPath + SrsDeviceId + "/srs.pid";

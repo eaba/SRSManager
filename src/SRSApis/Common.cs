@@ -103,6 +103,7 @@ namespace SRSApis
                 if (file.Extension.Trim().ToLower().Equals(".conf")) //find the configuration file
                 {
                     var sm = new SrsManager();
+                    
                     ret = sm.SRS_Init(file.FullName, out rs);
                     var rsStr = JsonHelper.ToJson(rs);
                     if (!ret)
@@ -117,7 +118,7 @@ namespace SRSApis
                 }
             }
 
-
+            //SysemController
             if (SrsManagers.Count == 0)
             {
                 LogWriter.WriteLog("If there is no Srs instance configuration file, the system will automatically create a Srs instance configuration file");

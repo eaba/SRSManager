@@ -16,6 +16,7 @@ public class Program
     public static CommonFunctions CommonFunctions = new CommonFunctions();
     public static void Main(params string[] args)
     {
+        CommonFunctions.CommonInit();
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container.
