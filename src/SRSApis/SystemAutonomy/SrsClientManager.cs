@@ -107,66 +107,7 @@ namespace SRSApis.SystemAutonomy
             }
         }
 
-        private void CompletionOnvifIpAddress()
-        {
-            try
-            {
-                if (Common.SrsManagers != null)
-                {
-                    foreach (var srs in Common.SrsManagers)
-                    {
-                        if (srs == null || srs.Srs == null) continue;
-                        if (srs.IsInit && srs.Srs != null && srs.IsRunning)
-                        {
-                            var ret = VhostIngestApis.GetVhostIngestNameList(srs.SrsDeviceId, out var rs);
-                            if (ret != null)
-                            {
-                                foreach (var r in ret)
-                                {
-                                    var ingest = VhostIngestApis.GetVhostIngest(srs.SrsDeviceId, r.VhostDomain!,
-                                        r.IngestInstanceName!,
-                                        out rs);
-
-                                    if (ingest != null)
-                                    {
-                                        var inputIp =
-                                            SrsManageCommon.Common
-                                                .GetIngestRtspMonitorUrlIpAddress(ingest.Input!.Url!)!;
-                                        if (SrsManageCommon.Common.IsIpAddr(inputIp!))
-                                        {
-                                            lock (SrsManageCommon.Common.LockDbObjForOnlineClient)
-                                            {
-                                                var reti = OrmService.Db.Update<OnlineClient>()
-                                                    .Set(x => x.MonitorIp, inputIp)
-                                                    .Set(x => x.RtspUrl, ingest.Input!.Url!)
-                                                    .Where(x => x.Stream!.Equals(ingest.IngestName) &&
-                                                                x.Device_Id!.Equals(srs.SrsDeviceId) &&
-                                                                (x.MonitorIp == null || x.MonitorIp == "" ||
-                                                                 x.MonitorIp == "127.0.0.1"))
-                                                    .ExecuteAffrows();
-                                                if (reti > 0)
-                                                {
-                                                    LogWriter.WriteLog("Complete the IP address of the camera in the Ingest streamer...",
-                                                        srs.SrsDeviceId + "/" + r.VhostDomain + "/" +
-                                                        ingest.IngestName +
-                                                        " Get the IP:" + inputIp + " Get the Rtsp address:" + ingest.Input!.Url);
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                LogWriter.WriteLog("completionOnvifIpAddress exception", ex.Message + "\r\n" + ex.StackTrace,
-                    ConsoleColor.Yellow);
-            }
-        }
-
+      
         private void CompletionT28181IpAddress()
         {
             try
