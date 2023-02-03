@@ -953,6 +953,7 @@ namespace SRSManager.Actors
         }
         public static Props Prop()
         {
+            ErrorMessage.Init();
             return Props.Create(() => new SRSManagersActor());
         }
     }
